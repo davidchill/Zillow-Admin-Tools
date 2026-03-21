@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @font-face { font-family: 'Nunito Sans'; src: url('fonts/NunitoSans-VariableFont.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: swap; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 380px; font-family: 'Nunito Sans', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+
+    /* Header */
+    .header { background: #0f172a; padding: 20px; color: white; }
+    .header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .header-icon { background: #3b82f6; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .header-icon svg { width: 20px; height: 20px; fill: none; stroke: white; stroke-width: 2; }
+    .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; flex: 1; }
+    .header p { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .settings-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; transition: background 0.15s; display: flex; align-items: center; justify-content: center; }
+    .settings-btn:hover { background: rgba(255,255,255,0.1); }
+    .settings-btn svg { width: 18px; height: 18px; fill: none; stroke: #94a3b8; stroke-width: 2; }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+    .tab { flex: 1; padding: 10px; font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; border: none; background: none; color: #94a3b8; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .tab:hover { color: #64748b; }
+    .tab.active { color: #2563eb; border-bottom: 2px solid #2563eb; background: white; }
+    .tab svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+    /* Content */
+    .content { padding: 20px; }
+
+    /* Mode selector */
+    .modes { display: flex; gap: 5px; margin-bottom: 16px; }
+    .mode-btn { flex: 1; padding: 6px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #e2e8f0; background: white; color: #94a3b8; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+    .mode-btn:hover { color: #64748b; border-color: #cbd5e1; }
+    .mode-btn.active { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+
+    /* Input */
+    .input-label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-bottom: 6px; padding-left: 2px; }
+    .input-row { position: relative; margin-bottom: 6px; }
+    .input-row input { width: 100%; padding: 10px 44px 10px 14px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; color: #0f172a; outline: none; transition: all 0.15s; }
+    .input-row input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+    .input-row input::placeholder { color: #94a3b8; }
+    .search-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); padding: 7px; background: #2563eb; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .search-btn:hover { background: #1d4ed8; }
+    .search-btn svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 2; }
+    .error-msg { font-size: 11px; color: #ef4444; padding-left: 2px; margin-top: 4px; min-height: 16px; }
+    .input-row input.has-error { border-color: #fca5a5; background: #fef2f2; }
+
+    /* Confirm bar */
+    .confirm-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; margin-bottom: 12px; }
+    .confirm-bar .confirm-text { flex: 1; font-size: 12px; color: #92400e; }
+    .confirm-bar .confirm-text strong { font-weight: 700; }
+    .confirm-bar button { padding: 5px 14px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; }
+    .confirm-yes { background: #2563eb; color: white; }
+    .confirm-yes:hover { background: #1d4ed8; }
+    .confirm-no { background: #e2e8f0; color: #475569; }
+    .confirm-no:hover { background: #cbd5e1; }
+
+    /* History */
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; margin-bottom: 10px; }
+    .history-title { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; flex: 1; }
+    .history-title svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .clear-btn { font-size: 11px; color: #94a3b8; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: color 0.15s; }
+    .clear-btn:hover { color: #ef4444; }
+    .clear-btn svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+    .history-item { width: 100%; display: flex; flex-direction: column; gap: 3px; padding: 10px 12px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; cursor: pointer; transition: all 0.15s; margin-bottom: 6px; text-align: left; }
+    .history-item:hover { background: #f1f5f9; }
+    .history-item-top { display: flex; align-items: center; justify-content: space-between; }
+    .history-item-id { font-size: 13px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px; }
+    .history-item-sub { font-size: 11px; color: #64748b; padding-left: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ext-icon { width: 12px; height: 12px; fill: none; stroke: #cbd5e1; stroke-width: 2; transition: stroke 0.15s; flex-shrink: 0; }
+    .history-item:hover .ext-icon { stroke: #3b82f6; }
+
+    .badge { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; }
+    .badge-email { background: #f3e8ff; color: #7c3aed; }
+    .badge-zuid { background: #dbeafe; color: #2563eb; }
+    .badge-screenname { background: #dcfce7; color: #16a34a; }
+    .badge-zpid { background: #fef3c7; color: #d97706; }
+
+    .empty-state { text-align: center; padding: 28px 0; border: 2px dashed #e2e8f0; border-radius: 12px; }
+    .empty-state p { font-size: 13px; color: #94a3b8; }
+
+    /* Footer */
+    .footer { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 20px; }
+    .footer-inner { display: flex; align-items: flex-start; gap: 10px; font-size: 11px; color: #64748b; line-height: 1.5; }
+    .footer-icon { color: #3b82f6; font-size: 13px; margin-top: 1px; flex-shrink: 0; font-style: normal; }
+
+    /* Settings overlay */
+    .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; }
+    .settings-panel { background: white; border-radius: 16px; width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); overflow: hidden; }
+    .settings-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+    .settings-header h2 { font-size: 15px; font-weight: 700; color: #0f172a; }
+    .close-btn { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .close-btn:hover { background: #e2e8f0; }
+    .close-btn svg { width: 18px; height: 18px; fill: none; stroke: #64748b; stroke-width: 2; }
+    .settings-body { padding: 20px; }
+    .setting-row { margin-bottom: 18px; }
+    .setting-row:last-child { margin-bottom: 0; }
+    .setting-label { font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block; }
+    .setting-desc { font-size: 11px; color: #94a3b8; margin-bottom: 8px; }
+    .setting-row select { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer; }
+    .setting-row select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-row">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <h1>Zillow Admin Tools</h1>
+      <button class="settings-btn" id="settings-open">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <p>Search listings or impersonate users by email, ZUID, or screen name.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tab-imp">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Impersonate
+    </button>
+    <button class="tab" id="tab-zpid">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      ZPID Search
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Mode selector (impersonate only) -->
+    <div class="modes" id="mode-row">
+      <button class="mode-btn active" data-mode="auto">Auto-detect</button>
+      <button class="mode-btn" data-mode="email">Email</button>
+      <button class="mode-btn" data-mode="zuid">ZUID</button>
+      <button class="mode-btn" data-mode="screenname">Screen Name</button>
+    </div>
+
+    <!-- Confirm bar (auto-detect confirmation) -->
+    <div class="confirm-bar hidden" id="confirm-bar">
+      <span class="confirm-text" id="confirm-text"></span>
+      <button class="confirm-yes" id="confirm-yes">Go</button>
+      <button class="confirm-no" id="confirm-no">Cancel</button>
+    </div>
+
+    <!-- Input -->
+    <label class="input-label" id="input-label">Email, ZUID, or Screen Name</label>
+    <div class="input-row">
+      <input type="text" id="main-input" placeholder="Email, ZUID, or Screen Name" autocomplete="off">
+      <button class="search-btn" id="go-btn">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+
+    <!-- History -->
+    <div class="history-header">
+      <div class="history-title">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span id="history-label">Recent Impersonations</span>
+      </div>
+      <button class="clear-btn hidden" id="clear-btn">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        Clear
+      </button>
+    </div>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-inner">
+      <i class="footer-icon">i</i>
+      <span id="footer-text">Auto-detect mode: emails (contains @), ZUIDs (all digits), or screen names (everything else).</span>
+    </div>
+  </div>
+
+  <!-- Settings overlay -->
+  <div class="overlay hidden" id="settings-overlay">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="close-btn" id="settings-close">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-row">
+          <label class="setting-label">Recent history limit</label>
+          <div class="setting-desc">Maximum number of items shown in Recent Impersonations and Recent Properties.</div>
+          <select id="setting-history-limit">
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="7">7</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
