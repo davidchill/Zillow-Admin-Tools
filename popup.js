@@ -5,7 +5,7 @@
   var currentTab = 'impersonate';
   var currentMode = 'auto';
   var history = [];
-  var settings = { historyLimit: 5 };
+  var settings = { historyLimit: 5, zpidTabEnabled: true };
   var pendingConfirm = null; // { method, value }
 
   var IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
@@ -32,6 +32,8 @@
   var settingsOverlay = document.getElementById('settings-overlay');
   var settingsClose = document.getElementById('settings-close');
   var settingHistoryLimit = document.getElementById('setting-history-limit');
+  var settingZpidTab = document.getElementById('setting-zpid-tab');
+  var tabsRow = document.querySelector('.tabs');
 
   // ── Load settings + history from chrome.storage ──
   function loadFromStorage(callback) {
@@ -39,10 +41,13 @@
       if (data.zillow_settings) {
         settings = data.zillow_settings;
         settingHistoryLimit.value = String(settings.historyLimit || 5);
+        if (typeof settings.zpidTabEnabled === 'undefined') settings.zpidTabEnabled = true;
+        settingZpidTab.checked = settings.zpidTabEnabled;
       }
       if (data.zillow_history_v3) {
         history = data.zillow_history_v3;
       }
+      applyZpidTabVisibility();
       renderHistory();
       if (callback) callback();
     });
@@ -106,6 +111,21 @@
       historyId: historyId,
       historyType: historyType
     });
+  }
+
+  // ══════════════════════════════
+  // ZPID TAB VISIBILITY
+  // ══════════════════════════════
+
+  function applyZpidTabVisibility() {
+    var show = settings.zpidTabEnabled;
+    tabZpid.classList.toggle('hidden', !show);
+    // If ZPID tab is hidden but currently active, switch to impersonate
+    if (!show && currentTab === 'zpid') {
+      switchTab('impersonate');
+    }
+    // If only one tab visible, hide the tab bar entirely for a cleaner look
+    tabsRow.classList.toggle('hidden', !show);
   }
 
   // ══════════════════════════════
@@ -331,6 +351,7 @@
   settingsOpen.addEventListener('click', function () {
     settingsOverlay.classList.remove('hidden');
     settingHistoryLimit.value = String(settings.historyLimit || 5);
+    settingZpidTab.checked = settings.zpidTabEnabled;
   });
 
   settingsClose.addEventListener('click', function () {
@@ -354,6 +375,12 @@
       saveHistory();
     }
     renderHistory();
+  });
+
+  settingZpidTab.addEventListener('change', function () {
+    settings.zpidTabEnabled = settingZpidTab.checked;
+    saveSettings();
+    applyZpidTabVisibility();
   });
 
 })();

@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    @font-face { font-family: 'Nunito Sans'; src: url('fonts/NunitoSans-VariableFont.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Nunito Sans'; src: url('fonts/NunitoSans-VariableFont.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: block; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: inherit; }
     body { width: 380px; font-family: 'Nunito Sans', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
 
     /* Header */
@@ -102,6 +102,16 @@
     .setting-desc { font-size: 11px; color: #94a3b8; margin-bottom: 8px; }
     .setting-row select { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer; }
     .setting-row select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+
+    /* Toggle switch */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .toggle-row .toggle-label-group { flex: 1; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #cbd5e1; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+    .toggle-track::after { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .toggle input:checked + .toggle-track { background: #2563eb; }
+    .toggle input:checked + .toggle-track::after { transform: translateX(20px); }
 
     .hidden { display: none; }
   </style>
@@ -202,6 +212,18 @@
             <option value="7">7</option>
             <option value="10">10</option>
           </select>
+        </div>
+        <div class="setting-row">
+          <div class="toggle-row">
+            <div class="toggle-label-group">
+              <label class="setting-label" style="margin-bottom:2px;">ZPID Search tab</label>
+              <div class="setting-desc" style="margin-bottom:0;">Show or hide the ZPID Search tab in the toolbar.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-zpid-tab" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
         </div>
       </div>
     </div>

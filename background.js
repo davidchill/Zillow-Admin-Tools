@@ -178,35 +178,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     return;
   }
 
-  // ── Zillow - ZPID Search ──
-  if (info.menuItemId === 'zillow-zpid-search') {
-    if (info.selectionText) {
-      const text = info.selectionText.trim().replace(/\D/g, '');
-      if (text) {
-        const url = 'https://www.zillow.com/homedetails/' + text + '_zpid/';
-        chrome.tabs.create({ url }, (newTab) => {
-          scrapeTabForLabel(newTab.id, text, 'zpid');
-          // Also save to history
-          chrome.storage.local.get(['zillow_history_v3', 'zillow_settings'], (data) => {
-            const settings = data.zillow_settings || { historyLimit: 5 };
-            const limit = settings.historyLimit || 5;
-            let history = data.zillow_history_v3 || [];
-            history = [
-              { type: 'zpid', id: text, method: 'zpid', label: '', timestamp: Date.now() }
-            ].concat(
-              history.filter((h) => !(h.id === text && h.type === 'zpid'))
-            ).slice(0, limit);
-            chrome.storage.local.set({ zillow_history_v3: history });
-          });
-        });
-      } else {
-        showAlert(tab.id, 'No valid ZPID found in the selected text. Please select a numeric ZPID and try again.');
-      }
-    } else {
-      showAlert(tab.id, 'Please select a ZPID (numeric ID) on the page first, then right-click and choose "Zillow - ZPID Search".');
-    }
-    return;
-  }
 });
 
 // ── Create context menu entries on install ──
@@ -215,10 +186,5 @@ chrome.runtime.onInstalled.addListener(() => {
     id: 'zillow-impersonate',
     title: 'Zillow - Impersonate',
     contexts: ['page', 'selection', 'link', 'editable', 'image', 'video', 'audio']
-  });
-  chrome.contextMenus.create({
-    id: 'zillow-zpid-search',
-    title: 'Zillow - ZPID Search',
-    contexts: ['selection']
   });
 });
