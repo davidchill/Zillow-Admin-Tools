@@ -1,4 +1,4 @@
-// ── Zillow Admin Tools – Content Script v2.2 ──
+// ── Zillow Admin Tools – Content Script v2.3 ──
 // Injects a floating tab into Zillow pages that expands into a history panel.
 
 (function () {
@@ -57,11 +57,11 @@
       right: 0;
       top: 50%;
       transform: translateY(-50%);
-      width: 44px;
-      height: 52px;
+      width: 33px;
+      height: 39px;
       background: #0f172a;
-      border-radius: 10px 0 0 10px;
-      cursor: pointer;
+      border-radius: 8px 0 0 8px;
+      cursor: grab;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -71,11 +71,15 @@
     }
     .fab:hover {
       background: #1e293b;
-      width: 52px;
+      width: 39px;
+    }
+    .fab.dragging {
+      cursor: grabbing;
+      transition: background 0.15s;
     }
     .fab img {
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
       flex-shrink: 0;
       display: block;
     }
@@ -83,13 +87,13 @@
     /* ── Panel ── */
     .panel {
       position: fixed;
-      right: 44px;
+      right: 33px;
       top: 50%;
       transform: translateY(-50%) translateX(16px);
       width: 290px;
       max-height: 72vh;
       background: white;
-      border-radius: 14px 0 0 14px;
+      border-radius: 14px;
       box-shadow: -6px 0 28px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
@@ -413,11 +417,6 @@
     panel.classList.remove('open');
   }
 
-  fab.addEventListener('click', e => {
-    e.stopPropagation();
-    isOpen ? closePanel() : openPanel();
-  });
-
   shadow.getElementById('zat-close').addEventListener('click', closePanel);
 
   // Close when clicking anywhere outside the panel or fab
@@ -433,6 +432,60 @@
     if (isOpen && (changes.zillow_history_v3 || changes.zillow_settings)) {
       loadAndRender();
     }
+  });
+
+  // ── Vertical drag ─────────────────────────────────────────────────────────
+  const FAB_H = 39;
+  let fabTopPx = window.innerHeight / 2;
+  let isDragging = false;
+  let didDrag = false;
+  let dragStartY = 0;
+  let dragStartTop = 0;
+
+  function applyPosition(topPx) {
+    const clamped = Math.max(FAB_H / 2, Math.min(window.innerHeight - FAB_H / 2, topPx));
+    fab.style.top = clamped + 'px';
+    fab.style.transform = 'translateY(-50%)';
+    panel.style.top = clamped + 'px';
+    return clamped;
+  }
+
+  // Load saved position, fall back to vertical center
+  chrome.storage.local.get('zat_fab_top', data => {
+    fabTopPx = data.zat_fab_top || window.innerHeight / 2;
+    applyPosition(fabTopPx);
+  });
+
+  fab.addEventListener('mousedown', e => {
+    isDragging = true;
+    didDrag = false;
+    dragStartY = e.clientY;
+    dragStartTop = fabTopPx;
+    fab.classList.add('dragging');
+    e.preventDefault(); // prevent text selection while dragging
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const delta = e.clientY - dragStartY;
+    if (Math.abs(delta) > 3) didDrag = true;
+    fabTopPx = applyPosition(dragStartTop + delta);
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    fab.classList.remove('dragging');
+    if (didDrag) {
+      chrome.storage.local.set({ zat_fab_top: fabTopPx });
+    }
+  });
+
+  // Toggle panel on click — but not if the mouse just finished dragging
+  fab.addEventListener('click', e => {
+    if (didDrag) return;
+    e.stopPropagation();
+    isOpen ? closePanel() : openPanel();
   });
 
 })();
