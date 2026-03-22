@@ -76,6 +76,7 @@
     }
     .mode-btn:hover { color: #64748b; border-color: #cbd5e1; }
     .mode-btn.active { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+    .wip-tag { font-size: 8px; font-weight: 800; text-transform: uppercase; background: #fef3c7; color: #d97706; padding: 1px 4px; border-radius: 3px; letter-spacing: 0.3px; margin-left: 3px; vertical-align: middle; }
 
     /* Input */
     .input-label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: #64748b; margin-bottom: 5px; }
@@ -208,10 +209,10 @@
       <div class="search-content">
         <!-- Mode selector -->
         <div class="modes" id="sp-mode-row">
-          <button class="mode-btn active" data-mode="auto">Auto</button>
+          <button class="mode-btn active" data-mode="zuid">ZUID</button>
           <button class="mode-btn" data-mode="email">Email</button>
-          <button class="mode-btn" data-mode="zuid">ZUID</button>
           <button class="mode-btn" data-mode="screenname">Screen</button>
+          <button class="mode-btn" data-mode="auto">Auto<span class="wip-tag">WIP</span></button>
         </div>
 
         <!-- Confirm bar -->

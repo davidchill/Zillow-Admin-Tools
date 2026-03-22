@@ -4,7 +4,7 @@ const IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
 
 // ── State ────────────────────────────────────────────────────────────────────
 let currentTab      = 'impersonate';
-let currentMode     = 'auto';
+let currentMode     = 'zuid';
 let listingMode     = 'zillow';
 let spHistory       = [];
 let spViewed        = [];
@@ -416,6 +416,16 @@ function buildItemHtml(item) {
     ? buildListingUrl(item.type, item.id)
     : buildImpersonateUrl(item.method, item.id);
   const sub = item.label ? `<div class="item-sub">${escapeHtml(item.label)}</div>` : '';
+  let copyLabel;
+  if (item.type === 'zpid' || item.type === 'phx' || item.type === 'dit' || item.type === 'viewed') {
+    copyLabel = 'Copy ZPID';
+  } else if (item.method === 'email') {
+    copyLabel = 'Copy Email';
+  } else if (item.method === 'screenname') {
+    copyLabel = 'Copy Screen Name';
+  } else {
+    copyLabel = 'Copy ZUID';
+  }
   return `
     <button class="item" data-url="${escapeHtml(url)}">
       <div class="item-top">
@@ -424,7 +434,7 @@ function buildItemHtml(item) {
           ${escapeHtml(item.id)}
         </span>
         <div style="display:flex;align-items:center;gap:4px;">
-          <span class="copy-btn" data-copy-id="${escapeHtml(item.id)}">
+          <span class="copy-btn" data-copy-id="${escapeHtml(item.id)}" title="${copyLabel}">
             <svg class="copy-icon" viewBox="0 0 24 24">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>

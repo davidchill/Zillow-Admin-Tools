@@ -34,6 +34,7 @@
     .mode-btn { flex: 1; padding: 6px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #e2e8f0; background: white; color: #94a3b8; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
     .mode-btn:hover { color: #64748b; border-color: #cbd5e1; }
     .mode-btn.active { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+    .wip-tag { font-size: 8px; font-weight: 800; text-transform: uppercase; background: #fef3c7; color: #d97706; padding: 1px 4px; border-radius: 3px; letter-spacing: 0.3px; margin-left: 3px; vertical-align: middle; }
 
     /* Input */
     .input-label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-bottom: 6px; padding-left: 2px; }
@@ -175,10 +176,10 @@
   <div class="content">
     <!-- Mode selector (impersonate only) -->
     <div class="modes" id="mode-row">
-      <button class="mode-btn active" data-mode="auto">Auto-detect</button>
+      <button class="mode-btn active" data-mode="zuid">ZUID</button>
       <button class="mode-btn" data-mode="email">Email</button>
-      <button class="mode-btn" data-mode="zuid">ZUID</button>
       <button class="mode-btn" data-mode="screenname">Screen Name</button>
+      <button class="mode-btn" data-mode="auto">Auto<span class="wip-tag">WIP</span></button>
     </div>
 
     <!-- Confirm bar (auto-detect confirmation) -->

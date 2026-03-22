@@ -3,7 +3,7 @@
 (function () {
   // ── State ──
   var currentTab   = 'impersonate';
-  var currentMode  = 'auto';
+  var currentMode  = 'zuid';
   var listingMode  = 'zillow';
   var history = [];
   var viewedHistory = [];
@@ -500,7 +500,17 @@
     var subLine   = item.label ? '<div class="history-item-sub">' + escapeHtml(item.label) + '</div>' : '';
     var dataAttrs = 'data-type="' + escapeHtml(item.type) + '" data-id="' + escapeHtml(item.id) + '"' +
       (item.method ? ' data-method="' + escapeHtml(item.method) + '"' : '');
-    var copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '">' +
+    var copyLabel;
+    if (item.type === 'zpid' || item.type === 'phx' || item.type === 'dit' || item.type === 'viewed') {
+      copyLabel = 'Copy ZPID';
+    } else if (item.method === 'email') {
+      copyLabel = 'Copy Email';
+    } else if (item.method === 'screenname') {
+      copyLabel = 'Copy Screen Name';
+    } else {
+      copyLabel = 'Copy ZUID';
+    }
+    var copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" title="' + copyLabel + '">' +
       '<svg class="copy-icon" viewBox="0 0 24 24">' +
         '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>' +
         '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>' +
