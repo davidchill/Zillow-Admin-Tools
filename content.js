@@ -70,6 +70,7 @@
   fab.className = 'fab';
   fab.setAttribute('aria-label', 'Open Zillow Admin Tools');
   fab.innerHTML = `<img src="${ICON_URL}" alt="">`;
+  fab.style.display = 'none'; // hidden until settings are checked
   shadow.appendChild(fab);
 
   // ── Vertical drag ─────────────────────────────────────────────────────────
@@ -87,10 +88,21 @@
     return clamped;
   }
 
-  // Load saved position, fall back to vertical center
-  chrome.storage.local.get('zat_fab_top', data => {
+  // Load saved position and check floatingTabEnabled setting
+  chrome.storage.local.get(['zillow_settings', 'zat_fab_top'], data => {
+    const s = data.zillow_settings || {};
+    if (s.floatingTabEnabled === false) return; // stay hidden
+    fab.style.display = 'flex';
     fabTopPx = data.zat_fab_top || window.innerHeight / 2;
     applyPosition(fabTopPx);
+  });
+
+  // React to setting changes without a page reload
+  chrome.storage.onChanged.addListener(changes => {
+    if (changes.zillow_settings) {
+      const newSettings = changes.zillow_settings.newValue || {};
+      fab.style.display = newSettings.floatingTabEnabled === false ? 'none' : 'flex';
+    }
   });
 
   fab.addEventListener('mousedown', e => {

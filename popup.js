@@ -5,7 +5,7 @@
   var currentTab = 'impersonate';
   var currentMode = 'auto';
   var history = [];
-  var settings = { historyLimit: 5, zpidTabEnabled: true };
+  var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true };
   var pendingConfirm = null; // { method, value }
 
   var IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
@@ -32,7 +32,8 @@
   var settingsOverlay = document.getElementById('settings-overlay');
   var settingsClose = document.getElementById('settings-close');
   var settingHistoryLimit = document.getElementById('setting-history-limit');
-  var settingZpidTab = document.getElementById('setting-zpid-tab');
+  var settingZpidTab     = document.getElementById('setting-zpid-tab');
+  var settingFloatingTab = document.getElementById('setting-floating-tab');
   var tabsRow = document.querySelector('.tabs');
 
   // ── Load settings + history from chrome.storage ──
@@ -41,8 +42,10 @@
       if (data.zillow_settings) {
         settings = data.zillow_settings;
         settingHistoryLimit.value = String(settings.historyLimit || 5);
-        if (typeof settings.zpidTabEnabled === 'undefined') settings.zpidTabEnabled = true;
-        settingZpidTab.checked = settings.zpidTabEnabled;
+        if (typeof settings.zpidTabEnabled === 'undefined')    settings.zpidTabEnabled    = true;
+        if (typeof settings.floatingTabEnabled === 'undefined') settings.floatingTabEnabled = true;
+        settingZpidTab.checked     = settings.zpidTabEnabled;
+        settingFloatingTab.checked = settings.floatingTabEnabled;
       }
       if (data.zillow_history_v3) {
         history = data.zillow_history_v3;
@@ -350,8 +353,9 @@
 
   settingsOpen.addEventListener('click', function () {
     settingsOverlay.classList.remove('hidden');
-    settingHistoryLimit.value = String(settings.historyLimit || 5);
-    settingZpidTab.checked = settings.zpidTabEnabled;
+    settingHistoryLimit.value      = String(settings.historyLimit || 5);
+    settingZpidTab.checked         = settings.zpidTabEnabled;
+    settingFloatingTab.checked     = settings.floatingTabEnabled !== false;
   });
 
   settingsClose.addEventListener('click', function () {
@@ -381,6 +385,11 @@
     settings.zpidTabEnabled = settingZpidTab.checked;
     saveSettings();
     applyZpidTabVisibility();
+  });
+
+  settingFloatingTab.addEventListener('change', function () {
+    settings.floatingTabEnabled = settingFloatingTab.checked;
+    saveSettings();
   });
 
 })();
