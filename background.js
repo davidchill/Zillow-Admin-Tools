@@ -119,10 +119,16 @@ function scrapeTabForLabel(tabId, historyId, historyType) {
   }, 20000);
 }
 
-// ── Listen for scrape requests from the popup ──
+// ── Message listener ──
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Scrape requests from the popup
   if (message.action === 'scrapeTab') {
     scrapeTabForLabel(message.tabId, message.historyId, message.historyType);
+    sendResponse({ ok: true });
+  }
+  // FAB click on any page — open the Side Panel
+  if (message.action === 'openSidePanel') {
+    chrome.sidePanel.open({ windowId: sender.tab.windowId });
     sendResponse({ ok: true });
   }
 });

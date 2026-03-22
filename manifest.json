@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Zillow Admin Tools",
-  "version": "2.3",
+  "version": "2.5",
   "description": "Search by ZPID or Impersonate by Email, ZUID, or Screen Name — with right-click context menu support.",
   "action": {
     "default_popup": "popup.html",
@@ -21,25 +21,30 @@
     "activeTab",
     "tabs",
     "scripting",
-    "storage"
+    "storage",
+    "sidePanel"
   ],
   "host_permissions": [
-    "https://www.zillow.com/*"
+    "https://www.zillow.com/*",
+    "*://*/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
   "content_scripts": [
     {
-      "matches": ["https://www.zillow.com/*"],
+      "matches": ["*://*/*"],
       "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/NunitoSans-VariableFont.ttf", "icons/icon48.png"],
-      "matches": ["https://www.zillow.com/*"]
+      "resources": ["icons/icon48.png"],
+      "matches": ["*://*/*"]
     }
   ]
 }
