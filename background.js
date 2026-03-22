@@ -119,6 +119,57 @@ function scrapeTabForLabel(tabId, historyId, historyType) {
   }, 20000);
 }
 
+// ── Zillow autocomplete ──
+// Primary path: inject fetch into an active Zillow tab so the request
+// carries Origin: https://www.zillow.com (accepted by zillowstatic.com CDN).
+// The extension's own origin is rejected with 403, so direct fetch is only
+// used as a last-resort fallback.
+function fetchAutocompleteInTab(query, callback) {
+  chrome.tabs.query({ url: 'https://www.zillow.com/*' }, function (tabs) {
+    if (!tabs || tabs.length === 0) { callback(null); return; }
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      func: function (q) {
+        var url = 'https://www.zillowstatic.com/autocomplete/v3/suggestions' +
+          '?q=' + encodeURIComponent(q) +
+          '&abKey=&resultTypes=allhomes&resultCount=6';
+        return fetch(url, { credentials: 'omit' })
+          .then(function (r) { return r.ok ? r.json() : { results: [] }; })
+          .then(function (data) { return data.results || []; })
+          .catch(function () { return []; });
+      },
+      args: [query]
+    }, function (injectionResults) {
+      if (chrome.runtime.lastError || !injectionResults || !injectionResults[0]) {
+        callback([]);
+      } else {
+        callback(injectionResults[0].result || []);
+      }
+    });
+  });
+}
+
+// Fallback: direct fetch from the service worker (may be blocked by CDN CORS)
+async function fetchAutocomplete(query) {
+  const url =
+    'https://www.zillowstatic.com/autocomplete/v3/suggestions' +
+    '?q=' + encodeURIComponent(query) +
+    '&abKey=&resultTypes=allhomes&resultCount=6';
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'Referer': 'https://www.zillow.com/'
+      }
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.results || [];
+  } catch (e) {
+    return [];
+  }
+}
+
 // ── Message listener ──
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Scrape requests from the popup
@@ -130,6 +181,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'openSidePanel') {
     chrome.sidePanel.open({ windowId: sender.tab.windowId });
     sendResponse({ ok: true });
+  }
+  // Autocomplete address query — primary path runs inside a Zillow tab
+  // so the request carries Origin: https://www.zillow.com
+  if (message.action === 'autocomplete') {
+    fetchAutocompleteInTab(message.query, function (tabResults) {
+      if (tabResults && tabResults.length > 0) {
+        sendResponse({ ok: true, results: tabResults });
+      } else {
+        // Fall back to direct service-worker fetch
+        fetchAutocomplete(message.query)
+          .then(function (r) { sendResponse({ ok: true, results: r }); })
+          .catch(function ()  { sendResponse({ ok: false, results: [] }); });
+      }
+    });
+    return true; // keep message channel open for async response
   }
 });
 

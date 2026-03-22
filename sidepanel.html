@@ -41,59 +41,24 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .header-icon svg {
-      width: 16px;
-      height: 16px;
-      fill: none;
-      stroke: white;
-      stroke-width: 2;
-    }
-    .header h1 {
-      font-size: 15px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: -0.2px;
-    }
+    .header-icon svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 2; }
+    .header h1 { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.2px; }
 
     /* ── Body ── */
-    .body {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
+    .body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
     .body::-webkit-scrollbar { width: 4px; }
     .body::-webkit-scrollbar-track { background: transparent; }
     .body::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
 
     /* ── Search Area ── */
-    .search-area {
-      background: white;
-      border-bottom: 1px solid #e2e8f0;
-      flex-shrink: 0;
-    }
+    .search-area { background: white; border-bottom: 1px solid #e2e8f0; flex-shrink: 0; }
 
     /* ── Tabs ── */
-    .sp-tabs {
-      display: flex;
-      border-bottom: 1px solid #e2e8f0;
-    }
+    .sp-tabs { display: flex; border-bottom: 1px solid #e2e8f0; }
     .sp-tab {
-      flex: 1;
-      padding: 9px 8px;
-      font-size: 12px;
-      font-weight: 700;
-      text-align: center;
-      cursor: pointer;
-      border: none;
-      background: none;
-      color: #94a3b8;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
+      flex: 1; padding: 9px 8px; font-size: 12px; font-weight: 700; text-align: center;
+      cursor: pointer; border: none; background: none; color: #94a3b8; transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
     }
     .sp-tab:hover { color: #64748b; }
     .sp-tab.active { color: #2563eb; border-bottom: 2px solid #2563eb; background: white; }
@@ -105,88 +70,58 @@
     /* Mode selector */
     .modes { display: flex; gap: 4px; margin-bottom: 12px; }
     .mode-btn {
-      flex: 1;
-      padding: 5px 3px;
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      border: 1px solid #e2e8f0;
-      background: white;
-      color: #94a3b8;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.15s;
+      flex: 1; padding: 5px 3px; font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.4px; border: 1px solid #e2e8f0; background: white; color: #94a3b8;
+      border-radius: 7px; cursor: pointer; transition: all 0.15s;
     }
     .mode-btn:hover { color: #64748b; border-color: #cbd5e1; }
     .mode-btn.active { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
 
     /* Input */
-    .input-label {
-      display: block;
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.7px;
-      color: #64748b;
-      margin-bottom: 5px;
-    }
+    .input-label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: #64748b; margin-bottom: 5px; }
+    .input-hint  { font-size: 10px; color: #94a3b8; margin-bottom: 5px; }
+    .input-wrap { position: relative; }
     .input-row { position: relative; margin-bottom: 4px; }
     .input-row input {
-      width: 100%;
-      padding: 9px 40px 9px 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      font-size: 13px;
-      background: #f8fafc;
-      color: #0f172a;
-      outline: none;
-      transition: all 0.15s;
+      width: 100%; padding: 9px 40px 9px 12px; border: 1px solid #e2e8f0; border-radius: 10px;
+      font-size: 13px; background: #f8fafc; color: #0f172a; outline: none; transition: all 0.15s;
     }
     .input-row input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
     .input-row input::placeholder { color: #94a3b8; }
     .input-row input.has-error { border-color: #fca5a5; background: #fef2f2; }
     .search-btn {
-      position: absolute;
-      right: 5px;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 6px;
-      background: #2563eb;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s;
+      position: absolute; right: 5px; top: 50%; transform: translateY(-50%); padding: 6px;
+      background: #2563eb; border: none; border-radius: 7px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background 0.15s;
     }
     .search-btn:hover { background: #1d4ed8; }
     .search-btn svg { width: 14px; height: 14px; fill: none; stroke: white; stroke-width: 2; }
     .error-msg { font-size: 10px; color: #ef4444; padding-left: 2px; min-height: 14px; }
 
+    /* Autocomplete dropdown */
+    .ac-dropdown {
+      position: absolute; top: calc(100% - 2px); left: 0; right: 0;
+      background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 200; overflow: hidden;
+    }
+    .ac-item {
+      width: 100%; padding: 8px 12px; font-size: 11px; text-align: left;
+      background: none; border: none; cursor: pointer; color: #1e293b;
+      display: block; transition: background 0.1s; border-top: 1px solid #f1f5f9;
+    }
+    .ac-item:first-child { border-top: none; }
+    .ac-item:hover, .ac-item.ac-active { background: #f1f5f9; }
+    .ac-item-main { font-weight: 600; font-size: 11px; }
+    .ac-item-sub { font-size: 10px; color: #64748b; margin-top: 1px; }
+
     /* Confirm bar */
     .confirm-bar {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7px 10px;
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      border-radius: 9px;
-      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 7px; padding: 7px 10px;
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 9px; margin-bottom: 8px;
     }
     .confirm-text { flex: 1; font-size: 11px; color: #92400e; }
     .confirm-text strong { font-weight: 700; }
-    .confirm-bar button {
-      padding: 4px 10px;
-      border-radius: 5px;
-      font-size: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-    }
+    .confirm-bar button { padding: 4px 10px; border-radius: 5px; font-size: 10px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; }
     .confirm-yes { background: #2563eb; color: white; }
     .confirm-yes:hover { background: #1d4ed8; }
     .confirm-no { background: #e2e8f0; color: #475569; }
@@ -198,99 +133,40 @@
     /* ── Sections ── */
     .section + .section { margin-top: 20px; }
     .section-title {
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #64748b;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+      color: #64748b; margin-bottom: 10px; display: flex; align-items: center; gap: 5px;
     }
-    .section-title svg {
-      width: 11px;
-      height: 11px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-    }
+    .section-title svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .section-header .section-title { margin-bottom: 0; }
+    .section-clear { font-size: 10px; color: #94a3b8; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 3px; transition: color 0.15s; }
+    .section-clear:hover { color: #ef4444; }
+    .section-clear svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; }
 
     /* ── History items ── */
     .item {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      padding: 10px 12px;
-      background: white;
-      border: 1px solid #f1f5f9;
-      border-radius: 10px;
-      cursor: pointer;
-      text-align: left;
-      transition: background 0.15s;
-      margin-bottom: 6px;
+      width: 100%; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px;
+      background: white; border: 1px solid #f1f5f9; border-radius: 10px;
+      cursor: pointer; text-align: left; transition: background 0.15s; margin-bottom: 6px;
     }
     .item:last-child { margin-bottom: 0; }
     .item:hover { background: #f1f5f9; }
-    .item-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .item-id {
-      font-size: 13px;
-      font-weight: 700;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-    }
-    .item-sub {
-      font-size: 11px;
-      color: #64748b;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding-left: 1px;
-      margin-top: 2px;
-    }
-    .ext-icon {
-      width: 12px;
-      height: 12px;
-      fill: none;
-      stroke: #cbd5e1;
-      stroke-width: 2;
-      flex-shrink: 0;
-      transition: stroke 0.15s;
-    }
+    .item-top { display: flex; align-items: center; justify-content: space-between; }
+    .item-id { font-size: 13px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .item-sub { font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 1px; margin-top: 2px; }
+    .ext-icon { width: 12px; height: 12px; fill: none; stroke: #cbd5e1; stroke-width: 2; flex-shrink: 0; transition: stroke 0.15s; }
     .item:hover .ext-icon { stroke: #3b82f6; }
 
     /* ── Badges ── */
-    .badge {
-      font-size: 9px;
-      font-weight: 800;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 4px;
-      letter-spacing: 0.3px;
-      flex-shrink: 0;
-    }
+    .badge { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; flex-shrink: 0; }
     .badge-email      { background: #f3e8ff; color: #7c3aed; }
     .badge-zuid       { background: #dbeafe; color: #2563eb; }
     .badge-screenname { background: #dcfce7; color: #16a34a; }
     .badge-zpid       { background: #fef3c7; color: #d97706; }
+    .badge-viewed     { background: #ecfeff; color: #0e7490; }
 
     /* ── Empty state ── */
-    .empty {
-      text-align: center;
-      padding: 20px;
-      border: 2px dashed #e2e8f0;
-      border-radius: 10px;
-      font-size: 12px;
-      color: #94a3b8;
-    }
+    .empty { text-align: center; padding: 20px; border: 2px dashed #e2e8f0; border-radius: 10px; font-size: 12px; color: #94a3b8; }
 
     .hidden { display: none !important; }
   </style>
@@ -317,7 +193,7 @@
         </button>
         <button class="sp-tab" id="sp-tab-zpid">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          ZPID Search
+          Listing Search
         </button>
       </div>
 
@@ -337,15 +213,40 @@
           <button class="confirm-no" id="sp-confirm-no">Cancel</button>
         </div>
 
-        <!-- Input -->
-        <label class="input-label" id="sp-input-label">Email, ZUID, or Screen Name</label>
-        <div class="input-row">
-          <input type="text" id="sp-input" placeholder="Email, ZUID, or Screen Name" autocomplete="off">
-          <button class="search-btn" id="sp-go-btn">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </button>
+        <!-- Impersonate input (hidden on listing tab) -->
+        <div id="sp-imp-search">
+          <label class="input-label" id="sp-input-label">Email, ZUID, or Screen Name</label>
+          <div class="input-row">
+            <input type="text" id="sp-input" placeholder="Email, ZUID, or Screen Name" autocomplete="off">
+            <button class="search-btn" id="sp-go-btn">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="sp-error-msg"></div>
         </div>
-        <div class="error-msg" id="sp-error-msg"></div>
+
+        <!-- Listing Search — two separate inputs (hidden on impersonate tab) -->
+        <div id="sp-listing-search" class="hidden">
+          <label class="input-label">ZPID</label>
+          <div class="input-row" style="margin-bottom:2px;">
+            <input type="text" id="sp-zpid-input" placeholder="e.g. 29122711" inputmode="numeric" autocomplete="off">
+            <button class="search-btn" id="sp-zpid-go-btn">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="sp-zpid-error-msg"></div>
+          <label class="input-label" style="margin-top:1px; display:block;">Address</label>
+          <div class="input-wrap">
+            <div class="input-row">
+              <input type="text" id="sp-addr-input" placeholder="e.g. 123 Main St, Seattle" autocomplete="off">
+              <button class="search-btn" id="sp-addr-go-btn">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </button>
+            </div>
+            <div class="ac-dropdown hidden" id="sp-ac-dropdown"></div>
+          </div>
+          <div class="error-msg" id="sp-addr-error-msg"></div>
+        </div>
       </div>
     </div>
 

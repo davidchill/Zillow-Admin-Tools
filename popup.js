@@ -1,69 +1,80 @@
-// ── Zillow Admin Tools – Popup Script v2.1 ──
+// ── Zillow Admin Tools – Popup Script v2.7 ──
 
 (function () {
   // ── State ──
   var currentTab = 'impersonate';
   var currentMode = 'auto';
   var history = [];
+  var viewedHistory = [];
   var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true };
-  var pendingConfirm = null; // { method, value }
+  var pendingConfirm = null;
 
   var IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
   var METHOD_DISPLAY = { email: 'Email', zuid: 'ZUID', screenname: 'Screen Name' };
 
   // ── DOM refs ──
-  var tabImp = document.getElementById('tab-imp');
-  var tabZpid = document.getElementById('tab-zpid');
-  var modeRow = document.getElementById('mode-row');
-  var modeBtns = modeRow.querySelectorAll('.mode-btn');
-  var inputLabel = document.getElementById('input-label');
-  var mainInput = document.getElementById('main-input');
-  var goBtn = document.getElementById('go-btn');
-  var errorMsg = document.getElementById('error-msg');
-  var historyLabel = document.getElementById('history-label');
-  var historyList = document.getElementById('history-list');
-  var clearBtn = document.getElementById('clear-btn');
-  var footerText = document.getElementById('footer-text');
-  var confirmBar = document.getElementById('confirm-bar');
-  var confirmText = document.getElementById('confirm-text');
-  var confirmYes = document.getElementById('confirm-yes');
-  var confirmNo = document.getElementById('confirm-no');
-  var settingsOpen = document.getElementById('settings-open');
-  var settingsOverlay = document.getElementById('settings-overlay');
-  var settingsClose = document.getElementById('settings-close');
+  var tabImp              = document.getElementById('tab-imp');
+  var tabZpid             = document.getElementById('tab-zpid');
+  var modeRow             = document.getElementById('mode-row');
+  var modeBtns            = modeRow.querySelectorAll('.mode-btn');
+  var inputLabel          = document.getElementById('input-label');
+  var mainInput           = document.getElementById('main-input');
+  var goBtn               = document.getElementById('go-btn');
+  var errorMsg            = document.getElementById('error-msg');
+  var impSearch           = document.getElementById('imp-search');
+  var listingSearch       = document.getElementById('listing-search');
+  var zpidInput           = document.getElementById('zpid-input');
+  var zpidGoBtn           = document.getElementById('zpid-go-btn');
+  var zpidErrorMsg        = document.getElementById('zpid-error-msg');
+  var addrInput           = document.getElementById('addr-input');
+  var addrGoBtn           = document.getElementById('addr-go-btn');
+  var addrErrorMsg        = document.getElementById('addr-error-msg');
+  var historyHeader       = document.getElementById('history-header');
+  var historyLabel        = document.getElementById('history-label');
+  var historyList         = document.getElementById('history-list');
+  var clearBtn            = document.getElementById('clear-btn');
+  var footerText          = document.getElementById('footer-text');
+  var confirmBar          = document.getElementById('confirm-bar');
+  var confirmText         = document.getElementById('confirm-text');
+  var confirmYes          = document.getElementById('confirm-yes');
+  var confirmNo           = document.getElementById('confirm-no');
+  var settingsOpen        = document.getElementById('settings-open');
+  var settingsOverlay     = document.getElementById('settings-overlay');
+  var settingsClose       = document.getElementById('settings-close');
   var settingHistoryLimit = document.getElementById('setting-history-limit');
-  var settingZpidTab     = document.getElementById('setting-zpid-tab');
-  var settingFloatingTab = document.getElementById('setting-floating-tab');
-  var tabsRow = document.querySelector('.tabs');
+  var settingZpidTab      = document.getElementById('setting-zpid-tab');
+  var settingFloatingTab  = document.getElementById('setting-floating-tab');
+  var tabsRow             = document.querySelector('.tabs');
+  var acDropdown          = document.getElementById('ac-dropdown');
+
+  // ── Autocomplete state ──
+  var acDebounceTimer = null;
+  var acResults = [];
+  var acActiveIdx = -1;
 
   // ── Load settings + history from chrome.storage ──
   function loadFromStorage(callback) {
-    chrome.storage.local.get(['zillow_history_v3', 'zillow_settings'], function (data) {
+    chrome.storage.local.get(['zillow_history_v3', 'zillow_viewed_v3', 'zillow_settings'], function (data) {
       if (data.zillow_settings) {
         settings = data.zillow_settings;
         settingHistoryLimit.value = String(settings.historyLimit || 5);
-        if (typeof settings.zpidTabEnabled === 'undefined')    settings.zpidTabEnabled    = true;
+        if (typeof settings.zpidTabEnabled    === 'undefined') settings.zpidTabEnabled    = true;
         if (typeof settings.floatingTabEnabled === 'undefined') settings.floatingTabEnabled = true;
         settingZpidTab.checked     = settings.zpidTabEnabled;
         settingFloatingTab.checked = settings.floatingTabEnabled;
       }
-      if (data.zillow_history_v3) {
-        history = data.zillow_history_v3;
-      }
+      if (data.zillow_history_v3) history = data.zillow_history_v3;
+      if (data.zillow_viewed_v3)  viewedHistory = data.zillow_viewed_v3;
       applyZpidTabVisibility();
       renderHistory();
       if (callback) callback();
     });
   }
 
-  // Initial load
   loadFromStorage();
 
-  // Re-load history every time the popup becomes visible (picks up labels added by background.js)
   document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) {
-      loadFromStorage();
-    }
+    if (!document.hidden) loadFromStorage();
   });
 
   function saveHistory() {
@@ -74,12 +85,11 @@
     chrome.storage.local.set({ zillow_settings: settings });
   }
 
-  // ── Email validation ──
+  // ── Helpers ──
   function validateEmail(email) {
     return /^(([^<>()\[\]\.,;:\s@"]+(\.[^<>()\[\]\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.)+[^<>()[\]\.,;:\s@"]{2,})$/i.test(email);
   }
 
-  // ── Build impersonation URL ──
   function buildImpersonateUrl(method, value) {
     var p = new URLSearchParams();
     if (method === 'email') {
@@ -92,7 +102,6 @@
     return IMPERSONATE_BASE + '?' + p.toString();
   }
 
-  // ── Auto-detect input type ──
   function detectMethod(input) {
     if (input.includes('@')) {
       return validateEmail(input) ? { method: 'email', value: input } : { error: 'Invalid email address format.' };
@@ -101,19 +110,97 @@
     return { method: 'screenname', value: input };
   }
 
-  // ══════════════════════════════════════════
-  // REQUEST SCRAPE FROM BACKGROUND.JS
-  // The popup sends a message to the service
-  // worker which persists after the popup closes.
-  // ══════════════════════════════════════════
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
 
   function requestScrape(tabId, historyId, historyType) {
-    chrome.runtime.sendMessage({
-      action: 'scrapeTab',
-      tabId: tabId,
-      historyId: historyId,
-      historyType: historyType
+    chrome.runtime.sendMessage({ action: 'scrapeTab', tabId: tabId, historyId: historyId, historyType: historyType });
+  }
+
+  // ── Remove a ZPID from viewed history when user explicitly searches it ──
+  function removeFromViewed(zpid) {
+    var filtered = viewedHistory.filter(function (h) { return h.id !== zpid; });
+    if (filtered.length !== viewedHistory.length) {
+      viewedHistory = filtered;
+      chrome.storage.local.set({ zillow_viewed_v3: viewedHistory });
+    }
+  }
+
+  // ══════════════════════════════
+  // AUTOCOMPLETE (address input only)
+  // ══════════════════════════════
+
+  function showAcDropdown(results) {
+    acResults = results;
+    acActiveIdx = -1;
+    if (!results || !results.length) { hideAcDropdown(); return; }
+
+    acDropdown.innerHTML = results.map(function (r, i) {
+      var meta      = r.metaData || {};
+      var address   = meta.addressString || r.display || '';
+      var cityState = meta.cityStateZip  || '';
+      return '<button class="ac-item" data-idx="' + i + '">' +
+        '<div class="ac-item-main">' + escapeHtml(address) + '</div>' +
+        (cityState ? '<div class="ac-item-sub">' + escapeHtml(cityState) + '</div>' : '') +
+        '</button>';
+    }).join('');
+
+    acDropdown.querySelectorAll('.ac-item').forEach(function (btn) {
+      btn.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        selectAcResult(acResults[parseInt(btn.dataset.idx, 10)]);
+      });
     });
+
+    acDropdown.classList.remove('hidden');
+  }
+
+  function hideAcDropdown() {
+    acDropdown.classList.add('hidden');
+    acResults   = [];
+    acActiveIdx = -1;
+  }
+
+  function updateAcActive() {
+    acDropdown.querySelectorAll('.ac-item').forEach(function (btn, i) {
+      btn.classList.toggle('ac-active', i === acActiveIdx);
+    });
+  }
+
+  function selectAcResult(result) {
+    if (!result) return;
+    var meta = result.metaData || {};
+    var zpid = meta.zpid ? String(meta.zpid) : null;
+    if (!zpid) { hideAcDropdown(); return; }
+
+    var url   = 'https://www.zillow.com/homedetails/' + zpid + '_zpid/';
+    var label = result.display || '';
+    addrInput.value = '';
+    hideAcDropdown();
+    removeFromViewed(zpid);
+    addToHistory('zpid', zpid, 'zpid', label);
+    chrome.tabs.create({ url: url });
+  }
+
+  function triggerAutocomplete(query) {
+    clearTimeout(acDebounceTimer);
+    if (!query || query.length < 2) { hideAcDropdown(); return; }
+    acDebounceTimer = setTimeout(function () {
+      chrome.runtime.sendMessage({ action: 'autocomplete', query: query }, function (response) {
+        if (chrome.runtime.lastError) { hideAcDropdown(); return; }
+        showAcDropdown((response && response.results) || []);
+      });
+    }, 300);
+  }
+
+  // Fallback when no autocomplete result is available: search Zillow by address text
+  function doAddressSearch(address) {
+    var slug = address.trim().replace(/,/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+    chrome.tabs.create({ url: 'https://www.zillow.com/homes/for_sale/' + slug + '_rb/' });
+    addrInput.value = '';
+    hideAcDropdown();
   }
 
   // ══════════════════════════════
@@ -123,11 +210,7 @@
   function applyZpidTabVisibility() {
     var show = settings.zpidTabEnabled;
     tabZpid.classList.toggle('hidden', !show);
-    // If ZPID tab is hidden but currently active, switch to impersonate
-    if (!show && currentTab === 'zpid') {
-      switchTab('impersonate');
-    }
-    // If only one tab visible, hide the tab bar entirely for a cleaner look
+    if (!show && currentTab === 'listing') switchTab('impersonate');
     tabsRow.classList.toggle('hidden', !show);
   }
 
@@ -137,28 +220,37 @@
 
   function switchTab(tab) {
     currentTab = tab;
-    tabImp.classList.toggle('active', tab === 'impersonate');
-    tabZpid.classList.toggle('active', tab === 'zpid');
-    modeRow.classList.toggle('hidden', tab === 'zpid');
+    tabImp.classList.toggle('active',  tab === 'impersonate');
+    tabZpid.classList.toggle('active', tab === 'listing');
+    modeRow.classList.toggle('hidden', tab === 'listing');
+    confirmBar.classList.add('hidden');
+    pendingConfirm = null;
+
+    // Show/hide the correct input area
+    impSearch.classList.toggle('hidden', tab === 'listing');
+    listingSearch.classList.toggle('hidden', tab !== 'listing');
+
+    // Clear all inputs and errors
     mainInput.value = '';
     errorMsg.textContent = '';
     mainInput.classList.remove('has-error');
-    hideConfirm();
+    zpidInput.value = '';
+    zpidErrorMsg.textContent = '';
+    zpidInput.classList.remove('has-error');
+    addrInput.value = '';
+    addrErrorMsg.textContent = '';
+    hideAcDropdown();
 
-    if (tab === 'zpid') {
-      inputLabel.textContent = 'Property ID (ZPID)';
-      mainInput.placeholder = 'e.g. 29122711';
-      historyLabel.textContent = 'Recent Properties';
-      footerText.textContent = 'The ZPID is a unique property ID found in Zillow listing URLs.';
+    if (tab === 'listing') {
+      footerText.textContent = 'Enter a ZPID to navigate directly, or type an address for autocomplete suggestions.';
     } else {
       updateImpersonateLabels();
-      historyLabel.textContent = 'Recent Impersonations';
     }
     renderHistory();
   }
 
-  tabImp.addEventListener('click', function () { switchTab('impersonate'); });
-  tabZpid.addEventListener('click', function () { switchTab('zpid'); });
+  tabImp.addEventListener('click',  function () { switchTab('impersonate'); });
+  tabZpid.addEventListener('click', function () { switchTab('listing'); });
 
   // ══════════════════════════════
   // MODE SWITCHING
@@ -188,7 +280,7 @@
       screenname: 'Impersonating by Screen Name. Both modern (pScreenName) and legacy (screenName) params are sent.'
     };
     inputLabel.textContent = labels[currentMode];
-    mainInput.placeholder = placeholders[currentMode];
+    mainInput.placeholder  = placeholders[currentMode];
     footerText.textContent = footers[currentMode];
   }
 
@@ -214,13 +306,78 @@
     mainInput.value = '';
   });
 
-  confirmNo.addEventListener('click', function () {
-    hideConfirm();
-    mainInput.focus();
+  confirmNo.addEventListener('click', function () { hideConfirm(); mainInput.focus(); });
+
+  // ══════════════════════════════
+  // ZPID SEARCH (listing tab)
+  // ══════════════════════════════
+
+  function doZpidSearch() {
+    var raw = zpidInput.value.trim();
+    zpidErrorMsg.textContent = '';
+    zpidInput.classList.remove('has-error');
+    if (!raw) return;
+    var cleanId = raw.replace(/\D/g, '');
+    if (!cleanId) {
+      zpidErrorMsg.textContent = 'Please enter a numeric ZPID.';
+      zpidInput.classList.add('has-error');
+      return;
+    }
+    var url = 'https://www.zillow.com/homedetails/' + cleanId + '_zpid/';
+    removeFromViewed(cleanId);
+    addToHistory('zpid', cleanId, 'zpid');
+    chrome.tabs.create({ url: url }, function (tab) {
+      requestScrape(tab.id, cleanId, 'zpid');
+    });
+    zpidInput.value = '';
+  }
+
+  zpidGoBtn.addEventListener('click', doZpidSearch);
+  zpidInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') doZpidSearch();
   });
 
   // ══════════════════════════════
-  // SEARCH / GO
+  // ADDRESS SEARCH (listing tab)
+  // ══════════════════════════════
+
+  addrGoBtn.addEventListener('click', function () {
+    if (acResults.length && !acDropdown.classList.contains('hidden')) {
+      // Dropdown is open — select the highlighted item (or first)
+      selectAcResult(acActiveIdx >= 0 ? acResults[acActiveIdx] : acResults[0]);
+    } else {
+      var q = addrInput.value.trim();
+      if (q.length >= 2) doAddressSearch(q);
+    }
+  });
+
+  addrInput.addEventListener('keydown', function (e) {
+    if (acResults.length && !acDropdown.classList.contains('hidden')) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); acActiveIdx = Math.min(acActiveIdx + 1, acResults.length - 1); updateAcActive(); return; }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); acActiveIdx = Math.max(acActiveIdx - 1, -1); updateAcActive(); return; }
+      if (e.key === 'Escape')    { hideAcDropdown(); return; }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        selectAcResult(acActiveIdx >= 0 ? acResults[acActiveIdx] : acResults[0]);
+        return;
+      }
+    }
+    if (e.key === 'Enter') {
+      var q = addrInput.value.trim();
+      if (q.length >= 2) doAddressSearch(q);
+    }
+  });
+
+  addrInput.addEventListener('input', function () {
+    triggerAutocomplete(addrInput.value.trim());
+  });
+
+  addrInput.addEventListener('blur', function () {
+    setTimeout(hideAcDropdown, 150);
+  });
+
+  // ══════════════════════════════
+  // IMPERSONATE SEARCH
   // ══════════════════════════════
 
   function doSearch() {
@@ -230,33 +387,17 @@
     mainInput.classList.remove('has-error');
     hideConfirm();
 
-    if (currentTab === 'zpid') {
-      var cleanId = raw.replace(/\D/g, '');
-      if (!cleanId) return;
-      var url = 'https://www.zillow.com/homedetails/' + cleanId + '_zpid/';
-      chrome.tabs.create({ url: url }, function (tab) {
-        requestScrape(tab.id, cleanId, 'zpid');
-      });
-      addToHistory('zpid', cleanId, 'zpid');
-      mainInput.value = '';
-      return;
-    }
-
-    // Impersonate
     if (currentMode === 'auto') {
       var detected = detectMethod(raw);
       if (detected.error) { showError(detected.error); return; }
-      // Show confirmation before proceeding
       showConfirm(detected.method, detected.value);
       return;
     }
 
-    // Explicit mode — go directly
     var method = currentMode;
-    var value = raw;
+    var value  = raw;
     if (method === 'email' && !validateEmail(value)) { showError('Please enter a valid email address.'); return; }
-    if (method === 'zuid' && !/^\d+$/.test(value)) { showError('ZUID must be numeric.'); return; }
-
+    if (method === 'zuid'  && !/^\d+$/.test(value))  { showError('ZUID must be numeric.'); return; }
     executeImpersonate(method, value);
     mainInput.value = '';
   }
@@ -283,10 +424,10 @@
   // HISTORY
   // ══════════════════════════════
 
-  function addToHistory(type, id, method) {
-    var limit = settings.historyLimit || 5;
+  function addToHistory(type, id, method, label) {
+    var limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
     history = [
-      { type: type, id: id, method: method, label: '', timestamp: Date.now() }
+      { type: type, id: id, method: method, label: label || '', timestamp: Date.now() }
     ].concat(
       history.filter(function (h) { return !(h.id === id && h.type === type); })
     ).slice(0, limit);
@@ -294,58 +435,103 @@
     renderHistory();
   }
 
-  clearBtn.addEventListener('click', function () {
-    history = [];
-    saveHistory();
-    renderHistory();
-  });
+  function renderHistoryItemHtml(item) {
+    var isZpid     = item.type === 'zpid' || item.type === 'viewed';
+    var badgeClass = item.type === 'viewed' ? 'badge-viewed' : (isZpid ? 'badge-zpid' : ('badge-' + (item.method || 'zuid')));
+    var badgeText  = item.type === 'viewed' ? 'Viewed' : (isZpid ? 'ZPID' : (item.method === 'screenname' ? 'Screen' : (item.method || 'Zuid').toUpperCase()));
+    var subLine    = item.label ? '<div class="history-item-sub">' + escapeHtml(item.label) + '</div>' : '';
+    var dataAttrs  = isZpid
+      ? 'data-zpid="' + escapeHtml(item.id) + '"'
+      : 'data-type="' + escapeHtml(item.type) + '" data-id="' + escapeHtml(item.id) + '" data-method="' + escapeHtml(item.method || 'zuid') + '"';
+    return '<button class="history-item" ' + dataAttrs + '>' +
+      '<div class="history-item-top">' +
+        '<span class="history-item-id"><span class="badge ' + badgeClass + '">' + badgeText + '</span> ' + escapeHtml(item.id) + '</span>' +
+        '<svg class="ext-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+      '</div>' +
+      subLine +
+      '</button>';
+  }
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  function renderSection(titleText, iconSvg, items, clearId, emptyText) {
+    var html = '<div class="listing-section">';
+    html += '<div class="history-header" style="margin-top:0;margin-bottom:10px;">';
+    html += '<div class="history-title">' + iconSvg + '<span>' + titleText + '</span></div>';
+    if (items.length) {
+      html += '<button class="clear-btn" id="' + clearId + '">';
+      html += '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+      html += 'Clear</button>';
+    }
+    html += '</div>';
+    if (!items.length) {
+      html += '<div class="empty-state"><p>' + emptyText + '</p></div>';
+    } else {
+      items.forEach(function (item) { html += renderHistoryItemHtml(item); });
+    }
+    html += '</div>';
+    return html;
   }
 
   function renderHistory() {
-    var limit = settings.historyLimit || 5;
-    var filtered = history.filter(function (h) { return h.type === currentTab; }).slice(0, limit);
+    var limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
 
-    clearBtn.classList.toggle('hidden', filtered.length === 0);
+    if (currentTab === 'listing') {
+      historyHeader.style.display = 'none';
+      var searches = history.filter(function (h) { return h.type === 'zpid'; }).slice(0, limit);
+      var viewed   = viewedHistory.slice(0, limit);
 
-    if (filtered.length === 0) {
-      var emptyLabel = currentTab === 'zpid' ? 'searches' : 'impersonations';
-      historyList.innerHTML = '<div class="empty-state"><p>No recent ' + emptyLabel + '</p></div>';
+      var searchIcon = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+      var eyeIcon    = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+      historyList.innerHTML =
+        renderSection('Recent Searches', searchIcon, searches, 'clear-searches-btn', 'No recent searches') +
+        renderSection('Recently Viewed',  eyeIcon,    viewed,   'clear-viewed-btn',   'No recently viewed properties');
+
+      var csBtn = document.getElementById('clear-searches-btn');
+      if (csBtn) csBtn.addEventListener('click', function () {
+        history = history.filter(function (h) { return h.type !== 'zpid'; });
+        saveHistory();
+        renderHistory();
+      });
+
+      var cvBtn = document.getElementById('clear-viewed-btn');
+      if (cvBtn) cvBtn.addEventListener('click', function () {
+        viewedHistory = [];
+        chrome.storage.local.set({ zillow_viewed_v3: [] });
+        renderHistory();
+      });
+
+      historyList.querySelectorAll('.history-item[data-zpid]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          chrome.tabs.create({ url: 'https://www.zillow.com/homedetails/' + el.dataset.zpid + '_zpid/' });
+        });
+      });
       return;
     }
 
-    historyList.innerHTML = filtered.map(function (item) {
-      var badgeClass = item.type === 'zpid' ? 'badge-zpid' : ('badge-' + (item.method || 'zuid'));
-      var badgeText = item.type === 'zpid' ? 'ZPID' : (item.method === 'screenname' ? 'Screen' : (item.method || 'zuid').toUpperCase());
-      var subLine = '';
-      if (item.label) {
-        subLine = '<div class="history-item-sub">' + escapeHtml(item.label) + '</div>';
-      }
-      return '<button class="history-item" data-type="' + escapeHtml(item.type) + '" data-id="' + escapeHtml(item.id) + '" data-method="' + escapeHtml(item.method || 'zuid') + '">' +
-        '<div class="history-item-top">' +
-          '<span class="history-item-id"><span class="badge ' + badgeClass + '">' + badgeText + '</span> ' + escapeHtml(item.id) + '</span>' +
-          '<svg class="ext-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-        '</div>' +
-        subLine +
-      '</button>';
-    }).join('');
+    // Impersonate tab
+    historyHeader.style.display = '';
+    historyLabel.textContent = 'Recent Impersonations';
+    var filtered = history.filter(function (h) { return h.type === 'impersonate'; }).slice(0, limit);
+    clearBtn.classList.toggle('hidden', filtered.length === 0);
 
-    // Attach click listeners
+    if (!filtered.length) {
+      historyList.innerHTML = '<div class="empty-state"><p>No recent impersonations</p></div>';
+      return;
+    }
+
+    historyList.innerHTML = filtered.map(renderHistoryItemHtml).join('');
     historyList.querySelectorAll('.history-item').forEach(function (el) {
       el.addEventListener('click', function () {
-        var type = el.dataset.type;
-        var id = el.dataset.id;
-        var method = el.dataset.method;
-        var url = type === 'zpid'
-          ? 'https://www.zillow.com/homedetails/' + id + '_zpid/'
-          : buildImpersonateUrl(method, id);
-        chrome.tabs.create({ url: url });
+        chrome.tabs.create({ url: buildImpersonateUrl(el.dataset.method, el.dataset.id) });
       });
     });
   }
+
+  clearBtn.addEventListener('click', function () {
+    history = history.filter(function (h) { return h.type !== 'impersonate'; });
+    saveHistory();
+    renderHistory();
+  });
 
   // ══════════════════════════════
   // SETTINGS
@@ -353,31 +539,27 @@
 
   settingsOpen.addEventListener('click', function () {
     settingsOverlay.classList.remove('hidden');
-    settingHistoryLimit.value      = String(settings.historyLimit || 5);
-    settingZpidTab.checked         = settings.zpidTabEnabled;
-    settingFloatingTab.checked     = settings.floatingTabEnabled !== false;
+    settingHistoryLimit.value  = String(settings.historyLimit || 5);
+    settingZpidTab.checked     = settings.zpidTabEnabled;
+    settingFloatingTab.checked = settings.floatingTabEnabled !== false;
   });
 
   settingsClose.addEventListener('click', function () {
     settingsOverlay.classList.add('hidden');
   });
 
-  // Close settings when clicking the overlay background
   settingsOverlay.addEventListener('click', function (e) {
-    if (e.target === settingsOverlay) {
-      settingsOverlay.classList.add('hidden');
-    }
+    if (e.target === settingsOverlay) settingsOverlay.classList.add('hidden');
   });
 
   settingHistoryLimit.addEventListener('change', function () {
-    var newLimit = parseInt(settingHistoryLimit.value, 10);
-    settings.historyLimit = newLimit;
+    var raw     = parseInt(settingHistoryLimit.value, 10);
+    var clamped = Math.min(20, Math.max(5, isNaN(raw) ? 5 : raw));
+    settingHistoryLimit.value = String(clamped);
+    settings.historyLimit = clamped;
     saveSettings();
-    // Trim history if needed
-    if (history.length > newLimit) {
-      history = history.slice(0, newLimit);
-      saveHistory();
-    }
+    if (history.length > clamped)       { history       = history.slice(0, clamped);       saveHistory(); }
+    if (viewedHistory.length > clamped) { viewedHistory  = viewedHistory.slice(0, clamped); chrome.storage.local.set({ zillow_viewed_v3: viewedHistory }); }
     renderHistory();
   });
 
