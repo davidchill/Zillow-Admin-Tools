@@ -2,8 +2,9 @@
 
 (function () {
   // ── State ──
-  var currentTab = 'impersonate';
-  var currentMode = 'auto';
+  var currentTab   = 'impersonate';
+  var currentMode  = 'auto';
+  var listingMode  = 'zillow';
   var history = [];
   var viewedHistory = [];
   var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true };
@@ -46,6 +47,9 @@
   var settingFloatingTab  = document.getElementById('setting-floating-tab');
   var tabsRow             = document.querySelector('.tabs');
   var acDropdown          = document.getElementById('ac-dropdown');
+  var listingModeRow      = document.getElementById('listing-mode-row');
+  var listingModeBtns     = listingModeRow.querySelectorAll('.mode-btn');
+  var addrSearch          = document.getElementById('addr-search');
 
   // ── Autocomplete state ──
   var acDebounceTimer = null;
@@ -100,6 +104,26 @@
       p.set('pScreenName', value); p.set('screenName', value);
     }
     return IMPERSONATE_BASE + '?' + p.toString();
+  }
+
+  function buildListingUrl(type, id) {
+    if (type === 'phx') return 'https://phoenix-admin-tool.dna-compute-prod.zg-int.net/zillow-data-lookup?zpid=' + id;
+    if (type === 'dit') return 'https://prm.in.zillow.net/zpid/edit?zpid=' + id;
+    return 'https://www.zillow.com/homedetails/' + id + '_zpid/';
+  }
+
+  function switchListingMode(mode) {
+    listingMode = mode;
+    listingModeBtns.forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.lmode === mode);
+    });
+    // Address search only shown in Zillow mode
+    addrSearch.classList.toggle('hidden', mode !== 'zillow');
+    // Clear ZPID input and errors
+    zpidInput.value = '';
+    zpidErrorMsg.textContent = '';
+    zpidInput.classList.remove('has-error');
+    hideAcDropdown();
   }
 
   function detectMethod(input) {
@@ -242,6 +266,7 @@
     hideAcDropdown();
 
     if (tab === 'listing') {
+      switchListingMode('zillow');
       footerText.textContent = 'Enter a ZPID to navigate directly, or type an address for autocomplete suggestions.';
     } else {
       updateImpersonateLabels();
@@ -323,18 +348,27 @@
       zpidInput.classList.add('has-error');
       return;
     }
-    var url = 'https://www.zillow.com/homedetails/' + cleanId + '_zpid/';
-    removeFromViewed(cleanId);
-    addToHistory('zpid', cleanId, 'zpid');
-    chrome.tabs.create({ url: url }, function (tab) {
-      requestScrape(tab.id, cleanId, 'zpid');
-    });
+    var url = buildListingUrl(listingMode, cleanId);
+    if (listingMode === 'zillow') {
+      removeFromViewed(cleanId);
+      addToHistory('zpid', cleanId, 'zpid');
+      chrome.tabs.create({ url: url });
+      chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: 'zpid' });
+    } else {
+      addToHistory(listingMode, cleanId, listingMode);
+      chrome.tabs.create({ url: url });
+      chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: listingMode });
+    }
     zpidInput.value = '';
   }
 
   zpidGoBtn.addEventListener('click', doZpidSearch);
   zpidInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') doZpidSearch();
+  });
+
+  listingModeBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () { switchListingMode(btn.dataset.lmode); });
   });
 
   // ══════════════════════════════
@@ -435,18 +469,49 @@
     renderHistory();
   }
 
+  function attachCopyHandlers(container) {
+    container.querySelectorAll('.copy-btn').forEach(function (span) {
+      span.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var id = span.dataset.copyId;
+        navigator.clipboard.writeText(id).then(function () {
+          var svg = span.querySelector('svg');
+          svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+          span.classList.add('copy-ok');
+          setTimeout(function () {
+            svg.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+            span.classList.remove('copy-ok');
+          }, 1500);
+        });
+      });
+    });
+  }
+
   function renderHistoryItemHtml(item) {
-    var isZpid     = item.type === 'zpid' || item.type === 'viewed';
-    var badgeClass = item.type === 'viewed' ? 'badge-viewed' : (isZpid ? 'badge-zpid' : ('badge-' + (item.method || 'zuid')));
-    var badgeText  = item.type === 'viewed' ? 'Viewed' : (isZpid ? 'ZPID' : (item.method === 'screenname' ? 'Screen' : (item.method || 'Zuid').toUpperCase()));
-    var subLine    = item.label ? '<div class="history-item-sub">' + escapeHtml(item.label) + '</div>' : '';
-    var dataAttrs  = isZpid
-      ? 'data-zpid="' + escapeHtml(item.id) + '"'
-      : 'data-type="' + escapeHtml(item.type) + '" data-id="' + escapeHtml(item.id) + '" data-method="' + escapeHtml(item.method || 'zuid') + '"';
+    var badgeClass, badgeText;
+    if      (item.type === 'viewed')     { badgeClass = 'badge-viewed'; badgeText = 'Viewed'; }
+    else if (item.type === 'zpid')       { badgeClass = 'badge-zpid';   badgeText = 'ZPID'; }
+    else if (item.type === 'phx')        { badgeClass = 'badge-phx';    badgeText = 'PHX'; }
+    else if (item.type === 'dit')        { badgeClass = 'badge-dit';    badgeText = 'DIT'; }
+    else { // impersonate
+      badgeClass = 'badge-' + (item.method || 'zuid');
+      badgeText  = item.method === 'screenname' ? 'Screen' : (item.method || 'ZUID').toUpperCase();
+    }
+    var subLine   = item.label ? '<div class="history-item-sub">' + escapeHtml(item.label) + '</div>' : '';
+    var dataAttrs = 'data-type="' + escapeHtml(item.type) + '" data-id="' + escapeHtml(item.id) + '"' +
+      (item.method ? ' data-method="' + escapeHtml(item.method) + '"' : '');
+    var copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '">' +
+      '<svg class="copy-icon" viewBox="0 0 24 24">' +
+        '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>' +
+        '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>' +
+      '</svg></span>';
     return '<button class="history-item" ' + dataAttrs + '>' +
       '<div class="history-item-top">' +
         '<span class="history-item-id"><span class="badge ' + badgeClass + '">' + badgeText + '</span> ' + escapeHtml(item.id) + '</span>' +
-        '<svg class="ext-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+        '<div style="display:flex;align-items:center;gap:4px;">' +
+          copySpan +
+          '<svg class="ext-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+        '</div>' +
       '</div>' +
       subLine +
       '</button>';
@@ -476,7 +541,7 @@
 
     if (currentTab === 'listing') {
       historyHeader.style.display = 'none';
-      var searches = history.filter(function (h) { return h.type === 'zpid'; }).slice(0, limit);
+      var searches = history.filter(function (h) { return h.type === 'zpid' || h.type === 'phx' || h.type === 'dit'; }).slice(0, limit);
       var viewed   = viewedHistory.slice(0, limit);
 
       var searchIcon = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
@@ -488,7 +553,7 @@
 
       var csBtn = document.getElementById('clear-searches-btn');
       if (csBtn) csBtn.addEventListener('click', function () {
-        history = history.filter(function (h) { return h.type !== 'zpid'; });
+        history = history.filter(function (h) { return h.type !== 'zpid' && h.type !== 'phx' && h.type !== 'dit'; });
         saveHistory();
         renderHistory();
       });
@@ -500,11 +565,12 @@
         renderHistory();
       });
 
-      historyList.querySelectorAll('.history-item[data-zpid]').forEach(function (el) {
+      historyList.querySelectorAll('.history-item[data-type]').forEach(function (el) {
         el.addEventListener('click', function () {
-          chrome.tabs.create({ url: 'https://www.zillow.com/homedetails/' + el.dataset.zpid + '_zpid/' });
+          chrome.tabs.create({ url: buildListingUrl(el.dataset.type, el.dataset.id) });
         });
       });
+      attachCopyHandlers(historyList);
       return;
     }
 
@@ -525,6 +591,7 @@
         chrome.tabs.create({ url: buildImpersonateUrl(el.dataset.method, el.dataset.id) });
       });
     });
+    attachCopyHandlers(historyList);
   }
 
   clearBtn.addEventListener('click', function () {
@@ -572,6 +639,14 @@
   settingFloatingTab.addEventListener('change', function () {
     settings.floatingTabEnabled = settingFloatingTab.checked;
     saveSettings();
+  });
+
+  // ── Live storage updates (e.g. address label populated after background fetch) ──
+  chrome.storage.onChanged.addListener(function (changes) {
+    var needsRender = false;
+    if (changes.zillow_history_v3) { history       = changes.zillow_history_v3.newValue || []; needsRender = true; }
+    if (changes.zillow_viewed_v3)  { viewedHistory = changes.zillow_viewed_v3.newValue  || []; needsRender = true; }
+    if (needsRender) renderHistory();
   });
 
 })();

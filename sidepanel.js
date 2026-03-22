@@ -5,6 +5,7 @@ const IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
 // ── State ────────────────────────────────────────────────────────────────────
 let currentTab      = 'impersonate';
 let currentMode     = 'auto';
+let listingMode     = 'zillow';
 let spHistory       = [];
 let spViewed        = [];
 let spSettings      = { historyLimit: 5, zpidTabEnabled: true };
@@ -36,7 +37,10 @@ const spConfirmTxt    = document.getElementById('sp-confirm-text');
 const spConfirmYes    = document.getElementById('sp-confirm-yes');
 const spConfirmNo     = document.getElementById('sp-confirm-no');
 const spHistoryEl     = document.getElementById('sp-history');
-const spAcDropdown    = document.getElementById('sp-ac-dropdown');
+const spAcDropdown        = document.getElementById('sp-ac-dropdown');
+const spListingModeRow    = document.getElementById('sp-listing-mode-row');
+const spListingModeBtns   = spListingModeRow.querySelectorAll('.mode-btn');
+const spAddrSearch        = document.getElementById('sp-addr-search');
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function escapeHtml(str) {
@@ -131,7 +135,11 @@ function switchSearchTab(tab) {
   spAddrErrorMsg.textContent = '';
   hideAcDropdown();
 
-  if (tab !== 'listing') updateImpersonateLabels();
+  if (tab === 'listing') {
+    switchListingMode('zillow');
+  } else {
+    updateImpersonateLabels();
+  }
   renderHistory();
 }
 
@@ -243,6 +251,46 @@ function doAddressSearch(address) {
   hideAcDropdown();
 }
 
+// ── Copy to clipboard ────────────────────────────────────────────────────────
+function attachCopyHandlers(container) {
+  container.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = btn.dataset.copyId;
+      navigator.clipboard.writeText(id).then(() => {
+        const svg = btn.querySelector('svg');
+        svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+        btn.classList.add('copy-ok');
+        setTimeout(() => {
+          svg.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+          btn.classList.remove('copy-ok');
+        }, 1500);
+      });
+    });
+  });
+}
+
+// ── Listing mode (Zillow / PHX / DIT) ────────────────────────────────────────
+function buildListingUrl(type, id) {
+  if (type === 'phx') return 'https://phoenix-admin-tool.dna-compute-prod.zg-int.net/zillow-data-lookup?zpid=' + id;
+  if (type === 'dit') return 'https://prm.in.zillow.net/zpid/edit?zpid=' + id;
+  return `https://www.zillow.com/homedetails/${id}_zpid/`;
+}
+
+function switchListingMode(mode) {
+  listingMode = mode;
+  spListingModeBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lmode === mode);
+  });
+  // Address search only shown in Zillow mode
+  spAddrSearch.classList.toggle('hidden', mode !== 'zillow');
+  // Clear ZPID input and errors
+  spZpidInput.value = '';
+  spZpidErrorMsg.textContent = '';
+  spZpidInput.classList.remove('has-error');
+  hideAcDropdown();
+}
+
 // ── ZPID Search ───────────────────────────────────────────────────────────────
 function doZpidSearch() {
   const raw = spZpidInput.value.trim();
@@ -255,16 +303,27 @@ function doZpidSearch() {
     spZpidInput.classList.add('has-error');
     return;
   }
-  const url = `https://www.zillow.com/homedetails/${cleanId}_zpid/`;
-  removeFromViewed(cleanId);
-  addToHistory('zpid', cleanId, 'zpid');
-  chrome.tabs.create({ url }, tab => { requestScrape(tab.id, cleanId, 'zpid'); });
+  const url = buildListingUrl(listingMode, cleanId);
+  if (listingMode === 'zillow') {
+    removeFromViewed(cleanId);
+    addToHistory('zpid', cleanId, 'zpid');
+    chrome.tabs.create({ url });
+    chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: 'zpid' });
+  } else {
+    addToHistory(listingMode, cleanId, listingMode);
+    chrome.tabs.create({ url });
+    chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: listingMode });
+  }
   spZpidInput.value = '';
 }
 
 spZpidGoBtn.addEventListener('click', doZpidSearch);
 spZpidInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') doZpidSearch();
+});
+
+spListingModeBtns.forEach(btn => {
+  btn.addEventListener('click', () => switchListingMode(btn.dataset.lmode));
 });
 
 // ── Address Search ────────────────────────────────────────────────────────────
@@ -343,11 +402,18 @@ function addToHistory(type, id, method, label) {
 }
 
 function buildItemHtml(item) {
-  const isListing  = item.type === 'zpid' || item.type === 'viewed';
-  const badgeClass = item.type === 'viewed' ? 'badge-viewed' : (isListing ? 'badge-zpid' : ('badge-' + (item.method || 'zuid')));
-  const badgeText  = item.type === 'viewed' ? 'Viewed' : (isListing ? 'ZPID' : (item.method === 'screenname' ? 'Screen' : (item.method || 'ZUID').toUpperCase()));
-  const url        = isListing
-    ? `https://www.zillow.com/homedetails/${encodeURIComponent(item.id)}_zpid/`
+  const isListing = item.type === 'zpid' || item.type === 'viewed' || item.type === 'phx' || item.type === 'dit';
+  let badgeClass, badgeText;
+  if      (item.type === 'viewed') { badgeClass = 'badge-viewed'; badgeText = 'Viewed'; }
+  else if (item.type === 'zpid')   { badgeClass = 'badge-zpid';   badgeText = 'ZPID'; }
+  else if (item.type === 'phx')    { badgeClass = 'badge-phx';    badgeText = 'PHX'; }
+  else if (item.type === 'dit')    { badgeClass = 'badge-dit';    badgeText = 'DIT'; }
+  else { // impersonate
+    badgeClass = 'badge-' + (item.method || 'zuid');
+    badgeText  = item.method === 'screenname' ? 'Screen' : (item.method || 'ZUID').toUpperCase();
+  }
+  const url = isListing
+    ? buildListingUrl(item.type, item.id)
     : buildImpersonateUrl(item.method, item.id);
   const sub = item.label ? `<div class="item-sub">${escapeHtml(item.label)}</div>` : '';
   return `
@@ -357,11 +423,19 @@ function buildItemHtml(item) {
           <span class="badge ${badgeClass}">${escapeHtml(badgeText)}</span>
           ${escapeHtml(item.id)}
         </span>
-        <svg class="ext-icon" viewBox="0 0 24 24">
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-          <polyline points="15 3 21 3 21 9"/>
-          <line x1="10" y1="14" x2="21" y2="3"/>
-        </svg>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span class="copy-btn" data-copy-id="${escapeHtml(item.id)}">
+            <svg class="copy-icon" viewBox="0 0 24 24">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </span>
+          <svg class="ext-icon" viewBox="0 0 24 24">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </div>
       </div>
       ${sub}
     </button>`;
@@ -400,7 +474,7 @@ function renderHistory() {
   let html = '';
 
   if (currentTab === 'listing') {
-    const zpids  = spHistory.filter(h => h.type === 'zpid').slice(0, limit);
+    const zpids  = spHistory.filter(h => h.type === 'zpid' || h.type === 'phx' || h.type === 'dit').slice(0, limit);
     const viewed = spViewed.slice(0, limit);
     html  = renderSectionBlock(searchSvg, 'Recent Searches', zpids,  'sp-clear-zpids',  'No recent searches');
     html += renderSectionBlock(eyeSvg,    'Recently Viewed', viewed, 'sp-clear-viewed', 'No recently viewed properties');
@@ -419,7 +493,7 @@ function renderHistory() {
 
   const clearZpids = document.getElementById('sp-clear-zpids');
   if (clearZpids) clearZpids.addEventListener('click', () => {
-    spHistory = spHistory.filter(h => h.type !== 'zpid');
+    spHistory = spHistory.filter(h => h.type !== 'zpid' && h.type !== 'phx' && h.type !== 'dit');
     saveHistory(); renderHistory();
   });
 
@@ -432,6 +506,7 @@ function renderHistory() {
   spHistoryEl.querySelectorAll('.item').forEach(btn => {
     btn.addEventListener('click', () => { chrome.tabs.create({ url: btn.dataset.url }); });
   });
+  attachCopyHandlers(spHistoryEl);
 }
 
 // ── Event listeners ───────────────────────────────────────────────────────────

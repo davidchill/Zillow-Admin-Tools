@@ -119,6 +119,51 @@ function scrapeTabForLabel(tabId, historyId, historyType) {
   }, 20000);
 }
 
+// ══════════════════════════════════════════
+// ZPID ADDRESS FETCH – background fetch of the Zillow listing page to
+// extract the property address for listing history items (zpid / phx / dit).
+// Runs entirely in the service worker; updates storage when done so that
+// the popup and side panel re-render with the address sub-line.
+// ══════════════════════════════════════════
+
+async function fetchZpidAddress(zpid, historyType) {
+  const url = 'https://www.zillow.com/homedetails/' + zpid + '_zpid/';
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9'
+      }
+    });
+    if (!res.ok) return;
+    const html = await res.text();
+    const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+    if (!titleMatch) return;
+    const title    = titleMatch[1];
+    const pipeIdx  = title.indexOf(' |');
+    const dashIdx  = title.indexOf(' -');
+    const cutIdx   = pipeIdx > 0 ? pipeIdx : (dashIdx > 0 ? dashIdx : -1);
+    const label    = cutIdx > 0 ? title.substring(0, cutIdx).trim() : title.trim();
+    if (!label || /zillow/i.test(label) || /page not found/i.test(label)) return;
+
+    chrome.storage.local.get('zillow_history_v3', (storageData) => {
+      const history = storageData.zillow_history_v3 || [];
+      let updated = false;
+      for (let i = 0; i < history.length; i++) {
+        if (history[i].id === zpid && history[i].type === historyType && !history[i].label) {
+          history[i].label = label;
+          updated = true;
+          break;
+        }
+      }
+      if (updated) chrome.storage.local.set({ zillow_history_v3: history });
+    });
+  } catch (e) {
+    // silently fail — address display is best-effort
+  }
+}
+
 // ── Zillow autocomplete ──
 // Primary path: inject fetch into an active Zillow tab so the request
 // carries Origin: https://www.zillow.com (accepted by zillowstatic.com CDN).
@@ -175,6 +220,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Scrape requests from the popup
   if (message.action === 'scrapeTab') {
     scrapeTabForLabel(message.tabId, message.historyId, message.historyType);
+    sendResponse({ ok: true });
+  }
+  // Background address fetch for listing history items (zpid / phx / dit)
+  if (message.action === 'fetchAddress') {
+    fetchZpidAddress(message.zpid, message.historyType);
     sendResponse({ ok: true });
   }
   // FAB click on any page — open the Side Panel

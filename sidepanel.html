@@ -154,8 +154,14 @@
     .item-top { display: flex; align-items: center; justify-content: space-between; }
     .item-id { font-size: 13px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px; min-width: 0; }
     .item-sub { font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 1px; margin-top: 2px; }
-    .ext-icon { width: 12px; height: 12px; fill: none; stroke: #cbd5e1; stroke-width: 2; flex-shrink: 0; transition: stroke 0.15s; }
+    .ext-icon { width: 14px; height: 14px; fill: none; stroke: #cbd5e1; stroke-width: 2; flex-shrink: 0; transition: stroke 0.15s; }
     .item:hover .ext-icon { stroke: #3b82f6; }
+    .copy-btn { display: inline-flex; align-items: center; padding: 2px; border-radius: 3px; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+    .copy-btn:hover { background: #e2e8f0; }
+    .copy-icon { width: 14px; height: 14px; fill: none; stroke: #cbd5e1; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.15s; }
+    .item:hover .copy-icon { stroke: #94a3b8; }
+    .copy-btn:hover .copy-icon { stroke: #475569; }
+    .copy-btn.copy-ok .copy-icon { stroke: #22c55e; }
 
     /* ── Badges ── */
     .badge { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; flex-shrink: 0; }
@@ -164,6 +170,8 @@
     .badge-screenname { background: #dcfce7; color: #16a34a; }
     .badge-zpid       { background: #fef3c7; color: #d97706; }
     .badge-viewed     { background: #ecfeff; color: #0e7490; }
+    .badge-phx        { background: #ffedd5; color: #c2410c; }
+    .badge-dit        { background: #fce7f3; color: #be185d; }
 
     /* ── Empty state ── */
     .empty { text-align: center; padding: 20px; border: 2px dashed #e2e8f0; border-radius: 10px; font-size: 12px; color: #94a3b8; }
@@ -227,6 +235,11 @@
 
         <!-- Listing Search — two separate inputs (hidden on impersonate tab) -->
         <div id="sp-listing-search" class="hidden">
+          <div class="modes" id="sp-listing-mode-row">
+            <button class="mode-btn active" data-lmode="zillow">Zillow</button>
+            <button class="mode-btn" data-lmode="phx">PHX</button>
+            <button class="mode-btn" data-lmode="dit">DIT</button>
+          </div>
           <label class="input-label">ZPID</label>
           <div class="input-row" style="margin-bottom:2px;">
             <input type="text" id="sp-zpid-input" placeholder="e.g. 29122711" inputmode="numeric" autocomplete="off">
@@ -235,17 +248,19 @@
             </button>
           </div>
           <div class="error-msg" id="sp-zpid-error-msg"></div>
-          <label class="input-label" style="margin-top:1px; display:block;">Address</label>
-          <div class="input-wrap">
-            <div class="input-row">
-              <input type="text" id="sp-addr-input" placeholder="e.g. 123 Main St, Seattle" autocomplete="off">
-              <button class="search-btn" id="sp-addr-go-btn">
-                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </button>
+          <div id="sp-addr-search">
+            <label class="input-label" style="margin-top:1px; display:block;">Address</label>
+            <div class="input-wrap">
+              <div class="input-row">
+                <input type="text" id="sp-addr-input" placeholder="e.g. 123 Main St, Seattle" autocomplete="off">
+                <button class="search-btn" id="sp-addr-go-btn">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
+              </div>
+              <div class="ac-dropdown hidden" id="sp-ac-dropdown"></div>
             </div>
-            <div class="ac-dropdown hidden" id="sp-ac-dropdown"></div>
+            <div class="error-msg" id="sp-addr-error-msg"></div>
           </div>
-          <div class="error-msg" id="sp-addr-error-msg"></div>
         </div>
       </div>
     </div>
