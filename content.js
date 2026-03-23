@@ -173,7 +173,7 @@
     const delta = e.clientY - dragStartY;
     if (Math.abs(delta) > 3) didDrag = true;
     fabTopPx = applyPosition(dragStartTop + delta);
-  });
+  }, { passive: true });
 
   document.addEventListener('mouseup', () => {
     if (!isDragging) return;
