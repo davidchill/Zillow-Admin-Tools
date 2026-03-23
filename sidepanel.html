@@ -157,12 +157,14 @@
     .item-sub { font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 1px; margin-top: 2px; }
     .ext-icon { width: 14px; height: 14px; fill: none; stroke: #cbd5e1; stroke-width: 2; flex-shrink: 0; transition: stroke 0.15s; }
     .item:hover .ext-icon { stroke: #3b82f6; }
-    .copy-btn { display: inline-flex; align-items: center; padding: 2px; border-radius: 3px; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+    .copy-btn { position: relative; display: inline-flex; align-items: center; padding: 2px; border-radius: 3px; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
     .copy-btn:hover { background: #e2e8f0; }
     .copy-icon { width: 14px; height: 14px; fill: none; stroke: #cbd5e1; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.15s; }
     .item:hover .copy-icon { stroke: #94a3b8; }
     .copy-btn:hover .copy-icon { stroke: #475569; }
     .copy-btn.copy-ok .copy-icon { stroke: #22c55e; }
+    .copy-btn[data-tip]::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; font-size: 11px; white-space: nowrap; padding: 3px 7px; border-radius: 4px; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 10; }
+    .copy-btn[data-tip]:hover::after { opacity: 1; }
 
     /* ── Badges ── */
     .badge { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; flex-shrink: 0; }

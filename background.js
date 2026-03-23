@@ -1,7 +1,8 @@
 // ── Zillow Admin Tools – Background Service Worker v2.1 ──
 // Context-menu impersonation + page scraping for history labels
 
-const IMPERSONATE_URL = 'https://www.zillow.com/user/Impersonate.htm';
+const IMPERSONATE_URL   = 'https://www.zillow.com/user/Impersonate.htm';
+const PROFILE_REDIRECT  = 'https://www.zillow.com/myzillow/Profile.htm';
 
 // Email validation (same regex used in the popup)
 function validateEmail(email) {
@@ -46,6 +47,29 @@ function showAlert(tabId, message) {
 const ERROR_MESSAGE =
   'A valid e-mail address, Zillow User ID (ZUID), or screen name is not selected. ' +
   'Please first select one of these and try again.';
+
+// ══════════════════════════════════════════
+// POST-IMPERSONATION REDIRECT
+// After the Impersonate.htm page finishes loading, redirect the tab to the
+// Profile page so agents land somewhere useful. The 3-second delay in
+// scrapeTabForLabel means the scrape naturally runs against the profile
+// page title (e.g. "Jane Doe | Zillow") instead of "My Account Settings".
+// ══════════════════════════════════════════
+
+function redirectAfterImpersonate(tabId) {
+  function onUpdated(updatedTabId, changeInfo) {
+    if (updatedTabId !== tabId || changeInfo.status !== 'loading') return;
+    chrome.tabs.onUpdated.removeListener(onUpdated);
+    chrome.storage.local.get('zillow_settings', (data) => {
+      const settings = data.zillow_settings || {};
+      if (settings.redirectEnabled === false) return;
+      chrome.tabs.update(tabId, { url: PROFILE_REDIRECT });
+    });
+  }
+  chrome.tabs.onUpdated.addListener(onUpdated);
+  // Safety: remove listener after 20s to avoid leaks
+  setTimeout(() => chrome.tabs.onUpdated.removeListener(onUpdated), 20000);
+}
 
 // ══════════════════════════════════════════
 // PAGE SCRAPING – runs in the service worker
@@ -305,6 +329,7 @@ chrome.tabs.onCreated.addListener((tab) => {
   const parsed = parseImpersonateUrl(url);
   if (parsed) {
     addPassiveImpersonation(parsed.method, parsed.value);
+    redirectAfterImpersonate(tab.id);
     scrapeTabForLabel(tab.id, parsed.value, 'impersonate');
   }
 });

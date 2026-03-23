@@ -7,7 +7,7 @@
   var listingMode  = 'zillow';
   var history = [];
   var viewedHistory = [];
-  var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true };
+  var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true, redirectEnabled: true };
   var pendingConfirm = null;
 
   var IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
@@ -44,7 +44,8 @@
   var settingsClose       = document.getElementById('settings-close');
   var settingHistoryLimit = document.getElementById('setting-history-limit');
   var settingZpidTab      = document.getElementById('setting-zpid-tab');
-  var settingFloatingTab  = document.getElementById('setting-floating-tab');
+  var settingFloatingTab       = document.getElementById('setting-floating-tab');
+  var settingRedirectProfile   = document.getElementById('setting-redirect-profile');
   var tabsRow             = document.querySelector('.tabs');
   var acDropdown          = document.getElementById('ac-dropdown');
   var listingModeRow      = document.getElementById('listing-mode-row');
@@ -63,9 +64,11 @@
         settings = data.zillow_settings;
         settingHistoryLimit.value = String(settings.historyLimit || 5);
         if (typeof settings.zpidTabEnabled    === 'undefined') settings.zpidTabEnabled    = true;
-        if (typeof settings.floatingTabEnabled === 'undefined') settings.floatingTabEnabled = true;
-        settingZpidTab.checked     = settings.zpidTabEnabled;
-        settingFloatingTab.checked = settings.floatingTabEnabled;
+        if (typeof settings.floatingTabEnabled  === 'undefined') settings.floatingTabEnabled  = true;
+        if (typeof settings.redirectEnabled     === 'undefined') settings.redirectEnabled     = true;
+        settingZpidTab.checked          = settings.zpidTabEnabled;
+        settingFloatingTab.checked      = settings.floatingTabEnabled;
+        settingRedirectProfile.checked  = settings.redirectEnabled;
       }
       if (data.zillow_history_v3) history = data.zillow_history_v3;
       if (data.zillow_viewed_v3)  viewedHistory = data.zillow_viewed_v3;
@@ -510,7 +513,7 @@
     } else {
       copyLabel = 'Copy ZUID';
     }
-    var copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" title="' + copyLabel + '">' +
+    var copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" data-tip="' + copyLabel + '">' +
       '<svg class="copy-icon" viewBox="0 0 24 24">' +
         '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>' +
         '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>' +
@@ -617,8 +620,9 @@
   settingsOpen.addEventListener('click', function () {
     settingsOverlay.classList.remove('hidden');
     settingHistoryLimit.value  = String(settings.historyLimit || 5);
-    settingZpidTab.checked     = settings.zpidTabEnabled;
-    settingFloatingTab.checked = settings.floatingTabEnabled !== false;
+    settingZpidTab.checked         = settings.zpidTabEnabled;
+    settingFloatingTab.checked     = settings.floatingTabEnabled !== false;
+    settingRedirectProfile.checked = settings.redirectEnabled !== false;
   });
 
   settingsClose.addEventListener('click', function () {
@@ -648,6 +652,11 @@
 
   settingFloatingTab.addEventListener('change', function () {
     settings.floatingTabEnabled = settingFloatingTab.checked;
+    saveSettings();
+  });
+
+  settingRedirectProfile.addEventListener('change', function () {
+    settings.redirectEnabled = settingRedirectProfile.checked;
     saveSettings();
   });
 
