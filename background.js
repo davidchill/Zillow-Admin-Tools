@@ -249,6 +249,74 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// ══════════════════════════════════════════
+// PASSIVE IMPERSONATION TRACKER
+// Watches every tab for navigation to Impersonate.htm and records it in
+// history — whether the extension initiated it or not (direct URL, bookmark,
+// context menu, external script, etc.).
+//
+// Duplicate prevention: if the same id+method was already added within the
+// last 5 seconds (e.g. by the popup/sidepanel before opening the tab), the
+// entry is skipped to avoid double-counting extension-initiated impersonations.
+// ══════════════════════════════════════════
+
+function parseImpersonateUrl(url) {
+  if (!url || !url.includes('Impersonate.htm')) return null;
+  try {
+    const params = new URL(url).searchParams;
+    const email      = params.get('pEmail')      || params.get('email');
+    if (email) return { method: 'email', value: email };
+    const zuid       = params.get('pZuid')       || params.get('zuid');
+    if (zuid)  return { method: 'zuid',  value: zuid };
+    const screenName = params.get('pScreenName') || params.get('screenName');
+    if (screenName) return { method: 'screenname', value: screenName };
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function addPassiveImpersonation(method, value) {
+  chrome.storage.local.get(['zillow_history_v3', 'zillow_settings'], (data) => {
+    const settings = data.zillow_settings || {};
+    const limit    = Math.min(20, Math.max(5, settings.historyLimit || 5));
+    const history  = data.zillow_history_v3 || [];
+    const now      = Date.now();
+
+    // Skip if an identical entry was added in the last 5 seconds
+    const isDupe = history.some(h =>
+      h.type === 'impersonate' && h.id === value && h.method === method &&
+      (now - h.timestamp) < 5000
+    );
+    if (isDupe) return;
+
+    const updated = [{ type: 'impersonate', id: value, method, label: '', timestamp: now }]
+      .concat(history.filter(h => !(h.type === 'impersonate' && h.id === value && h.method === method)))
+      .slice(0, limit);
+    chrome.storage.local.set({ zillow_history_v3: updated });
+  });
+}
+
+// NEW tab created with an Impersonate URL (context menu, popup, sidepanel — all
+// call chrome.tabs.create, so onUpdated never gets changeInfo.url for these).
+// tab.pendingUrl holds the destination URL before the page even starts loading.
+chrome.tabs.onCreated.addListener((tab) => {
+  const url = tab.pendingUrl || tab.url || '';
+  const parsed = parseImpersonateUrl(url);
+  if (parsed) {
+    addPassiveImpersonation(parsed.method, parsed.value);
+    scrapeTabForLabel(tab.id, parsed.value, 'impersonate');
+  }
+});
+
+// EXISTING tab navigating to an Impersonate URL (address bar, bookmark, etc.)
+// changeInfo.url is only populated when the URL changes in an already-open tab.
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (!changeInfo.url) return;
+  const parsed = parseImpersonateUrl(changeInfo.url);
+  if (parsed) addPassiveImpersonation(parsed.method, parsed.value);
+});
+
 // ── Context menu click handler ──
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 
