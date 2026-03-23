@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Zillow Admin Tools",
-  "version": "3.2",
+  "version": "3.3",
   "description": "Search by ZPID or Impersonate by Email, ZUID, or Screen Name — with right-click context menu support.",
   "action": {
     "default_popup": "popup.html",

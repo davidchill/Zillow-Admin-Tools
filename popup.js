@@ -7,7 +7,7 @@
   var listingMode  = 'zillow';
   var history = [];
   var viewedHistory = [];
-  var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true, redirectEnabled: true };
+  var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true, redirectEnabled: true, themeMode: 'auto', historyEnabled: true };
   var pendingConfirm = null;
 
   var IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
@@ -46,6 +46,8 @@
   var settingZpidTab      = document.getElementById('setting-zpid-tab');
   var settingFloatingTab       = document.getElementById('setting-floating-tab');
   var settingRedirectProfile   = document.getElementById('setting-redirect-profile');
+  var settingHistory           = document.getElementById('setting-history');
+  var settingTheme             = document.getElementById('setting-theme');
   var tabsRow             = document.querySelector('.tabs');
   var acDropdown          = document.getElementById('ac-dropdown');
   var listingModeRow      = document.getElementById('listing-mode-row');
@@ -57,6 +59,23 @@
   var acResults = [];
   var acActiveIdx = -1;
 
+  // ── Theme ──
+  function applyTheme(mode) {
+    if (mode === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else if (mode === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }
+
+  function updateThemeButtons(mode) {
+    settingTheme.querySelectorAll('.theme-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.themeVal === mode);
+    });
+  }
+
   // ── Load settings + history from chrome.storage ──
   function loadFromStorage(callback) {
     chrome.storage.local.get(['zillow_history_v3', 'zillow_viewed_v3', 'zillow_settings'], function (data) {
@@ -66,9 +85,13 @@
         if (typeof settings.zpidTabEnabled    === 'undefined') settings.zpidTabEnabled    = true;
         if (typeof settings.floatingTabEnabled  === 'undefined') settings.floatingTabEnabled  = true;
         if (typeof settings.redirectEnabled     === 'undefined') settings.redirectEnabled     = true;
+        if (typeof settings.themeMode       === 'undefined') settings.themeMode       = 'auto';
+        if (typeof settings.historyEnabled  === 'undefined') settings.historyEnabled  = true;
         settingZpidTab.checked          = settings.zpidTabEnabled;
         settingFloatingTab.checked      = settings.floatingTabEnabled;
         settingRedirectProfile.checked  = settings.redirectEnabled;
+        settingHistory.checked          = settings.historyEnabled;
+        applyTheme(settings.themeMode);
       }
       if (data.zillow_history_v3) history = data.zillow_history_v3;
       if (data.zillow_viewed_v3)  viewedHistory = data.zillow_viewed_v3;
@@ -207,7 +230,7 @@
     addrInput.value = '';
     hideAcDropdown();
     removeFromViewed(zpid);
-    addToHistory('zpid', zpid, 'zpid', label);
+    if (settings.historyEnabled !== false) addToHistory('zpid', zpid, 'zpid', label);
     chrome.tabs.create({ url: url });
   }
 
@@ -354,13 +377,17 @@
     var url = buildListingUrl(listingMode, cleanId);
     if (listingMode === 'zillow') {
       removeFromViewed(cleanId);
-      addToHistory('zpid', cleanId, 'zpid');
+      if (settings.historyEnabled !== false) {
+        addToHistory('zpid', cleanId, 'zpid');
+        chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: 'zpid' });
+      }
       chrome.tabs.create({ url: url });
-      chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: 'zpid' });
     } else {
-      addToHistory(listingMode, cleanId, listingMode);
+      if (settings.historyEnabled !== false) {
+        addToHistory(listingMode, cleanId, listingMode);
+        chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: listingMode });
+      }
       chrome.tabs.create({ url: url });
-      chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: listingMode });
     }
     zpidInput.value = '';
   }
@@ -444,7 +471,7 @@
     chrome.tabs.create({ url: url }, function (tab) {
       requestScrape(tab.id, value, 'impersonate');
     });
-    addToHistory('impersonate', value, method);
+    if (settings.historyEnabled !== false) addToHistory('impersonate', value, method);
   }
 
   function showError(msg) {
@@ -560,9 +587,10 @@
       var searchIcon = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
       var eyeIcon    = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
+      var offMsg = 'History recording is off. Enable it in Settings.';
       historyList.innerHTML =
-        renderSection('Recent Searches', searchIcon, searches, 'clear-searches-btn', 'No recent searches') +
-        renderSection('Recently Viewed',  eyeIcon,    viewed,   'clear-viewed-btn',   'No recently viewed properties');
+        renderSection('Recent Searches', searchIcon, searches, 'clear-searches-btn', settings.historyEnabled === false ? offMsg : 'No recent searches') +
+        renderSection('Recently Viewed',  eyeIcon,    viewed,   'clear-viewed-btn',   settings.historyEnabled === false ? offMsg : 'No recently viewed properties');
 
       var csBtn = document.getElementById('clear-searches-btn');
       if (csBtn) csBtn.addEventListener('click', function () {
@@ -594,7 +622,10 @@
     clearBtn.classList.toggle('hidden', filtered.length === 0);
 
     if (!filtered.length) {
-      historyList.innerHTML = '<div class="empty-state"><p>No recent impersonations</p></div>';
+      var emptyMsg = settings.historyEnabled === false
+        ? 'History recording is off. Enable it in Settings.'
+        : 'No recent impersonations';
+      historyList.innerHTML = '<div class="empty-state"><p>' + emptyMsg + '</p></div>';
       return;
     }
 
@@ -623,6 +654,8 @@
     settingZpidTab.checked         = settings.zpidTabEnabled;
     settingFloatingTab.checked     = settings.floatingTabEnabled !== false;
     settingRedirectProfile.checked = settings.redirectEnabled !== false;
+    settingHistory.checked         = settings.historyEnabled !== false;
+    updateThemeButtons(settings.themeMode || 'auto');
   });
 
   settingsClose.addEventListener('click', function () {
@@ -658,6 +691,27 @@
   settingRedirectProfile.addEventListener('change', function () {
     settings.redirectEnabled = settingRedirectProfile.checked;
     saveSettings();
+  });
+
+  settingHistory.addEventListener('change', function () {
+    settings.historyEnabled = settingHistory.checked;
+    saveSettings();
+    if (!settings.historyEnabled) {
+      history = [];
+      viewedHistory = [];
+      chrome.storage.local.set({ zillow_history_v3: [], zillow_viewed_v3: [] });
+      renderHistory();
+    }
+  });
+
+  settingTheme.addEventListener('click', function (e) {
+    var btn = e.target.closest('.theme-btn');
+    if (!btn) return;
+    var mode = btn.dataset.themeVal;
+    settings.themeMode = mode;
+    saveSettings();
+    applyTheme(mode);
+    updateThemeButtons(mode);
   });
 
   // ── Live storage updates (e.g. address label populated after background fetch) ──

@@ -4,6 +4,21 @@
 const IMPERSONATE_URL   = 'https://www.zillow.com/user/Impersonate.htm';
 const PROFILE_REDIRECT  = 'https://www.zillow.com/myzillow/Profile.htm';
 
+// ── Side Panel state tracking ──────────────────────────────────────────────
+// Keeps a set of windowIds where the side panel is currently open.
+// sidepanel.js connects a named port on load and reconnects on SW restart,
+// so the Set stays accurate even after the service worker is killed/revived.
+const openPanelWindows = new Set();
+
+chrome.runtime.onConnect.addListener(port => {
+  if (!port.name.startsWith('zat-sidepanel-')) return;
+  const windowId = parseInt(port.name.replace('zat-sidepanel-', ''), 10);
+  if (!isNaN(windowId)) {
+    openPanelWindows.add(windowId);
+    port.onDisconnect.addListener(() => openPanelWindows.delete(windowId));
+  }
+});
+
 // Email validation (same regex used in the popup)
 function validateEmail(email) {
   const re = /^(([^<>()\[\]\.,;:\s@"]+(\.[^<>()\[\]\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.)+[^<>()[\]\.,;:\s@"]{2,})$/i;
@@ -251,9 +266,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     fetchZpidAddress(message.zpid, message.historyType);
     sendResponse({ ok: true });
   }
-  // FAB click on any page — open the Side Panel
+  // FAB click on any page — toggle the Side Panel open/closed
   if (message.action === 'openSidePanel') {
-    chrome.sidePanel.open({ windowId: sender.tab.windowId });
+    const windowId = sender.tab.windowId;
+    if (openPanelWindows.has(windowId)) {
+      chrome.sidePanel.close({ windowId });
+    } else {
+      chrome.sidePanel.open({ windowId });
+    }
     sendResponse({ ok: true });
   }
   // Autocomplete address query — primary path runs inside a Zillow tab
@@ -306,6 +326,9 @@ function addPassiveImpersonation(method, value) {
     const limit    = Math.min(20, Math.max(5, settings.historyLimit || 5));
     const history  = data.zillow_history_v3 || [];
     const now      = Date.now();
+
+    // Skip if history recording is disabled
+    if (settings.historyEnabled === false) return;
 
     // Skip if an identical entry was added in the last 5 seconds
     const isDupe = history.some(h =>

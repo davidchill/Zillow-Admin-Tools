@@ -28,6 +28,9 @@
         const searched = data.zillow_history_v3 || [];
         const viewed   = data.zillow_viewed_v3   || [];
 
+        // Don't track if history recording is disabled
+        if (settings.historyEnabled === false) return;
+
         // Don't track if already in searched history (avoid duplication)
         if (searched.some(h => h.type === 'zpid' && h.id === viewedZpid)) return;
 
@@ -119,7 +122,7 @@
   // ── FAB ──────────────────────────────────────────────────────────────────
   const fab = document.createElement('button');
   fab.className = 'fab';
-  fab.setAttribute('aria-label', 'Open Zillow Admin Tools');
+  fab.setAttribute('aria-label', 'Open/Close Zillow Admin Tools');
   fab.innerHTML = `<img src="${ICON_URL}" alt="">`;
   fab.style.display = 'none'; // hidden until settings are checked
   shadow.appendChild(fab);
@@ -185,7 +188,9 @@
   fab.addEventListener('click', e => {
     if (didDrag) return;
     e.stopPropagation();
-    chrome.runtime.sendMessage({ action: 'openSidePanel' });
+    chrome.runtime.sendMessage({ action: 'openSidePanel' }, () => {
+      void chrome.runtime.lastError; // suppress "receiving end does not exist" if SW is sleeping
+    });
   });
 
 })();

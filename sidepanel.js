@@ -8,7 +8,7 @@ let currentMode     = 'zuid';
 let listingMode     = 'zillow';
 let spHistory       = [];
 let spViewed        = [];
-let spSettings      = { historyLimit: 5, zpidTabEnabled: true };
+let spSettings      = { historyLimit: 5, zpidTabEnabled: true, historyEnabled: true };
 let pendingConfirm  = null;
 let acDebounceTimer = null;
 let acResults       = [];
@@ -41,6 +41,27 @@ const spAcDropdown        = document.getElementById('sp-ac-dropdown');
 const spListingModeRow    = document.getElementById('sp-listing-mode-row');
 const spListingModeBtns   = spListingModeRow.querySelectorAll('.mode-btn');
 const spAddrSearch        = document.getElementById('sp-addr-search');
+
+// ── Background registration (FAB toggle support) ─────────────────────────────
+// Opens a named port so background.js knows the panel is open in this window.
+// Reconnects automatically if the service worker restarts while the panel is up.
+(function registerPanel() {
+  chrome.windows.getCurrent(win => {
+    const port = chrome.runtime.connect({ name: 'zat-sidepanel-' + win.id });
+    port.onDisconnect.addListener(() => setTimeout(registerPanel, 500));
+  });
+})();
+
+// ── Theme ─────────────────────────────────────────────────────────────────────
+function applyTheme(mode) {
+  if (mode === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else if (mode === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function escapeHtml(str) {
@@ -79,6 +100,9 @@ function loadFromStorage() {
     if (data.zillow_settings) {
       spSettings = data.zillow_settings;
       if (typeof spSettings.zpidTabEnabled === 'undefined') spSettings.zpidTabEnabled = true;
+      if (typeof spSettings.themeMode      === 'undefined') spSettings.themeMode      = 'auto';
+      if (typeof spSettings.historyEnabled === 'undefined') spSettings.historyEnabled = true;
+      applyTheme(spSettings.themeMode);
     }
     if (data.zillow_history_v3) spHistory = data.zillow_history_v3;
     if (data.zillow_viewed_v3)  spViewed  = data.zillow_viewed_v3;
@@ -228,7 +252,7 @@ function selectAcResult(result) {
   spAddrInput.value = '';
   hideAcDropdown();
   removeFromViewed(zpid);
-  addToHistory('zpid', zpid, 'zpid', label);
+  if (spSettings.historyEnabled !== false) addToHistory('zpid', zpid, 'zpid', label);
   chrome.tabs.create({ url });
 }
 
@@ -306,13 +330,17 @@ function doZpidSearch() {
   const url = buildListingUrl(listingMode, cleanId);
   if (listingMode === 'zillow') {
     removeFromViewed(cleanId);
-    addToHistory('zpid', cleanId, 'zpid');
+    if (spSettings.historyEnabled !== false) {
+      addToHistory('zpid', cleanId, 'zpid');
+      chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: 'zpid' });
+    }
     chrome.tabs.create({ url });
-    chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: 'zpid' });
   } else {
-    addToHistory(listingMode, cleanId, listingMode);
+    if (spSettings.historyEnabled !== false) {
+      addToHistory(listingMode, cleanId, listingMode);
+      chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: listingMode });
+    }
     chrome.tabs.create({ url });
-    chrome.runtime.sendMessage({ action: 'fetchAddress', zpid: cleanId, historyType: listingMode });
   }
   spZpidInput.value = '';
 }
@@ -386,7 +414,7 @@ function doSearch() {
 function executeImpersonate(method, value) {
   const url = buildImpersonateUrl(method, value);
   chrome.tabs.create({ url }, tab => { requestScrape(tab.id, value, 'impersonate'); });
-  addToHistory('impersonate', value, method);
+  if (spSettings.historyEnabled !== false) addToHistory('impersonate', value, method);
 }
 
 // ── History ───────────────────────────────────────────────────────────────────
@@ -486,11 +514,13 @@ function renderHistory() {
   if (currentTab === 'listing') {
     const zpids  = spHistory.filter(h => h.type === 'zpid' || h.type === 'phx' || h.type === 'dit').slice(0, limit);
     const viewed = spViewed.slice(0, limit);
-    html  = renderSectionBlock(searchSvg, 'Recent Searches', zpids,  'sp-clear-zpids',  'No recent searches');
-    html += renderSectionBlock(eyeSvg,    'Recently Viewed', viewed, 'sp-clear-viewed', 'No recently viewed properties');
+    const offMsg = 'History recording is off. Enable it in Settings.';
+    html  = renderSectionBlock(searchSvg, 'Recent Searches', zpids,  'sp-clear-zpids',  spSettings.historyEnabled === false ? offMsg : 'No recent searches');
+    html += renderSectionBlock(eyeSvg,    'Recently Viewed', viewed, 'sp-clear-viewed', spSettings.historyEnabled === false ? offMsg : 'No recently viewed properties');
   } else {
     const imps = spHistory.filter(h => h.type === 'impersonate').slice(0, limit);
-    html = renderSectionBlock(personSvg, 'Recent Impersonations', imps, 'sp-clear-imps', 'No recent impersonations');
+    const offMsg = 'History recording is off. Enable it in Settings.';
+    html = renderSectionBlock(personSvg, 'Recent Impersonations', imps, 'sp-clear-imps', spSettings.historyEnabled === false ? offMsg : 'No recent impersonations');
   }
 
   spHistoryEl.innerHTML = html;
@@ -545,6 +575,20 @@ chrome.storage.onChanged.addListener(changes => {
   let needsRender = false;
   if (changes.zillow_history_v3) { spHistory  = changes.zillow_history_v3.newValue || []; needsRender = true; }
   if (changes.zillow_viewed_v3)  { spViewed   = changes.zillow_viewed_v3.newValue  || []; needsRender = true; }
-  if (changes.zillow_settings)   { spSettings = changes.zillow_settings.newValue   || spSettings; applyZpidTabVisibility(); needsRender = true; }
+  if (changes.zillow_settings) {
+    const prev = spSettings;
+    spSettings = changes.zillow_settings.newValue || spSettings;
+    applyZpidTabVisibility();
+    applyTheme(spSettings.themeMode || 'auto');
+
+    // Clear all history when the recording toggle is turned off
+    if (prev.historyEnabled !== false && spSettings.historyEnabled === false) {
+      spHistory = [];
+      spViewed  = [];
+      chrome.storage.local.set({ zillow_history_v3: [], zillow_viewed_v3: [] });
+    }
+
+    needsRender = true;
+  }
   if (needsRender) renderHistory();
 });
