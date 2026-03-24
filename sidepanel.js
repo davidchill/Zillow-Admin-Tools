@@ -29,6 +29,10 @@ const spListingSearch = document.getElementById('sp-listing-search');
 const spZpidInput     = document.getElementById('sp-zpid-input');
 const spZpidGoBtn     = document.getElementById('sp-zpid-go-btn');
 const spZpidErrorMsg  = document.getElementById('sp-zpid-error-msg');
+const spMlsSearch     = document.getElementById('sp-mls-search');
+const spMlsInput      = document.getElementById('sp-mls-input');
+const spMlsGoBtn      = document.getElementById('sp-mls-go-btn');
+const spMlsErrorMsg   = document.getElementById('sp-mls-error-msg');
 const spAddrInput     = document.getElementById('sp-addr-input');
 const spAddrGoBtn     = document.getElementById('sp-addr-go-btn');
 const spAddrErrorMsg  = document.getElementById('sp-addr-error-msg');
@@ -161,6 +165,9 @@ function switchSearchTab(tab) {
   spZpidInput.value = '';
   spZpidErrorMsg.textContent = '';
   spZpidInput.classList.remove('has-error');
+  spMlsInput.value = '';
+  spMlsErrorMsg.textContent = '';
+  spMlsInput.classList.remove('has-error');
   spAddrInput.value = '';
   spAddrErrorMsg.textContent = '';
   spAgentFirstInput.value = '';
@@ -324,12 +331,16 @@ function switchListingMode(mode) {
   spListingModeBtns.forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lmode === mode);
   });
-  // Address search only shown in Zillow mode
+  // Address search only shown in Zillow mode; MLS search only shown in PHX mode
   spAddrSearch.classList.toggle('hidden', mode !== 'zillow');
-  // Clear ZPID input and errors
+  spMlsSearch.classList.toggle('hidden', mode !== 'phx');
+  // Clear ZPID and MLS inputs and errors
   spZpidInput.value = '';
   spZpidErrorMsg.textContent = '';
   spZpidInput.classList.remove('has-error');
+  spMlsInput.value = '';
+  spMlsErrorMsg.textContent = '';
+  spMlsInput.classList.remove('has-error');
   hideAcDropdown();
 }
 
@@ -366,6 +377,21 @@ function doZpidSearch() {
 spZpidGoBtn.addEventListener('click', doZpidSearch);
 spZpidInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') doZpidSearch();
+});
+
+// ── MLS ID Search ─────────────────────────────────────────────────────────────
+function doMlsSearch() {
+  const raw = spMlsInput.value.trim();
+  spMlsErrorMsg.textContent = '';
+  spMlsInput.classList.remove('has-error');
+  if (!raw) return;
+  chrome.tabs.create({ url: 'https://phoenix-admin-tool.dna-compute-prod.zg-int.net/zillow-data-lookup?mlsID=' + encodeURIComponent(raw) });
+  spMlsInput.value = '';
+}
+
+spMlsGoBtn.addEventListener('click', doMlsSearch);
+spMlsInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') doMlsSearch();
 });
 
 spListingModeBtns.forEach(btn => {
@@ -612,6 +638,10 @@ spInput.addEventListener('keydown', e => {
 spAgentGoBtn.addEventListener('click', doAgentSearch);
 spAgentFirstInput.addEventListener('keydown', e => { if (e.key === 'Enter') doAgentSearch(); });
 spAgentLastInput.addEventListener('keydown',  e => { if (e.key === 'Enter') doAgentSearch(); });
+
+document.querySelectorAll('.quick-btn').forEach(btn => {
+  btn.addEventListener('click', () => { chrome.tabs.create({ url: btn.dataset.url }); });
+});
 
 spConfirmYes.addEventListener('click', () => {
   if (!pendingConfirm) return;

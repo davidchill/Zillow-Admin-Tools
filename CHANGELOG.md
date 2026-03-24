@@ -5,6 +5,14 @@ Versions are tracked via git tags; see `manifest.json` for the current version.
 
 ---
 
+## [3.9] – 2026-03-24
+### Added
+- MLS ID search field in the Listing Search panel (both popup and Side Panel): input opens `phoenix-admin-tool.dna-compute-prod.zg-int.net/zillow-data-lookup?mlsID={id}` in a new tab
+- MLS ID field is shown only when PHX mode is active, matching the pattern of Address search being exclusive to Zillow mode
+- MLS input clears on tab switch and listing mode switch
+
+---
+
 ## [3.8] – 2026-03-23
 ### Added
 - Quick Access Links row above the tab panels (both popup and Side Panel): five icon buttons — 3D Home Tours Tool, Address Change Tool, Merge Profiles Tool, Upgrade Account Tool, and CaRP Tool — each opening the respective admin URL in a new tab
