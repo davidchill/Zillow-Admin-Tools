@@ -5,6 +5,16 @@ Versions are tracked via git tags; see `manifest.json` for the current version.
 
 ---
 
+## [3.8] – 2026-03-23
+### Added
+- Quick Access Links row above the tab panels (both popup and Side Panel): five icon buttons — 3D Home Tours Tool, Address Change Tool, Merge Profiles Tool, Upgrade Account Tool, and CaRP Tool — each opening the respective admin URL in a new tab
+- Downward hover tooltips on Quick Access Links buttons, with edge-aware positioning (first button pins left, last button pins right) to prevent overflow at popup boundaries
+
+### Changed
+- Settings panel "Default tab" label updated to "Impersonate / Find Alan"; `.theme-btn` now uses `white-space: nowrap` to keep all segmented-control labels on a single line
+
+---
+
 ## [3.7] – 2026-03-23
 ### Added
 - "Find Agent" search section on the Impersonate / Find Agent tab (both popup and Side Panel): two side-by-side First Name / Last Name inputs that open `zillow.com/professionals/real-estate-agent-reviews/?name=first+last` in a new tab
