@@ -5,6 +5,16 @@ Versions are tracked via git tags; see `manifest.json` for the current version.
 
 ---
 
+## [3.9.1] – 2026-03-24
+### Added
+- Settings button and full settings overlay added to the Side Panel header, mirroring the popup's settings UI; changes persist to the same shared `zillow_settings` storage key so popup and Side Panel stay in sync
+
+### Changed
+- Listing Search panel now shows only "Recently Viewed" — "Recent Searches" section removed from both popup and Side Panel
+- "Recent Impersonations" renamed to "Recently Impersonated" in both popup and Side Panel
+
+---
+
 ## [3.9] – 2026-03-24
 ### Added
 - MLS ID search field in the Listing Search panel (both popup and Side Panel): input opens `phoenix-admin-tool.dna-compute-prod.zg-int.net/zillow-data-lookup?mlsID={id}` in a new tab

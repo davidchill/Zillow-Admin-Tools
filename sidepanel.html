@@ -162,7 +162,42 @@
       flex-shrink: 0;
     }
     .header-icon svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 2; }
-    .header h1 { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.2px; }
+    .header h1 { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.2px; flex: 1; }
+    .settings-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; transition: background 0.15s; display: flex; align-items: center; justify-content: center; }
+    .settings-btn:hover { background: rgba(255,255,255,0.1); }
+    .settings-btn svg { width: 18px; height: 18px; fill: none; stroke: #94a3b8; stroke-width: 2; }
+    .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--overlay-bg); z-index: 100; display: flex; align-items: center; justify-content: center; }
+    .settings-panel { background: var(--bg-surface); border-radius: 16px; width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); overflow: hidden; }
+    .settings-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--bg-input); }
+    .settings-header h2 { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .close-btn { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .close-btn:hover { background: var(--border); }
+    .close-btn svg { width: 18px; height: 18px; fill: none; stroke: var(--text-muted); stroke-width: 2; }
+    .settings-body { padding: 20px; max-height: min(420px, 65vh); overflow-y: auto; }
+    .settings-body::-webkit-scrollbar { width: 4px; }
+    .settings-body::-webkit-scrollbar-track { background: transparent; }
+    .settings-body::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
+    .setting-row { margin-bottom: 18px; }
+    .setting-row:last-child { margin-bottom: 0; }
+    .setting-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+    .setting-label-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+    .setting-label-hint { font-size: 10px; color: var(--text-faint); }
+    .setting-desc { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; }
+    .setting-input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-primary); background: var(--bg-input); outline: none; }
+    .setting-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+    .setting-input[type="number"] { -moz-appearance: textfield; }
+    .setting-input[type="number"]::-webkit-inner-spin-button, .setting-input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .toggle-row .toggle-label-group { flex: 1; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--toggle-off); border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+    .toggle-track::after { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .toggle input:checked+.toggle-track { background: var(--accent); }
+    .toggle input:checked+.toggle-track::after { transform: translateX(20px); }
+    .theme-seg { display: flex; background: var(--bg-subtle); border-radius: 9px; padding: 3px; gap: 2px; }
+    .theme-btn { flex: 1; padding: 5px 8px; font-size: 11px; font-weight: 600; white-space: nowrap; border: none; border-radius: 6px; cursor: pointer; background: none; color: var(--text-muted); transition: all 0.15s; }
+    .theme-btn.active { background: var(--bg-surface); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
 
     /* ── Body ── */
     .body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
@@ -334,6 +369,12 @@
       <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </div>
     <h1>Zillow Admin Tools</h1>
+    <button class="settings-btn" id="sp-settings-open">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    </button>
   </div>
 
   <!-- Quick Access Links -->
@@ -457,6 +498,95 @@
     <!-- History area -->
     <div class="history-area" id="sp-history"></div>
 
+  </div>
+
+  <!-- Settings overlay -->
+  <div class="overlay hidden" id="sp-settings-overlay">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="close-btn" id="sp-settings-close">
+          <svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-row">
+          <label class="setting-label">Theme</label>
+          <div class="theme-seg" id="sp-setting-theme">
+            <button class="theme-btn active" data-theme-val="auto">Auto</button>
+            <button class="theme-btn" data-theme-val="light">Light</button>
+            <button class="theme-btn" data-theme-val="dark">Dark</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label class="setting-label">Default tab</label>
+          <div class="setting-desc">Which tab opens when the extension is launched.</div>
+          <div class="theme-seg" id="sp-setting-default-tab">
+            <button class="theme-btn active" data-tab-val="listing">Listing Search</button>
+            <button class="theme-btn" data-tab-val="impersonate">Impersonate / Find Agent</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label-row">
+            <label class="setting-label" style="margin-bottom:0;">Recent history limit</label>
+            <span class="setting-label-hint">(5–20)</span>
+          </div>
+          <div class="setting-desc">Maximum number of items shown per history section.</div>
+          <input type="number" class="setting-input" id="sp-setting-history-limit" min="5" max="20" value="5">
+        </div>
+        <div class="setting-row">
+          <div class="toggle-row">
+            <div class="toggle-label-group">
+              <label class="setting-label" style="margin-bottom:2px;">Record history</label>
+              <div class="setting-desc" style="margin-bottom:0;">Track recent impersonations, listing searches, and recently viewed properties. Disabling clears all saved history.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="sp-setting-history" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="toggle-row">
+            <div class="toggle-label-group">
+              <label class="setting-label" style="margin-bottom:2px;">Listing Search tab</label>
+              <div class="setting-desc" style="margin-bottom:0;">Show or hide the Listing Search tab in the toolbar.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="sp-setting-zpid-tab" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="toggle-row">
+            <div class="toggle-label-group">
+              <label class="setting-label" style="margin-bottom:2px;">Floating Tab</label>
+              <div class="setting-desc" style="margin-bottom:0;">Shows a small launcher on the edge of every webpage. Click it to open the Side Panel, or drag it to reposition.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="sp-setting-floating-tab" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="toggle-row">
+            <div class="toggle-label-group">
+              <label class="setting-label" style="margin-bottom:2px;">Redirect to Profile after impersonation</label>
+              <div class="setting-desc" style="margin-bottom:0;">Automatically navigates to the user's Profile page after impersonating, instead of landing on Account Settings.</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="sp-setting-redirect-profile" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="sidepanel.js"></script>

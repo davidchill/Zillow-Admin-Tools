@@ -684,23 +684,13 @@
 
     if (currentTab === 'listing') {
       historyHeader.style.display = 'none';
-      const searches = history.filter(function (h) { return h.type === 'zpid' || h.type === 'phx' || h.type === 'dit'; }).slice(0, limit);
-      const viewed   = viewedHistory.slice(0, limit);
+      const viewed = viewedHistory.slice(0, limit);
 
-      const searchIcon = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
-      const eyeIcon    = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      const eyeIcon = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
       const offMsg = 'History recording is off. Enable it in Settings.';
       historyList.innerHTML =
-        renderSection('Recent Searches', searchIcon, searches, 'clear-searches-btn', settings.historyEnabled === false ? offMsg : 'No recent searches') +
-        renderSection('Recently Viewed',  eyeIcon,    viewed,   'clear-viewed-btn',   settings.historyEnabled === false ? offMsg : 'No recently viewed properties');
-
-      const csBtn = document.getElementById('clear-searches-btn');
-      if (csBtn) csBtn.addEventListener('click', function () {
-        history = history.filter(function (h) { return h.type !== 'zpid' && h.type !== 'phx' && h.type !== 'dit'; });
-        saveHistory();
-        renderHistory();
-      });
+        renderSection('Recently Viewed', eyeIcon, viewed, 'clear-viewed-btn', settings.historyEnabled === false ? offMsg : 'No recently viewed properties');
 
       const cvBtn = document.getElementById('clear-viewed-btn');
       if (cvBtn) cvBtn.addEventListener('click', function () {
@@ -720,7 +710,7 @@
 
     // Impersonate tab
     historyHeader.style.display = '';
-    historyLabel.textContent = 'Recent Impersonations';
+    historyLabel.textContent = 'Recently Impersonated';
     const filtered = history.filter(function (h) { return h.type === 'impersonate'; }).slice(0, limit);
     clearBtn.classList.toggle('hidden', filtered.length === 0);
 

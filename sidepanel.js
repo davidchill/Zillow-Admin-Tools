@@ -49,6 +49,16 @@ const spAgentFirstInput   = document.getElementById('sp-agent-first');
 const spAgentLastInput    = document.getElementById('sp-agent-last');
 const spAgentGoBtn        = document.getElementById('sp-agent-go-btn');
 const spAgentErrorMsg     = document.getElementById('sp-agent-error-msg');
+const spSettingsOpen         = document.getElementById('sp-settings-open');
+const spSettingsOverlay      = document.getElementById('sp-settings-overlay');
+const spSettingsClose        = document.getElementById('sp-settings-close');
+const spSettingHistoryLimit  = document.getElementById('sp-setting-history-limit');
+const spSettingZpidTab       = document.getElementById('sp-setting-zpid-tab');
+const spSettingFloatingTab   = document.getElementById('sp-setting-floating-tab');
+const spSettingRedirectProfile = document.getElementById('sp-setting-redirect-profile');
+const spSettingHistory       = document.getElementById('sp-setting-history');
+const spSettingTheme         = document.getElementById('sp-setting-theme');
+const spSettingDefaultTab    = document.getElementById('sp-setting-default-tab');
 
 // ── Background registration (FAB toggle support) ─────────────────────────────
 // Opens a named port so background.js knows the panel is open in this window.
@@ -107,11 +117,20 @@ function loadFromStorage() {
   chrome.storage.local.get(['zillow_history_v3', 'zillow_viewed_v3', 'zillow_settings'], data => {
     if (data.zillow_settings) {
       spSettings = data.zillow_settings;
-      if (typeof spSettings.zpidTabEnabled === 'undefined') spSettings.zpidTabEnabled = true;
-      if (typeof spSettings.themeMode      === 'undefined') spSettings.themeMode      = 'auto';
-      if (typeof spSettings.historyEnabled === 'undefined') spSettings.historyEnabled = true;
-      if (typeof spSettings.defaultTab     === 'undefined') spSettings.defaultTab     = 'listing';
+      if (typeof spSettings.zpidTabEnabled      === 'undefined') spSettings.zpidTabEnabled      = true;
+      if (typeof spSettings.floatingTabEnabled  === 'undefined') spSettings.floatingTabEnabled  = true;
+      if (typeof spSettings.redirectEnabled     === 'undefined') spSettings.redirectEnabled     = true;
+      if (typeof spSettings.themeMode           === 'undefined') spSettings.themeMode           = 'auto';
+      if (typeof spSettings.historyEnabled      === 'undefined') spSettings.historyEnabled      = true;
+      if (typeof spSettings.defaultTab          === 'undefined') spSettings.defaultTab          = 'listing';
       applyTheme(spSettings.themeMode);
+      spSettingHistoryLimit.value          = String(spSettings.historyLimit || 5);
+      spSettingZpidTab.checked             = spSettings.zpidTabEnabled !== false;
+      spSettingFloatingTab.checked         = spSettings.floatingTabEnabled !== false;
+      spSettingRedirectProfile.checked     = spSettings.redirectEnabled !== false;
+      spSettingHistory.checked             = spSettings.historyEnabled !== false;
+      updateThemeButtons(spSettings.themeMode || 'auto');
+      updateDefaultTabButtons(spSettings.defaultTab || 'listing');
     }
     if (data.zillow_history_v3) spHistory = data.zillow_history_v3;
     if (data.zillow_viewed_v3)  spViewed  = data.zillow_viewed_v3;
@@ -119,6 +138,10 @@ function loadFromStorage() {
     switchSearchTab(spSettings.defaultTab || 'listing');
     applyZpidTabVisibility();
   });
+}
+
+function saveSettings() {
+  chrome.storage.local.set({ zillow_settings: spSettings });
 }
 
 function saveHistory() {
@@ -582,20 +605,17 @@ function renderHistory() {
 
   const personSvg = `<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
   const eyeSvg    = `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-  const searchSvg = `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
 
   let html = '';
 
   if (currentTab === 'listing') {
-    const zpids  = spHistory.filter(h => h.type === 'zpid' || h.type === 'phx' || h.type === 'dit').slice(0, limit);
     const viewed = spViewed.slice(0, limit);
     const offMsg = 'History recording is off. Enable it in Settings.';
-    html  = renderSectionBlock(searchSvg, 'Recent Searches', zpids,  'sp-clear-zpids',  spSettings.historyEnabled === false ? offMsg : 'No recent searches');
-    html += renderSectionBlock(eyeSvg,    'Recently Viewed', viewed, 'sp-clear-viewed', spSettings.historyEnabled === false ? offMsg : 'No recently viewed properties');
+    html = renderSectionBlock(eyeSvg, 'Recently Viewed', viewed, 'sp-clear-viewed', spSettings.historyEnabled === false ? offMsg : 'No recently viewed properties');
   } else {
     const imps = spHistory.filter(h => h.type === 'impersonate').slice(0, limit);
     const offMsg = 'History recording is off. Enable it in Settings.';
-    html = renderSectionBlock(personSvg, 'Recent Impersonations', imps, 'sp-clear-imps', spSettings.historyEnabled === false ? offMsg : 'No recent impersonations');
+    html = renderSectionBlock(personSvg, 'Recently Impersonated', imps, 'sp-clear-imps', spSettings.historyEnabled === false ? offMsg : 'No recent impersonations');
   }
 
   spHistoryEl.innerHTML = html;
@@ -603,12 +623,6 @@ function renderHistory() {
   const clearImps = document.getElementById('sp-clear-imps');
   if (clearImps) clearImps.addEventListener('click', () => {
     spHistory = spHistory.filter(h => h.type !== 'impersonate');
-    saveHistory(); renderHistory();
-  });
-
-  const clearZpids = document.getElementById('sp-clear-zpids');
-  if (clearZpids) clearZpids.addEventListener('click', () => {
-    spHistory = spHistory.filter(h => h.type !== 'zpid' && h.type !== 'phx' && h.type !== 'dit');
     saveHistory(); renderHistory();
   });
 
@@ -650,6 +664,95 @@ spConfirmYes.addEventListener('click', () => {
   spInput.value = '';
 });
 spConfirmNo.addEventListener('click', () => { hideConfirm(); spInput.focus(); });
+
+// ── Settings helpers ──────────────────────────────────────────────────────────
+function updateThemeButtons(mode) {
+  spSettingTheme.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.themeVal === mode);
+  });
+}
+
+function updateDefaultTabButtons(tab) {
+  spSettingDefaultTab.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tabVal === tab);
+  });
+}
+
+// ── Settings event handlers ───────────────────────────────────────────────────
+spSettingsOpen.addEventListener('click', () => {
+  spSettingsOverlay.classList.remove('hidden');
+  spSettingHistoryLimit.value          = String(spSettings.historyLimit || 5);
+  spSettingZpidTab.checked             = spSettings.zpidTabEnabled !== false;
+  spSettingFloatingTab.checked         = spSettings.floatingTabEnabled !== false;
+  spSettingRedirectProfile.checked     = spSettings.redirectEnabled !== false;
+  spSettingHistory.checked             = spSettings.historyEnabled !== false;
+  updateThemeButtons(spSettings.themeMode || 'auto');
+  updateDefaultTabButtons(spSettings.defaultTab || 'listing');
+});
+
+spSettingsClose.addEventListener('click', () => {
+  spSettingsOverlay.classList.add('hidden');
+});
+
+spSettingsOverlay.addEventListener('click', e => {
+  if (e.target === spSettingsOverlay) spSettingsOverlay.classList.add('hidden');
+});
+
+spSettingHistoryLimit.addEventListener('change', () => {
+  const raw     = parseInt(spSettingHistoryLimit.value, 10);
+  const clamped = Math.min(20, Math.max(5, isNaN(raw) ? 5 : raw));
+  spSettingHistoryLimit.value = String(clamped);
+  spSettings.historyLimit = clamped;
+  saveSettings();
+  if (spHistory.length > clamped) { spHistory = spHistory.slice(0, clamped); saveHistory(); }
+  if (spViewed.length  > clamped) { spViewed  = spViewed.slice(0, clamped);  chrome.storage.local.set({ zillow_viewed_v3: spViewed }); }
+  renderHistory();
+});
+
+spSettingZpidTab.addEventListener('change', () => {
+  spSettings.zpidTabEnabled = spSettingZpidTab.checked;
+  saveSettings();
+  applyZpidTabVisibility();
+});
+
+spSettingFloatingTab.addEventListener('change', () => {
+  spSettings.floatingTabEnabled = spSettingFloatingTab.checked;
+  saveSettings();
+});
+
+spSettingRedirectProfile.addEventListener('change', () => {
+  spSettings.redirectEnabled = spSettingRedirectProfile.checked;
+  saveSettings();
+});
+
+spSettingHistory.addEventListener('change', () => {
+  spSettings.historyEnabled = spSettingHistory.checked;
+  saveSettings();
+  if (!spSettings.historyEnabled) {
+    spHistory = [];
+    spViewed  = [];
+    chrome.storage.local.set({ zillow_history_v3: [], zillow_viewed_v3: [] });
+    renderHistory();
+  }
+});
+
+spSettingTheme.addEventListener('click', e => {
+  const btn = e.target.closest('.theme-btn');
+  if (!btn) return;
+  const mode = btn.dataset.themeVal;
+  spSettings.themeMode = mode;
+  saveSettings();
+  applyTheme(mode);
+  updateThemeButtons(mode);
+});
+
+spSettingDefaultTab.addEventListener('click', e => {
+  const btn = e.target.closest('.theme-btn');
+  if (!btn) return;
+  spSettings.defaultTab = btn.dataset.tabVal;
+  saveSettings();
+  updateDefaultTabButtons(spSettings.defaultTab);
+});
 
 // ── Init + live reload ────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', loadFromStorage);
