@@ -41,6 +41,10 @@ const spAcDropdown        = document.getElementById('sp-ac-dropdown');
 const spListingModeRow    = document.getElementById('sp-listing-mode-row');
 const spListingModeBtns   = spListingModeRow.querySelectorAll('.mode-btn');
 const spAddrSearch        = document.getElementById('sp-addr-search');
+const spAgentFirstInput   = document.getElementById('sp-agent-first');
+const spAgentLastInput    = document.getElementById('sp-agent-last');
+const spAgentGoBtn        = document.getElementById('sp-agent-go-btn');
+const spAgentErrorMsg     = document.getElementById('sp-agent-error-msg');
 
 // ── Background registration (FAB toggle support) ─────────────────────────────
 // Opens a named port so background.js knows the panel is open in this window.
@@ -159,6 +163,11 @@ function switchSearchTab(tab) {
   spZpidInput.classList.remove('has-error');
   spAddrInput.value = '';
   spAddrErrorMsg.textContent = '';
+  spAgentFirstInput.value = '';
+  spAgentLastInput.value  = '';
+  spAgentErrorMsg.textContent = '';
+  spAgentFirstInput.classList.remove('has-error');
+  spAgentLastInput.classList.remove('has-error');
   hideAcDropdown();
 
   if (tab === 'listing') {
@@ -426,6 +435,27 @@ function executeImpersonate(method, value) {
   if (spSettings.historyEnabled !== false) addToHistory('impersonate', value, method);
 }
 
+function doAgentSearch() {
+  const first = spAgentFirstInput.value.trim();
+  const last  = spAgentLastInput.value.trim();
+  spAgentErrorMsg.textContent = '';
+  spAgentFirstInput.classList.remove('has-error');
+  spAgentLastInput.classList.remove('has-error');
+  if (!first && !last) {
+    spAgentErrorMsg.textContent = 'Enter at least a first or last name.';
+    spAgentFirstInput.classList.add('has-error');
+    spAgentLastInput.classList.add('has-error');
+    return;
+  }
+  const nameParam = [first, last]
+    .filter(Boolean)
+    .map(n => n.replace(/\s+/g, '+'))
+    .join('+');
+  chrome.tabs.create({ url: 'https://www.zillow.com/professionals/real-estate-agent-reviews/?name=' + nameParam });
+  spAgentFirstInput.value = '';
+  spAgentLastInput.value  = '';
+}
+
 // ── History ───────────────────────────────────────────────────────────────────
 function addToHistory(type, id, method, label) {
   const limit = Math.min(20, Math.max(5, spSettings.historyLimit || 5));
@@ -578,6 +608,10 @@ spGoBtn.addEventListener('click', doSearch);
 spInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') doSearch();
 });
+
+spAgentGoBtn.addEventListener('click', doAgentSearch);
+spAgentFirstInput.addEventListener('keydown', e => { if (e.key === 'Enter') doAgentSearch(); });
+spAgentLastInput.addEventListener('keydown',  e => { if (e.key === 'Enter') doAgentSearch(); });
 
 spConfirmYes.addEventListener('click', () => {
   if (!pendingConfirm) return;

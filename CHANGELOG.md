@@ -5,6 +5,15 @@ Versions are tracked via git tags; see `manifest.json` for the current version.
 
 ---
 
+## [3.7] – 2026-03-23
+### Added
+- "Find Agent" search section on the Impersonate / Find Agent tab (both popup and Side Panel): two side-by-side First Name / Last Name inputs that open `zillow.com/professionals/real-estate-agent-reviews/?name=first+last` in a new tab
+- Tab renamed from "Impersonate" to "Impersonate / Find Agent" with a reduced font size (10px) to fit the longer label
+- Section divider CSS component (`.section-divider`) with flanking rule lines, reusable for future sections
+- Agent inputs are cleared when switching tabs
+
+---
+
 ## [3.6] – 2026-03-23
 ### Added
 - Five action buttons on each Recently Viewed item (in both popup and Side Panel): Copy ZPID, Copy Address (hidden when no address label is available), Copy URL, Open PHX, Open DIT — each with a hover tooltip

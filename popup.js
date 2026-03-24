@@ -54,6 +54,10 @@
   const listingModeRow      = document.getElementById('listing-mode-row');
   const listingModeBtns     = listingModeRow.querySelectorAll('.mode-btn');
   const addrSearch          = document.getElementById('addr-search');
+  const agentFirstInput     = document.getElementById('agent-first');
+  const agentLastInput      = document.getElementById('agent-last');
+  const agentGoBtn          = document.getElementById('agent-go-btn');
+  const agentErrorMsg       = document.getElementById('agent-error-msg');
 
   // ── Autocomplete state ──
   let acDebounceTimer = null;
@@ -300,6 +304,11 @@
     zpidInput.classList.remove('has-error');
     addrInput.value = '';
     addrErrorMsg.textContent = '';
+    agentFirstInput.value = '';
+    agentLastInput.value  = '';
+    agentErrorMsg.textContent = '';
+    agentFirstInput.classList.remove('has-error');
+    agentLastInput.classList.remove('has-error');
     hideAcDropdown();
 
     if (tab === 'listing') {
@@ -490,10 +499,35 @@
     mainInput.classList.add('has-error');
   }
 
+  function doAgentSearch() {
+    const first = agentFirstInput.value.trim();
+    const last  = agentLastInput.value.trim();
+    agentErrorMsg.textContent = '';
+    agentFirstInput.classList.remove('has-error');
+    agentLastInput.classList.remove('has-error');
+    if (!first && !last) {
+      agentErrorMsg.textContent = 'Enter at least a first or last name.';
+      agentFirstInput.classList.add('has-error');
+      agentLastInput.classList.add('has-error');
+      return;
+    }
+    const nameParam = [first, last]
+      .filter(Boolean)
+      .map(function (n) { return n.replace(/\s+/g, '+'); })
+      .join('+');
+    chrome.tabs.create({ url: 'https://www.zillow.com/professionals/real-estate-agent-reviews/?name=' + nameParam });
+    agentFirstInput.value = '';
+    agentLastInput.value  = '';
+  }
+
   goBtn.addEventListener('click', doSearch);
   mainInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') doSearch();
   });
+
+  agentGoBtn.addEventListener('click', doAgentSearch);
+  agentFirstInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') doAgentSearch(); });
+  agentLastInput.addEventListener('keydown',  function (e) { if (e.key === 'Enter') doAgentSearch(); });
 
   // ══════════════════════════════
   // HISTORY

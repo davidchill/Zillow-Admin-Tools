@@ -148,6 +148,7 @@
     .tab:hover { color: var(--text-tertiary); }
     .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); background: var(--bg-surface); }
     .tab svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+    #tab-imp { font-size: 10px; gap: 3px; }
 
     /* Content */
     .content { padding: 20px; }
@@ -190,6 +191,16 @@
     .confirm-yes:hover { background: var(--accent-hover); }
     .confirm-no { background: var(--border); color: var(--text-tertiary); }
     .confirm-no:hover { background: var(--border-medium); }
+
+    /* Find Agent */
+    .section-divider { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+    .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .agent-name-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+    .agent-name-row input { flex: 1; min-width: 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 13px; font-family: inherit; background: var(--bg-input); color: var(--text-primary); outline: none; transition: all 0.15s; }
+    .agent-name-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+    .agent-name-row input::placeholder { color: var(--text-faint); }
+    .agent-name-row input.has-error { border-color: var(--error-border); background: var(--error-bg); }
+    .agent-name-row .search-btn { position: static; transform: none; flex-shrink: 0; }
 
     /* History */
     .history-header { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; margin-bottom: 10px; }
@@ -305,7 +316,7 @@
     </button>
     <button class="tab active" id="tab-imp">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Impersonate
+      Impersonate / Find Agent
     </button>
   </div>
 
@@ -336,6 +347,18 @@
         </button>
       </div>
       <div class="error-msg" id="error-msg"></div>
+
+      <!-- Find an Agent -->
+      <div class="section-divider">Find an Agent</div>
+      <p class="input-hint">Opens the Zillow Find an Agent results page.</p>
+      <div class="agent-name-row">
+        <input type="text" id="agent-first" placeholder="First name" autocomplete="off">
+        <input type="text" id="agent-last" placeholder="Last name" autocomplete="off">
+        <button class="search-btn" id="agent-go-btn">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+      <div class="error-msg" id="agent-error-msg"></div>
     </div>
 
     <!-- Listing Search — two separate inputs (hidden on impersonate tab) -->
