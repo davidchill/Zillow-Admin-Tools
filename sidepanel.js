@@ -1,4 +1,4 @@
-// ── Zillow Admin Tools – Side Panel v2.7 ──
+// ── Zillow Admin Tools – Side Panel ──
 
 const IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
 
@@ -8,7 +8,7 @@ let currentMode     = 'zuid';
 let listingMode     = 'zillow';
 let spHistory       = [];
 let spViewed        = [];
-let spSettings      = { historyLimit: 5, zpidTabEnabled: true, historyEnabled: true };
+let spSettings      = { historyLimit: 5, zpidTabEnabled: true, historyEnabled: true, defaultTab: 'listing' };
 let pendingConfirm  = null;
 let acDebounceTimer = null;
 let acResults       = [];
@@ -102,12 +102,14 @@ function loadFromStorage() {
       if (typeof spSettings.zpidTabEnabled === 'undefined') spSettings.zpidTabEnabled = true;
       if (typeof spSettings.themeMode      === 'undefined') spSettings.themeMode      = 'auto';
       if (typeof spSettings.historyEnabled === 'undefined') spSettings.historyEnabled = true;
+      if (typeof spSettings.defaultTab     === 'undefined') spSettings.defaultTab     = 'listing';
       applyTheme(spSettings.themeMode);
     }
     if (data.zillow_history_v3) spHistory = data.zillow_history_v3;
     if (data.zillow_viewed_v3)  spViewed  = data.zillow_viewed_v3;
+    // Switch to the user's chosen default tab first, then apply visibility rules
+    switchSearchTab(spSettings.defaultTab || 'listing');
     applyZpidTabVisibility();
-    renderHistory();
   });
 }
 

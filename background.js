@@ -1,4 +1,4 @@
-// ── Zillow Admin Tools – Background Service Worker v2.1 ──
+// ── Zillow Admin Tools – Background Service Worker ──
 // Context-menu impersonation + page scraping for history labels
 
 const IMPERSONATE_URL   = 'https://www.zillow.com/user/Impersonate.htm';

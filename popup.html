@@ -295,13 +295,13 @@
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" id="tab-imp">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Impersonate
-    </button>
     <button class="tab" id="tab-zpid">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Listing Search
+    </button>
+    <button class="tab active" id="tab-imp">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Impersonate
     </button>
   </div>
 
@@ -402,6 +402,14 @@
             <button class="theme-btn active" data-theme-val="auto">Auto</button>
             <button class="theme-btn" data-theme-val="light">Light</button>
             <button class="theme-btn" data-theme-val="dark">Dark</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label class="setting-label">Default tab</label>
+          <div class="setting-desc">Which tab opens when the extension is launched.</div>
+          <div class="theme-seg" id="setting-default-tab">
+            <button class="theme-btn active" data-tab-val="listing">Listing Search</button>
+            <button class="theme-btn" data-tab-val="impersonate">Impersonate</button>
           </div>
         </div>
         <div class="setting-row">

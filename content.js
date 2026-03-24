@@ -1,4 +1,4 @@
-// ── Zillow Admin Tools – Content Script v2.6 ──
+// ── Zillow Admin Tools – Content Script ──
 // Injects a floating tab on every page that opens the Chrome Side Panel.
 // Also tracks Zillow property page views for the "Recently Viewed" history.
 

@@ -1,63 +1,64 @@
-// ── Zillow Admin Tools – Popup Script v2.7 ──
+// ── Zillow Admin Tools – Popup Script ──
 
 (function () {
   // ── State ──
-  var currentTab   = 'impersonate';
-  var currentMode  = 'zuid';
-  var listingMode  = 'zillow';
-  var history = [];
-  var viewedHistory = [];
-  var settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true, redirectEnabled: true, themeMode: 'auto', historyEnabled: true };
-  var pendingConfirm = null;
+  let currentTab   = 'impersonate';
+  let currentMode  = 'zuid';
+  let listingMode  = 'zillow';
+  let history = [];
+  let viewedHistory = [];
+  let settings = { historyLimit: 5, zpidTabEnabled: true, floatingTabEnabled: true, redirectEnabled: true, themeMode: 'auto', historyEnabled: true, defaultTab: 'listing' };
+  let pendingConfirm = null;
 
-  var IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
-  var METHOD_DISPLAY = { email: 'Email', zuid: 'ZUID', screenname: 'Screen Name' };
+  const IMPERSONATE_BASE = 'https://www.zillow.com/user/Impersonate.htm';
+  const METHOD_DISPLAY = { email: 'Email', zuid: 'Zuid', screenname: 'Screen Name' };
 
   // ── DOM refs ──
-  var tabImp              = document.getElementById('tab-imp');
-  var tabZpid             = document.getElementById('tab-zpid');
-  var modeRow             = document.getElementById('mode-row');
-  var modeBtns            = modeRow.querySelectorAll('.mode-btn');
-  var inputLabel          = document.getElementById('input-label');
-  var mainInput           = document.getElementById('main-input');
-  var goBtn               = document.getElementById('go-btn');
-  var errorMsg            = document.getElementById('error-msg');
-  var impSearch           = document.getElementById('imp-search');
-  var listingSearch       = document.getElementById('listing-search');
-  var zpidInput           = document.getElementById('zpid-input');
-  var zpidGoBtn           = document.getElementById('zpid-go-btn');
-  var zpidErrorMsg        = document.getElementById('zpid-error-msg');
-  var addrInput           = document.getElementById('addr-input');
-  var addrGoBtn           = document.getElementById('addr-go-btn');
-  var addrErrorMsg        = document.getElementById('addr-error-msg');
-  var historyHeader       = document.getElementById('history-header');
-  var historyLabel        = document.getElementById('history-label');
-  var historyList         = document.getElementById('history-list');
-  var clearBtn            = document.getElementById('clear-btn');
-  var footerText          = document.getElementById('footer-text');
-  var confirmBar          = document.getElementById('confirm-bar');
-  var confirmText         = document.getElementById('confirm-text');
-  var confirmYes          = document.getElementById('confirm-yes');
-  var confirmNo           = document.getElementById('confirm-no');
-  var settingsOpen        = document.getElementById('settings-open');
-  var settingsOverlay     = document.getElementById('settings-overlay');
-  var settingsClose       = document.getElementById('settings-close');
-  var settingHistoryLimit = document.getElementById('setting-history-limit');
-  var settingZpidTab      = document.getElementById('setting-zpid-tab');
-  var settingFloatingTab       = document.getElementById('setting-floating-tab');
-  var settingRedirectProfile   = document.getElementById('setting-redirect-profile');
-  var settingHistory           = document.getElementById('setting-history');
-  var settingTheme             = document.getElementById('setting-theme');
-  var tabsRow             = document.querySelector('.tabs');
-  var acDropdown          = document.getElementById('ac-dropdown');
-  var listingModeRow      = document.getElementById('listing-mode-row');
-  var listingModeBtns     = listingModeRow.querySelectorAll('.mode-btn');
-  var addrSearch          = document.getElementById('addr-search');
+  const tabImp              = document.getElementById('tab-imp');
+  const tabZpid             = document.getElementById('tab-zpid');
+  const modeRow             = document.getElementById('mode-row');
+  const modeBtns            = modeRow.querySelectorAll('.mode-btn');
+  const inputLabel          = document.getElementById('input-label');
+  const mainInput           = document.getElementById('main-input');
+  const goBtn               = document.getElementById('go-btn');
+  const errorMsg            = document.getElementById('error-msg');
+  const impSearch           = document.getElementById('imp-search');
+  const listingSearch       = document.getElementById('listing-search');
+  const zpidInput           = document.getElementById('zpid-input');
+  const zpidGoBtn           = document.getElementById('zpid-go-btn');
+  const zpidErrorMsg        = document.getElementById('zpid-error-msg');
+  const addrInput           = document.getElementById('addr-input');
+  const addrGoBtn           = document.getElementById('addr-go-btn');
+  const addrErrorMsg        = document.getElementById('addr-error-msg');
+  const historyHeader       = document.getElementById('history-header');
+  const historyLabel        = document.getElementById('history-label');
+  const historyList         = document.getElementById('history-list');
+  const clearBtn            = document.getElementById('clear-btn');
+  const footerText          = document.getElementById('footer-text');
+  const confirmBar          = document.getElementById('confirm-bar');
+  const confirmText         = document.getElementById('confirm-text');
+  const confirmYes          = document.getElementById('confirm-yes');
+  const confirmNo           = document.getElementById('confirm-no');
+  const settingsOpen        = document.getElementById('settings-open');
+  const settingsOverlay     = document.getElementById('settings-overlay');
+  const settingsClose       = document.getElementById('settings-close');
+  const settingHistoryLimit = document.getElementById('setting-history-limit');
+  const settingZpidTab      = document.getElementById('setting-zpid-tab');
+  const settingFloatingTab       = document.getElementById('setting-floating-tab');
+  const settingRedirectProfile   = document.getElementById('setting-redirect-profile');
+  const settingHistory           = document.getElementById('setting-history');
+  const settingTheme             = document.getElementById('setting-theme');
+  const settingDefaultTab        = document.getElementById('setting-default-tab');
+  const tabsRow             = document.querySelector('.tabs');
+  const acDropdown          = document.getElementById('ac-dropdown');
+  const listingModeRow      = document.getElementById('listing-mode-row');
+  const listingModeBtns     = listingModeRow.querySelectorAll('.mode-btn');
+  const addrSearch          = document.getElementById('addr-search');
 
   // ── Autocomplete state ──
-  var acDebounceTimer = null;
-  var acResults = [];
-  var acActiveIdx = -1;
+  let acDebounceTimer = null;
+  let acResults = [];
+  let acActiveIdx = -1;
 
   // ── Theme ──
   function applyTheme(mode) {
@@ -76,6 +77,12 @@
     });
   }
 
+  function updateDefaultTabButtons(tab) {
+    settingDefaultTab.querySelectorAll('.theme-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.tabVal === tab);
+    });
+  }
+
   // ── Load settings + history from chrome.storage ──
   function loadFromStorage(callback) {
     chrome.storage.local.get(['zillow_history_v3', 'zillow_viewed_v3', 'zillow_settings'], function (data) {
@@ -87,16 +94,20 @@
         if (typeof settings.redirectEnabled     === 'undefined') settings.redirectEnabled     = true;
         if (typeof settings.themeMode       === 'undefined') settings.themeMode       = 'auto';
         if (typeof settings.historyEnabled  === 'undefined') settings.historyEnabled  = true;
+        if (typeof settings.defaultTab      === 'undefined') settings.defaultTab      = 'listing';
         settingZpidTab.checked          = settings.zpidTabEnabled;
         settingFloatingTab.checked      = settings.floatingTabEnabled;
         settingRedirectProfile.checked  = settings.redirectEnabled;
         settingHistory.checked          = settings.historyEnabled;
         applyTheme(settings.themeMode);
+        updateDefaultTabButtons(settings.defaultTab);
       }
       if (data.zillow_history_v3) history = data.zillow_history_v3;
       if (data.zillow_viewed_v3)  viewedHistory = data.zillow_viewed_v3;
+      // Switch to the user's chosen default tab first, then apply visibility rules
+      // (applyZpidTabVisibility will override back to Impersonate if Listing tab is disabled)
+      switchTab(settings.defaultTab || 'listing');
       applyZpidTabVisibility();
-      renderHistory();
       if (callback) callback();
     });
   }
@@ -121,7 +132,7 @@
   }
 
   function buildImpersonateUrl(method, value) {
-    var p = new URLSearchParams();
+    const p = new URLSearchParams();
     if (method === 'email') {
       p.set('pEmail', value); p.set('email', value);
     } else if (method === 'zuid') {
@@ -171,7 +182,7 @@
 
   // ── Remove a ZPID from viewed history when user explicitly searches it ──
   function removeFromViewed(zpid) {
-    var filtered = viewedHistory.filter(function (h) { return h.id !== zpid; });
+    const filtered = viewedHistory.filter(function (h) { return h.id !== zpid; });
     if (filtered.length !== viewedHistory.length) {
       viewedHistory = filtered;
       chrome.storage.local.set({ zillow_viewed_v3: viewedHistory });
@@ -188,9 +199,9 @@
     if (!results || !results.length) { hideAcDropdown(); return; }
 
     acDropdown.innerHTML = results.map(function (r, i) {
-      var meta      = r.metaData || {};
-      var address   = meta.addressString || r.display || '';
-      var cityState = meta.cityStateZip  || '';
+      const meta      = r.metaData || {};
+      const address   = meta.addressString || r.display || '';
+      const cityState = meta.cityStateZip  || '';
       return '<button class="ac-item" data-idx="' + i + '">' +
         '<div class="ac-item-main">' + escapeHtml(address) + '</div>' +
         (cityState ? '<div class="ac-item-sub">' + escapeHtml(cityState) + '</div>' : '') +
@@ -221,12 +232,12 @@
 
   function selectAcResult(result) {
     if (!result) return;
-    var meta = result.metaData || {};
-    var zpid = meta.zpid ? String(meta.zpid) : null;
+    const meta = result.metaData || {};
+    const zpid = meta.zpid ? String(meta.zpid) : null;
     if (!zpid) { hideAcDropdown(); return; }
 
-    var url   = 'https://www.zillow.com/homedetails/' + zpid + '_zpid/';
-    var label = result.display || '';
+    const url   = 'https://www.zillow.com/homedetails/' + zpid + '_zpid/';
+    const label = result.display || '';
     addrInput.value = '';
     hideAcDropdown();
     removeFromViewed(zpid);
@@ -247,7 +258,7 @@
 
   // Fallback when no autocomplete result is available: search Zillow by address text
   function doAddressSearch(address) {
-    var slug = address.trim().replace(/,/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+    const slug = address.trim().replace(/,/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
     chrome.tabs.create({ url: 'https://www.zillow.com/homes/for_sale/' + slug + '_rb/' });
     addrInput.value = '';
     hideAcDropdown();
@@ -258,7 +269,7 @@
   // ══════════════════════════════
 
   function applyZpidTabVisibility() {
-    var show = settings.zpidTabEnabled;
+    const show = settings.zpidTabEnabled;
     tabZpid.classList.toggle('hidden', !show);
     if (!show && currentTab === 'listing') switchTab('impersonate');
     tabsRow.classList.toggle('hidden', !show);
@@ -322,9 +333,9 @@
   });
 
   function updateImpersonateLabels() {
-    var labels = { auto: 'Email, ZUID, or Screen Name', email: 'Email Address', zuid: 'User ID (ZUID)', screenname: 'Screen Name' };
-    var placeholders = { auto: 'Email, ZUID, or Screen Name', email: 'e.g. user@example.com', zuid: 'e.g. 12345678', screenname: 'e.g. johndoe42' };
-    var footers = {
+    const labels = { auto: 'Email, ZUID, or Screen Name', email: 'Email Address', zuid: 'User ID (ZUID)', screenname: 'Screen Name' };
+    const placeholders = { auto: 'Email, ZUID, or Screen Name', email: 'e.g. user@example.com', zuid: 'e.g. 12345678', screenname: 'e.g. johndoe42' };
+    const footers = {
       auto: 'Auto-detect mode: emails (contains @), ZUIDs (all digits), or screen names (everything else).',
       email: 'Impersonating by Email. Both modern (pEmail) and legacy (email) params are sent.',
       zuid: 'Impersonating by ZUID. Both modern (pZuid) and legacy (zuid) params are sent.',
@@ -364,17 +375,17 @@
   // ══════════════════════════════
 
   function doZpidSearch() {
-    var raw = zpidInput.value.trim();
+    const raw = zpidInput.value.trim();
     zpidErrorMsg.textContent = '';
     zpidInput.classList.remove('has-error');
     if (!raw) return;
-    var cleanId = raw.replace(/\D/g, '');
+    const cleanId = raw.replace(/\D/g, '');
     if (!cleanId) {
       zpidErrorMsg.textContent = 'Please enter a numeric ZPID.';
       zpidInput.classList.add('has-error');
       return;
     }
-    var url = buildListingUrl(listingMode, cleanId);
+    const url = buildListingUrl(listingMode, cleanId);
     if (listingMode === 'zillow') {
       removeFromViewed(cleanId);
       if (settings.historyEnabled !== false) {
@@ -410,7 +421,7 @@
       // Dropdown is open — select the highlighted item (or first)
       selectAcResult(acActiveIdx >= 0 ? acResults[acActiveIdx] : acResults[0]);
     } else {
-      var q = addrInput.value.trim();
+      const q = addrInput.value.trim();
       if (q.length >= 2) doAddressSearch(q);
     }
   });
@@ -427,7 +438,7 @@
       }
     }
     if (e.key === 'Enter') {
-      var q = addrInput.value.trim();
+      const q = addrInput.value.trim();
       if (q.length >= 2) doAddressSearch(q);
     }
   });
@@ -445,21 +456,21 @@
   // ══════════════════════════════
 
   function doSearch() {
-    var raw = mainInput.value.trim();
+    const raw = mainInput.value.trim();
     if (!raw) return;
     errorMsg.textContent = '';
     mainInput.classList.remove('has-error');
     hideConfirm();
 
     if (currentMode === 'auto') {
-      var detected = detectMethod(raw);
+      const detected = detectMethod(raw);
       if (detected.error) { showError(detected.error); return; }
       showConfirm(detected.method, detected.value);
       return;
     }
 
-    var method = currentMode;
-    var value  = raw;
+    const method = currentMode;
+    const value  = raw;
     if (method === 'email' && !validateEmail(value)) { showError('Please enter a valid email address.'); return; }
     if (method === 'zuid'  && !/^\d+$/.test(value))  { showError('ZUID must be numeric.'); return; }
     executeImpersonate(method, value);
@@ -467,7 +478,7 @@
   }
 
   function executeImpersonate(method, value) {
-    var url = buildImpersonateUrl(method, value);
+    const url = buildImpersonateUrl(method, value);
     chrome.tabs.create({ url: url }, function (tab) {
       requestScrape(tab.id, value, 'impersonate');
     });
@@ -489,7 +500,7 @@
   // ══════════════════════════════
 
   function addToHistory(type, id, method, label) {
-    var limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
+    const limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
     history = [
       { type: type, id: id, method: method, label: label || '', timestamp: Date.now() }
     ].concat(
@@ -503,9 +514,9 @@
     container.querySelectorAll('.copy-btn').forEach(function (span) {
       span.addEventListener('click', function (e) {
         e.stopPropagation();
-        var id = span.dataset.copyId;
+        const id = span.dataset.copyId;
         navigator.clipboard.writeText(id).then(function () {
-          var svg = span.querySelector('svg');
+          const svg = span.querySelector('svg');
           svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
           span.classList.add('copy-ok');
           setTimeout(function () {
@@ -518,7 +529,7 @@
   }
 
   function renderHistoryItemHtml(item) {
-    var badgeClass, badgeText;
+    let badgeClass, badgeText;
     if      (item.type === 'viewed')     { badgeClass = 'badge-viewed'; badgeText = 'Viewed'; }
     else if (item.type === 'zpid')       { badgeClass = 'badge-zpid';   badgeText = 'ZPID'; }
     else if (item.type === 'phx')        { badgeClass = 'badge-phx';    badgeText = 'PHX'; }
@@ -527,10 +538,10 @@
       badgeClass = 'badge-' + (item.method || 'zuid');
       badgeText  = item.method === 'screenname' ? 'Screen' : (item.method || 'ZUID').toUpperCase();
     }
-    var subLine   = item.label ? '<div class="history-item-sub">' + escapeHtml(item.label) + '</div>' : '';
-    var dataAttrs = 'data-type="' + escapeHtml(item.type) + '" data-id="' + escapeHtml(item.id) + '"' +
+    const subLine   = item.label ? '<div class="history-item-sub">' + escapeHtml(item.label) + '</div>' : '';
+    const dataAttrs = 'data-type="' + escapeHtml(item.type) + '" data-id="' + escapeHtml(item.id) + '"' +
       (item.method ? ' data-method="' + escapeHtml(item.method) + '"' : '');
-    var copyLabel;
+    let copyLabel;
     if (item.type === 'zpid' || item.type === 'phx' || item.type === 'dit' || item.type === 'viewed') {
       copyLabel = 'Copy ZPID';
     } else if (item.method === 'email') {
@@ -540,7 +551,7 @@
     } else {
       copyLabel = 'Copy ZUID';
     }
-    var copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" data-tip="' + copyLabel + '">' +
+    const copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" data-tip="' + copyLabel + '">' +
       '<svg class="copy-icon" viewBox="0 0 24 24">' +
         '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>' +
         '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>' +
@@ -558,7 +569,7 @@
   }
 
   function renderSection(titleText, iconSvg, items, clearId, emptyText) {
-    var html = '<div class="listing-section">';
+    let html = '<div class="listing-section">';
     html += '<div class="history-header" style="margin-top:0;margin-bottom:10px;">';
     html += '<div class="history-title">' + iconSvg + '<span>' + titleText + '</span></div>';
     if (items.length) {
@@ -577,29 +588,29 @@
   }
 
   function renderHistory() {
-    var limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
+    const limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
 
     if (currentTab === 'listing') {
       historyHeader.style.display = 'none';
-      var searches = history.filter(function (h) { return h.type === 'zpid' || h.type === 'phx' || h.type === 'dit'; }).slice(0, limit);
-      var viewed   = viewedHistory.slice(0, limit);
+      const searches = history.filter(function (h) { return h.type === 'zpid' || h.type === 'phx' || h.type === 'dit'; }).slice(0, limit);
+      const viewed   = viewedHistory.slice(0, limit);
 
-      var searchIcon = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
-      var eyeIcon    = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      const searchIcon = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+      const eyeIcon    = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
-      var offMsg = 'History recording is off. Enable it in Settings.';
+      const offMsg = 'History recording is off. Enable it in Settings.';
       historyList.innerHTML =
         renderSection('Recent Searches', searchIcon, searches, 'clear-searches-btn', settings.historyEnabled === false ? offMsg : 'No recent searches') +
         renderSection('Recently Viewed',  eyeIcon,    viewed,   'clear-viewed-btn',   settings.historyEnabled === false ? offMsg : 'No recently viewed properties');
 
-      var csBtn = document.getElementById('clear-searches-btn');
+      const csBtn = document.getElementById('clear-searches-btn');
       if (csBtn) csBtn.addEventListener('click', function () {
         history = history.filter(function (h) { return h.type !== 'zpid' && h.type !== 'phx' && h.type !== 'dit'; });
         saveHistory();
         renderHistory();
       });
 
-      var cvBtn = document.getElementById('clear-viewed-btn');
+      const cvBtn = document.getElementById('clear-viewed-btn');
       if (cvBtn) cvBtn.addEventListener('click', function () {
         viewedHistory = [];
         chrome.storage.local.set({ zillow_viewed_v3: [] });
@@ -618,11 +629,11 @@
     // Impersonate tab
     historyHeader.style.display = '';
     historyLabel.textContent = 'Recent Impersonations';
-    var filtered = history.filter(function (h) { return h.type === 'impersonate'; }).slice(0, limit);
+    const filtered = history.filter(function (h) { return h.type === 'impersonate'; }).slice(0, limit);
     clearBtn.classList.toggle('hidden', filtered.length === 0);
 
     if (!filtered.length) {
-      var emptyMsg = settings.historyEnabled === false
+      const emptyMsg = settings.historyEnabled === false
         ? 'History recording is off. Enable it in Settings.'
         : 'No recent impersonations';
       historyList.innerHTML = '<div class="empty-state"><p>' + emptyMsg + '</p></div>';
@@ -656,6 +667,7 @@
     settingRedirectProfile.checked = settings.redirectEnabled !== false;
     settingHistory.checked         = settings.historyEnabled !== false;
     updateThemeButtons(settings.themeMode || 'auto');
+    updateDefaultTabButtons(settings.defaultTab || 'listing');
   });
 
   settingsClose.addEventListener('click', function () {
@@ -667,8 +679,8 @@
   });
 
   settingHistoryLimit.addEventListener('change', function () {
-    var raw     = parseInt(settingHistoryLimit.value, 10);
-    var clamped = Math.min(20, Math.max(5, isNaN(raw) ? 5 : raw));
+    const raw     = parseInt(settingHistoryLimit.value, 10);
+    const clamped = Math.min(20, Math.max(5, isNaN(raw) ? 5 : raw));
     settingHistoryLimit.value = String(clamped);
     settings.historyLimit = clamped;
     saveSettings();
@@ -705,18 +717,26 @@
   });
 
   settingTheme.addEventListener('click', function (e) {
-    var btn = e.target.closest('.theme-btn');
+    const btn = e.target.closest('.theme-btn');
     if (!btn) return;
-    var mode = btn.dataset.themeVal;
+    const mode = btn.dataset.themeVal;
     settings.themeMode = mode;
     saveSettings();
     applyTheme(mode);
     updateThemeButtons(mode);
   });
 
+  settingDefaultTab.addEventListener('click', function (e) {
+    const btn = e.target.closest('.theme-btn');
+    if (!btn) return;
+    settings.defaultTab = btn.dataset.tabVal;
+    saveSettings();
+    updateDefaultTabButtons(settings.defaultTab);
+  });
+
   // ── Live storage updates (e.g. address label populated after background fetch) ──
   chrome.storage.onChanged.addListener(function (changes) {
-    var needsRender = false;
+    let needsRender = false;
     if (changes.zillow_history_v3) { history       = changes.zillow_history_v3.newValue || []; needsRender = true; }
     if (changes.zillow_viewed_v3)  { viewedHistory = changes.zillow_viewed_v3.newValue  || []; needsRender = true; }
     if (needsRender) renderHistory();
