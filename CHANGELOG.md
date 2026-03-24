@@ -5,6 +5,15 @@ Versions are tracked via git tags; see `manifest.json` for the current version.
 
 ---
 
+## [3.6] – 2026-03-23
+### Added
+- Five action buttons on each Recently Viewed item (in both popup and Side Panel): Copy ZPID, Copy Address (hidden when no address label is available), Copy URL, Open PHX, Open DIT — each with a hover tooltip
+- "Open in Zillow" tooltip moved to the existing external-link icon rather than a separate text button, saving row space; clicking the icon opens the Zillow listing in a new tab
+- `.open-btn` CSS component (text + icon wrappers) with matching tooltip styling in both `popup.html` and `sidepanel.html`
+- `attachCopyHandlers` extended to support `data-copy-text` attribute (used by Copy Address and Copy URL) and `.open-btn` click-to-open behavior
+
+---
+
 ## [3.5] – 2026-03-23
 ### Added
 - "Default tab" setting in the Settings panel (segmented control: Listing Search / Impersonate)

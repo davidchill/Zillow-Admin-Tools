@@ -514,8 +514,8 @@
     container.querySelectorAll('.copy-btn').forEach(function (span) {
       span.addEventListener('click', function (e) {
         e.stopPropagation();
-        const id = span.dataset.copyId;
-        navigator.clipboard.writeText(id).then(function () {
+        const text = span.dataset.copyText !== undefined ? span.dataset.copyText : span.dataset.copyId;
+        navigator.clipboard.writeText(text).then(function () {
           const svg = span.querySelector('svg');
           svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
           span.classList.add('copy-ok');
@@ -524,6 +524,13 @@
             span.classList.remove('copy-ok');
           }, 1500);
         });
+      });
+    });
+    container.querySelectorAll('.open-btn').forEach(function (span) {
+      span.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const url = span.dataset.openUrl;
+        if (url) chrome.tabs.create({ url: url });
       });
     });
   }
@@ -551,17 +558,33 @@
     } else {
       copyLabel = 'Copy ZUID';
     }
-    const copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" data-tip="' + copyLabel + '">' +
-      '<svg class="copy-icon" viewBox="0 0 24 24">' +
-        '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>' +
-        '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>' +
-      '</svg></span>';
+    const copyIconSvg = '<svg class="copy-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    const copySpan = '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" data-tip="' + copyLabel + '">' + copyIconSvg + '</span>';
+
+    const extIconSvg = '<svg class="ext-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    let actionButtons, extIconHtml;
+    if (item.type === 'viewed') {
+      const zpidUrl = 'https://www.zillow.com/homedetails/' + item.id + '_zpid/';
+      const phxUrl  = 'https://phoenix-admin-tool.dna-compute-prod.zg-int.net/zillow-data-lookup?zpid=' + item.id;
+      const ditUrl  = 'https://prm.in.zillow.net/zpid/edit?zpid=' + item.id;
+      actionButtons =
+        '<span class="copy-btn" data-copy-id="' + escapeHtml(item.id) + '" data-tip="Copy ZPID">' + copyIconSvg + '</span>' +
+        (item.label ? '<span class="copy-btn" data-copy-text="' + escapeHtml(item.label) + '" data-tip="Copy Address">' + copyIconSvg + '</span>' : '') +
+        '<span class="copy-btn" data-copy-text="' + escapeHtml(zpidUrl) + '" data-tip="Copy URL">' + copyIconSvg + '</span>' +
+        '<span class="open-btn" data-open-url="' + escapeHtml(phxUrl) + '" data-tip="Open in PHX">PHX</span>' +
+        '<span class="open-btn" data-open-url="' + escapeHtml(ditUrl) + '" data-tip="Open in DIT">DIT</span>';
+      extIconHtml = '<span class="open-btn" data-open-url="' + escapeHtml(zpidUrl) + '" data-tip="Open in Zillow">' + extIconSvg + '</span>';
+    } else {
+      actionButtons = copySpan;
+      extIconHtml = extIconSvg;
+    }
+
     return '<button class="history-item" ' + dataAttrs + '>' +
       '<div class="history-item-top">' +
         '<span class="history-item-id"><span class="badge ' + badgeClass + '">' + badgeText + '</span> ' + escapeHtml(item.id) + '</span>' +
-        '<div style="display:flex;align-items:center;gap:4px;">' +
-          copySpan +
-          '<svg class="ext-icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+        '<div style="display:flex;align-items:center;gap:2px;">' +
+          actionButtons +
+          extIconHtml +
         '</div>' +
       '</div>' +
       subLine +

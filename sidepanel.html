@@ -285,6 +285,10 @@
     .copy-btn.copy-ok .copy-icon { stroke: var(--success); }
     .copy-btn[data-tip]::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: var(--tooltip-bg); color: var(--tooltip-text); font-size: 11px; white-space: nowrap; padding: 3px 7px; border-radius: 4px; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 10; }
     .copy-btn[data-tip]:hover::after { opacity: 1; }
+    .open-btn { position: relative; display: inline-flex; align-items: center; padding: 2px 5px; border-radius: 3px; cursor: pointer; flex-shrink: 0; transition: background 0.15s; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; color: var(--text-tertiary); }
+    .open-btn:hover { background: var(--border); color: var(--text-primary); }
+    .open-btn[data-tip]::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: var(--tooltip-bg); color: var(--tooltip-text); font-size: 11px; white-space: nowrap; padding: 3px 7px; border-radius: 4px; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 10; }
+    .open-btn[data-tip]:hover::after { opacity: 1; }
 
     /* ── Badges ── */
     .badge { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; flex-shrink: 0; }
