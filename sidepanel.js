@@ -10,6 +10,7 @@ let spHistory       = [];
 let spViewed        = [];
 let spSettings      = { historyLimit: 5, zpidTabEnabled: true, historyEnabled: true, defaultTab: 'listing' };
 let pendingConfirm  = null;
+let sectionCollapsed = { imps: false, viewed: false };
 let acDebounceTimer = null;
 let acResults       = [];
 let acActiveIdx     = -1;
@@ -577,7 +578,7 @@ function buildItemHtml(item) {
     </button>`;
 }
 
-function renderSectionBlock(titleSvg, titleText, items, clearId, emptyText) {
+function renderSectionBlock(titleSvg, titleText, items, clearId, emptyText, collapsed) {
   const itemsHtml = items.length
     ? items.map(buildItemHtml).join('')
     : `<div class="empty">${emptyText}</div>`;
@@ -587,16 +588,21 @@ function renderSectionBlock(titleSvg, titleText, items, clearId, emptyText) {
         Clear
        </button>`
     : '';
+  const chevron = `<svg class="section-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+  const collapsedClass = collapsed ? ' collapsed' : '';
   return `
-    <div class="section">
-      <div class="section-header">
+    <div class="section${collapsedClass}">
+      <div class="section-header section-toggle-header">
         <div class="section-title">
           ${titleSvg}
           ${titleText}
+          ${chevron}
         </div>
         ${clearBtn}
       </div>
-      ${itemsHtml}
+      <div class="section-body">
+        ${itemsHtml}
+      </div>
     </div>`;
 }
 
@@ -611,14 +617,25 @@ function renderHistory() {
   if (currentTab === 'listing') {
     const viewed = spViewed.slice(0, limit);
     const offMsg = 'History recording is off. Enable it in Settings.';
-    html = renderSectionBlock(eyeSvg, 'Recently Viewed', viewed, 'sp-clear-viewed', spSettings.historyEnabled === false ? offMsg : 'No recently viewed properties');
+    html = renderSectionBlock(eyeSvg, 'Recently Viewed', viewed, 'sp-clear-viewed', spSettings.historyEnabled === false ? offMsg : 'No recently viewed properties', sectionCollapsed.viewed);
   } else {
     const imps = spHistory.filter(h => h.type === 'impersonate').slice(0, limit);
     const offMsg = 'History recording is off. Enable it in Settings.';
-    html = renderSectionBlock(personSvg, 'Recently Impersonated', imps, 'sp-clear-imps', spSettings.historyEnabled === false ? offMsg : 'No recent impersonations');
+    html = renderSectionBlock(personSvg, 'Recently Impersonated', imps, 'sp-clear-imps', spSettings.historyEnabled === false ? offMsg : 'No recent impersonations', sectionCollapsed.imps);
   }
 
   spHistoryEl.innerHTML = html;
+
+  // ── Collapsible toggle ──────────────────────────────────────────────────────
+  spHistoryEl.querySelectorAll('.section-toggle-header').forEach(header => {
+    header.addEventListener('click', e => {
+      if (e.target.closest('.section-clear')) return;
+      const section = header.closest('.section');
+      section.classList.toggle('collapsed');
+      const key = currentTab === 'listing' ? 'viewed' : 'imps';
+      sectionCollapsed[key] = section.classList.contains('collapsed');
+    });
+  });
 
   const clearImps = document.getElementById('sp-clear-imps');
   if (clearImps) clearImps.addEventListener('click', () => {
@@ -753,6 +770,14 @@ spSettingDefaultTab.addEventListener('click', e => {
   saveSettings();
   updateDefaultTabButtons(spSettings.defaultTab);
 });
+
+// ── Version badge ─────────────────────────────────────────────────────────────
+const RELEASE_DATE = 'Mar 24, 2026';
+const spVersionTag = document.getElementById('sp-version-tag');
+if (spVersionTag) {
+  const v = chrome.runtime.getManifest().version;
+  spVersionTag.textContent = 'v' + v + ' · ' + RELEASE_DATE;
+}
 
 // ── Init + live reload ────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', loadFromStorage);

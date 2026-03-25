@@ -5,6 +5,13 @@ Versions are tracked via git tags; see `manifest.json` for the current version.
 
 ---
 
+## [3.9.2] – 2026-03-25
+### Added
+- Collapsible history sections in the Side Panel — "Recently Impersonated" and "Recently Viewed" headers now act as toggles; clicking collapses or expands the list with an animated chevron indicator
+- Collapsed state persists across re-renders within the session (e.g. adding a new history entry keeps the section collapsed if the user had closed it)
+
+---
+
 ## [3.9.1] – 2026-03-24
 ### Added
 - Settings button and full settings overlay added to the Side Panel header, mirroring the popup's settings UI; changes persist to the same shared `zillow_settings` storage key so popup and Side Panel stay in sync

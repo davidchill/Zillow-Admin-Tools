@@ -162,7 +162,8 @@
       flex-shrink: 0;
     }
     .header-icon svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 2; }
-    .header h1 { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.2px; flex: 1; }
+    .header h1 { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.2px; flex: 1; display: flex; flex-direction: column; gap: 1px; }
+    .version-tag { font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.3); letter-spacing: 0.1px; }
     .settings-btn { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; transition: background 0.15s; display: flex; align-items: center; justify-content: center; }
     .settings-btn:hover { background: rgba(255,255,255,0.1); }
     .settings-btn svg { width: 18px; height: 18px; fill: none; stroke: #94a3b8; stroke-width: 2; }
@@ -359,6 +360,13 @@
     /* ── Empty state ── */
     .empty { text-align: center; padding: 20px; border: 2px dashed var(--border); border-radius: 10px; font-size: 12px; color: var(--text-faint); }
 
+    /* ── Collapsible sections ── */
+    .section-toggle-header { cursor: pointer; border-radius: 6px; transition: background 0.12s; }
+    .section-toggle-header:hover { background: var(--bg-subtle); }
+    .section-chevron { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; flex-shrink: 0; }
+    .section.collapsed .section-chevron { transform: rotate(-90deg); }
+    .section.collapsed .section-body { display: none; }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -368,7 +376,7 @@
     <div class="header-icon">
       <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </div>
-    <h1>Zillow Admin Tools</h1>
+    <h1>Zillow Admin Tools<span id="sp-version-tag" class="version-tag"></span></h1>
     <button class="settings-btn" id="sp-settings-open">
       <svg viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="3" />
