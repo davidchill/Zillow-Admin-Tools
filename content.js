@@ -6,57 +6,71 @@
   'use strict';
 
   // ── Property view tracking ───────────────────────────────────────────────
-  // Runs on every injection (before FAB dedup check) so re-visits are captured.
+  // Runs on initial injection AND on every SPA navigation (Zillow uses
+  // history.pushState when clicking listing cards on search results pages,
+  // so the content script is not re-injected — we must listen for URL changes).
   // Match both URL formats:
   //   Modern: /homedetails/123-Main-St-Seattle-WA-98101/29122711_zpid/
   //   Legacy: /homedetails/123-Main-St_29122711_zpid/
-  const zpidMatch = window.location.hostname === 'www.zillow.com'
-    && window.location.pathname.match(/\/homedetails\/[^?]*\/(\d+)_zpid(?:\/|$)/i);
 
-  if (zpidMatch) {
-    const viewedZpid = zpidMatch[1];
+  function doTrackView(viewedZpid) {
+    // Extract address from page title: "123 Main St, City, ST | Zillow" → "123 Main St, City, ST"
+    const title    = document.title || '';
+    const cutIdx   = title.indexOf(' |') > 0 ? title.indexOf(' |') : (title.indexOf(' -') > 0 ? title.indexOf(' -') : -1);
+    const label    = cutIdx > 0 ? title.substring(0, cutIdx).trim() : title;
 
-    function doTrackView() {
-      // Extract address from page title: "123 Main St, City, ST | Zillow" → "123 Main St, City, ST"
-      const title    = document.title || '';
-      const cutIdx   = title.indexOf(' |') > 0 ? title.indexOf(' |') : (title.indexOf(' -') > 0 ? title.indexOf(' -') : -1);
-      const label    = cutIdx > 0 ? title.substring(0, cutIdx).trim() : title;
+    chrome.storage.local.get(['zillow_history_v3', 'zillow_viewed_v3', 'zillow_settings'], data => {
+      const settings = data.zillow_settings || {};
+      const limit    = Math.min(20, Math.max(5, settings.historyLimit || 5));
+      const searched = data.zillow_history_v3 || [];
+      const viewed   = data.zillow_viewed_v3   || [];
 
-      chrome.storage.local.get(['zillow_history_v3', 'zillow_viewed_v3', 'zillow_settings'], data => {
-        const settings = data.zillow_settings || {};
-        const limit    = Math.min(20, Math.max(5, settings.historyLimit || 5));
-        const searched = data.zillow_history_v3 || [];
-        const viewed   = data.zillow_viewed_v3   || [];
+      // Don't track if history recording is disabled
+      if (settings.historyEnabled === false) return;
 
-        // Don't track if history recording is disabled
-        if (settings.historyEnabled === false) return;
+      // Don't track if already in searched history (avoid duplication)
+      if (searched.some(h => h.type === 'zpid' && h.id === viewedZpid)) return;
 
-        // Don't track if already in searched history (avoid duplication)
-        if (searched.some(h => h.type === 'zpid' && h.id === viewedZpid)) return;
+      const existingIdx = viewed.findIndex(h => h.id === viewedZpid);
+      let updated;
 
-        const existingIdx = viewed.findIndex(h => h.id === viewedZpid);
-        let updated;
+      if (existingIdx >= 0) {
+        // Move to top, refresh label and timestamp
+        const entry = { ...viewed[existingIdx], timestamp: Date.now(), label: label || viewed[existingIdx].label };
+        updated = [entry].concat(viewed.filter((_, i) => i !== existingIdx)).slice(0, limit);
+      } else {
+        updated = [{ type: 'viewed', id: viewedZpid, method: 'viewed', label, timestamp: Date.now() }]
+          .concat(viewed).slice(0, limit);
+      }
 
-        if (existingIdx >= 0) {
-          // Move to top, refresh label and timestamp
-          const entry = { ...viewed[existingIdx], timestamp: Date.now(), label: label || viewed[existingIdx].label };
-          updated = [entry].concat(viewed.filter((_, i) => i !== existingIdx)).slice(0, limit);
-        } else {
-          updated = [{ type: 'viewed', id: viewedZpid, method: 'viewed', label, timestamp: Date.now() }]
-            .concat(viewed).slice(0, limit);
-        }
-
-        chrome.storage.local.set({ zillow_viewed_v3: updated });
-      });
-    }
-
-    // Wait for title to settle (Zillow SPA updates it after initial render)
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => setTimeout(doTrackView, 1500));
-    } else {
-      setTimeout(doTrackView, 1500);
-    }
+      chrome.storage.local.set({ zillow_viewed_v3: updated });
+    });
   }
+
+  function checkAndTrackZpid() {
+    if (window.location.hostname !== 'www.zillow.com') return;
+    const match = window.location.pathname.match(/\/homedetails\/[^?]*\/(\d+)_zpid(?:\/|$)/i);
+    if (!match) return;
+    // Wait for title to settle (Zillow SPA updates it after initial render)
+    const viewedZpid = match[1];
+    setTimeout(() => doTrackView(viewedZpid), 1500);
+  }
+
+  // Check on initial page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkAndTrackZpid);
+  } else {
+    checkAndTrackZpid();
+  }
+
+  // SPA navigation tracking — background.js listens for history.pushState via
+  // chrome.webNavigation.onHistoryStateUpdated (which operates at the browser
+  // level, bypassing the content script isolated-world boundary) and sends this
+  // message when the URL navigates to a homedetails page.
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.action !== 'trackZpid') return;
+    setTimeout(() => doTrackView(msg.zpid), 1500);
+  });
 
   // Avoid duplicate FAB injection on navigation
   if (document.getElementById('zat-host')) return;

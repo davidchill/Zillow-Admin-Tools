@@ -50,6 +50,10 @@ const spAgentFirstInput   = document.getElementById('sp-agent-first');
 const spAgentLastInput    = document.getElementById('sp-agent-last');
 const spAgentGoBtn        = document.getElementById('sp-agent-go-btn');
 const spAgentErrorMsg     = document.getElementById('sp-agent-error-msg');
+const spChangelogOpen        = document.getElementById('sp-changelog-open');
+const spChangelogOverlay     = document.getElementById('sp-changelog-overlay');
+const spChangelogClose       = document.getElementById('sp-changelog-close');
+const spChangelogBody        = document.getElementById('sp-changelog-body');
 const spSettingsOpen         = document.getElementById('sp-settings-open');
 const spSettingsOverlay      = document.getElementById('sp-settings-overlay');
 const spSettingsClose        = document.getElementById('sp-settings-close');
@@ -567,7 +571,7 @@ function buildItemHtml(item) {
       <div class="item-top">
         <span class="item-id">
           <span class="badge ${badgeClass}">${escapeHtml(badgeText)}</span>
-          ${escapeHtml(item.id)}
+          <span class="item-id-text">${escapeHtml(item.id)}</span>
         </span>
         <div style="display:flex;align-items:center;gap:2px;">
           ${actionButtons}
@@ -694,6 +698,77 @@ function updateDefaultTabButtons(tab) {
     btn.classList.toggle('active', btn.dataset.tabVal === tab);
   });
 }
+
+// ── Changelog event handlers ──────────────────────────────────────────────────
+function parseChangelog(md) {
+  const lines = md.split('\n');
+  let html = '';
+  let inList = false;
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line === '---') {
+      if (inList) { html += '</ul>'; inList = false; }
+      continue;
+    }
+    if (line.startsWith('# ') || line.startsWith('All notable') ||
+        line.startsWith('Versions are') || line.startsWith('Versioning follows') ||
+        line.startsWith('- `0.') || line.startsWith('- `1.')) {
+      continue;
+    }
+    if (/^## \[Earlier\]/.test(line)) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += '<div class="cl-version"><span class="cl-version-num">Earlier</span></div>';
+      continue;
+    }
+    const vMatch = line.match(/^## \[(.+?)\]\s*[–-]\s*(.+)/);
+    if (vMatch) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<div class="cl-version"><span class="cl-version-num">v${vMatch[1]}</span><span class="cl-version-date">${vMatch[2]}</span></div>`;
+      continue;
+    }
+    const sMatch = line.match(/^### (.+)/);
+    if (sMatch) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<div class="cl-section">${sMatch[1]}</div><ul class="cl-list">`;
+      inList = true;
+      continue;
+    }
+    const iMatch = line.match(/^- (.+)/);
+    if (iMatch) {
+      if (!inList) { html += '<ul class="cl-list">'; inList = true; }
+      html += `<li>${iMatch[1]}</li>`;
+      continue;
+    }
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+let spChangelogLoaded = false;
+
+spChangelogOpen.addEventListener('click', () => {
+  spChangelogOverlay.classList.remove('hidden');
+  if (!spChangelogLoaded) {
+    fetch(chrome.runtime.getURL('CHANGELOG.md'))
+      .then(r => r.text())
+      .then(md => {
+        spChangelogBody.innerHTML = parseChangelog(md);
+        spChangelogLoaded = true;
+      })
+      .catch(() => {
+        spChangelogBody.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-faint);font-size:13px;">Could not load changelog.</div>';
+      });
+  }
+});
+
+spChangelogClose.addEventListener('click', () => {
+  spChangelogOverlay.classList.add('hidden');
+});
+
+spChangelogOverlay.addEventListener('click', e => {
+  if (e.target === spChangelogOverlay) spChangelogOverlay.classList.add('hidden');
+});
 
 // ── Settings event handlers ───────────────────────────────────────────────────
 spSettingsOpen.addEventListener('click', () => {

@@ -419,6 +419,24 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 });
 
+// ── SPA navigation tracking (search results → listing detail) ──────────────
+// Zillow uses history.pushState for in-page navigation. Content scripts run in
+// an isolated JS world and cannot intercept page-level pushState calls directly.
+// We listen at the browser level instead: onHistoryStateUpdated fires for every
+// pushState/replaceState call regardless of JS context, then we message the
+// already-running content script to handle the view tracking.
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  try {
+    const url = new URL(details.url);
+    if (url.hostname !== 'www.zillow.com') return;
+    const match = url.pathname.match(/\/homedetails\/[^?]*\/(\d+)_zpid(?:\/|$)/i);
+    if (!match) return;
+    chrome.tabs.sendMessage(details.tabId, { action: 'trackZpid', zpid: match[1] }, () => {
+      void chrome.runtime.lastError; // suppress if content script isn't ready yet
+    });
+  } catch (e) {}
+});
+
 // ── Create context menu entries on install ──
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({

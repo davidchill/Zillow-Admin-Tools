@@ -248,6 +248,75 @@
       stroke-width: 2;
     }
 
+    /* Changelog panel */
+    .changelog-panel {
+      background: var(--bg-surface);
+      border-radius: 16px;
+      width: 380px;
+      max-height: 72vh;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .changelog-body {
+      overflow-y: auto;
+      padding: 16px 20px 20px;
+      flex: 1;
+    }
+
+    .changelog-body::-webkit-scrollbar { width: 4px; }
+    .changelog-body::-webkit-scrollbar-track { background: transparent; }
+    .changelog-body::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+
+    .cl-version {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 20px;
+      margin-bottom: 6px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cl-version:first-child { margin-top: 0; }
+
+    .cl-version-num {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .cl-version-date {
+      font-size: 11px;
+      color: var(--text-faint);
+    }
+
+    .cl-section {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    .cl-list {
+      margin: 0;
+      padding-left: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cl-list li {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
     /* Tabs */
     .tabs {
       display: flex;
@@ -753,6 +822,14 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .history-item-id-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
     }
 
     .history-item-sub {
@@ -1210,6 +1287,15 @@
         </svg>
       </div>
       <h1>Zillow Admin Tools<span id="version-tag" class="version-tag"></span></h1>
+      <button class="settings-btn" id="changelog-open" title="What's New">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
+      </button>
       <button class="settings-btn" id="settings-open">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3" />
@@ -1497,6 +1583,24 @@
             </label>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Changelog overlay -->
+  <div class="overlay hidden" id="changelog-overlay">
+    <div class="changelog-panel">
+      <div class="settings-header">
+        <h2>What's New</h2>
+        <button class="close-btn" id="changelog-close">
+          <svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="changelog-body" id="changelog-body">
+        <div style="text-align:center;padding:24px;color:var(--text-faint);font-size:13px;">Loading…</div>
       </div>
     </div>
   </div>

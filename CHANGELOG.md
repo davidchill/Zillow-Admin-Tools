@@ -10,6 +10,13 @@ Versioning follows [Semantic Versioning](https://semver.org/) under `0.x.y`:
 
 ---
 
+## [0.7.4] – 2026-03-25
+### Fixed
+- Recently Viewed history now tracks listings clicked from search results pages (map + list layout) without requiring a page refresh. Zillow uses `history.pushState` for in-page SPA navigation, which does not re-inject content scripts. The fix uses `chrome.webNavigation.onHistoryStateUpdated` in the background service worker — which fires at the browser level regardless of JS context — to detect homedetails navigations and notify the content script to record the view.
+- Long email addresses in the Recently Impersonated section no longer overflow into the Copy/External Link buttons; the identifier text now truncates with an ellipsis.
+
+---
+
 ## [0.7.3] – 2026-03-25
 ### Added
 - Version badge in popup header displays the current extension version and release date (e.g. "v0.7.3 · Mar 25, 2026")

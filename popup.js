@@ -43,6 +43,10 @@
   const confirmText         = document.getElementById('confirm-text');
   const confirmYes          = document.getElementById('confirm-yes');
   const confirmNo           = document.getElementById('confirm-no');
+  const changelogOpen       = document.getElementById('changelog-open');
+  const changelogOverlay    = document.getElementById('changelog-overlay');
+  const changelogClose      = document.getElementById('changelog-close');
+  const changelogBody       = document.getElementById('changelog-body');
   const settingsOpen        = document.getElementById('settings-open');
   const settingsOverlay     = document.getElementById('settings-overlay');
   const settingsClose       = document.getElementById('settings-close');
@@ -658,7 +662,7 @@
 
     return '<button class="history-item" ' + dataAttrs + '>' +
       '<div class="history-item-top">' +
-        '<span class="history-item-id"><span class="badge ' + badgeClass + '">' + badgeText + '</span> ' + escapeHtml(item.id) + '</span>' +
+        '<span class="history-item-id"><span class="badge ' + badgeClass + '">' + badgeText + '</span><span class="history-item-id-text">' + escapeHtml(item.id) + '</span></span>' +
         '<div style="display:flex;align-items:center;gap:2px;">' +
           actionButtons +
           extIconHtml +
@@ -743,6 +747,85 @@
     history = history.filter(function (h) { return h.type !== 'impersonate'; });
     saveHistory();
     renderHistory();
+  });
+
+  // ══════════════════════════════
+  // CHANGELOG
+  // ══════════════════════════════
+
+  function parseChangelog(md) {
+    const lines = md.split('\n');
+    let html = '';
+    let inList = false;
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line || line === '---') {
+        if (inList) { html += '</ul>'; inList = false; }
+        continue;
+      }
+      // Skip top-level heading and meta prose
+      if (line.startsWith('# ') || line.startsWith('All notable') ||
+          line.startsWith('Versions are') || line.startsWith('Versioning follows') ||
+          line.startsWith('- `0.') || line.startsWith('- `1.')) {
+        continue;
+      }
+      // [Earlier] section
+      if (/^## \[Earlier\]/.test(line)) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<div class="cl-version"><span class="cl-version-num">Earlier</span></div>';
+        continue;
+      }
+      // Version header: ## [0.7.3] – 2026-03-25
+      const vMatch = line.match(/^## \[(.+?)\]\s*[–-]\s*(.+)/);
+      if (vMatch) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div class="cl-version"><span class="cl-version-num">v${vMatch[1]}</span><span class="cl-version-date">${vMatch[2]}</span></div>`;
+        continue;
+      }
+      // Section header: ### Added / ### Changed / ### Fixed
+      const sMatch = line.match(/^### (.+)/);
+      if (sMatch) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div class="cl-section">${sMatch[1]}</div><ul class="cl-list">`;
+        inList = true;
+        continue;
+      }
+      // List item
+      const iMatch = line.match(/^- (.+)/);
+      if (iMatch) {
+        if (!inList) { html += '<ul class="cl-list">'; inList = true; }
+        html += `<li>${iMatch[1]}</li>`;
+        continue;
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  let changelogLoaded = false;
+
+  changelogOpen.addEventListener('click', function () {
+    changelogOverlay.classList.remove('hidden');
+    if (!changelogLoaded) {
+      fetch(chrome.runtime.getURL('CHANGELOG.md'))
+        .then(function (r) { return r.text(); })
+        .then(function (md) {
+          changelogBody.innerHTML = parseChangelog(md);
+          changelogLoaded = true;
+        })
+        .catch(function () {
+          changelogBody.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-faint);font-size:13px;">Could not load changelog.</div>';
+        });
+    }
+  });
+
+  changelogClose.addEventListener('click', function () {
+    changelogOverlay.classList.add('hidden');
+  });
+
+  changelogOverlay.addEventListener('click', function (e) {
+    if (e.target === changelogOverlay) changelogOverlay.classList.add('hidden');
   });
 
   // ══════════════════════════════
