@@ -772,7 +772,7 @@ spSettingDefaultTab.addEventListener('click', e => {
 });
 
 // ── Version badge ─────────────────────────────────────────────────────────────
-const RELEASE_DATE = 'Mar 24, 2026';
+const RELEASE_DATE = 'Mar 25, 2026';
 const spVersionTag = document.getElementById('sp-version-tag');
 if (spVersionTag) {
   const v = chrome.runtime.getManifest().version;
