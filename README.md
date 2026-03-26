@@ -1,5 +1,3 @@
-# Zillow Admin Tools – README
-
 # Zillow Admin Tools
 
 A Chrome extension for Zillow internal use that provides fast impersonation, ZPID lookup, and address search — directly from the browser toolbar or a floating side panel.
