@@ -122,6 +122,14 @@
 
   loadFromStorage();
 
+  // ── Version badge ──
+  const RELEASE_DATE = 'Mar 24, 2026';
+  const versionTag = document.getElementById('version-tag');
+  if (versionTag) {
+    const v = chrome.runtime.getManifest().version;
+    versionTag.textContent = 'v' + v + ' · ' + RELEASE_DATE;
+  }
+
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) loadFromStorage();
   });

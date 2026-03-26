@@ -206,6 +206,16 @@
       font-weight: 600;
       letter-spacing: -0.3px;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .version-tag {
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.3);
+      letter-spacing: 0.1px;
     }
 
     .header p {
@@ -1199,7 +1209,7 @@
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
       </div>
-      <h1>Zillow Admin Tools</h1>
+      <h1>Zillow Admin Tools<span id="version-tag" class="version-tag"></span></h1>
       <button class="settings-btn" id="settings-open">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3" />
