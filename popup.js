@@ -808,7 +808,7 @@
   changelogOpen.addEventListener('click', function () {
     changelogOverlay.classList.remove('hidden');
     if (!changelogLoaded) {
-      fetch(chrome.runtime.getURL('CHANGELOG.md'))
+      fetch(chrome.runtime.getURL('CHANGELOG_UI.md'))
         .then(function (r) { return r.text(); })
         .then(function (md) {
           changelogBody.innerHTML = parseChangelog(md);

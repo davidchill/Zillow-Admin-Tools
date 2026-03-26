@@ -750,7 +750,7 @@ let spChangelogLoaded = false;
 spChangelogOpen.addEventListener('click', () => {
   spChangelogOverlay.classList.remove('hidden');
   if (!spChangelogLoaded) {
-    fetch(chrome.runtime.getURL('CHANGELOG.md'))
+    fetch(chrome.runtime.getURL('CHANGELOG_UI.md'))
       .then(r => r.text())
       .then(md => {
         spChangelogBody.innerHTML = parseChangelog(md);
