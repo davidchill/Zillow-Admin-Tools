@@ -1,8 +1,9 @@
 // ── Zillow Admin Tools – Background Service Worker ──
 // Context-menu impersonation + page scraping for history labels
 
-const IMPERSONATE_URL   = 'https://www.zillow.com/user/Impersonate.htm';
-const PROFILE_REDIRECT  = 'https://www.zillow.com/myzillow/Profile.htm';
+const IMPERSONATE_URL    = 'https://www.zillow.com/user/Impersonate.htm';
+const PROFILE_REDIRECT   = 'https://www.zillow.com/myzillow/Profile.htm';
+const CONSUMER_REDIRECT  = 'https://www.zillow.com/myzillow/Account.htm';
 
 // ── Side Panel state tracking ──────────────────────────────────────────────
 // Keeps a set of windowIds where the side panel is currently open.
@@ -65,25 +66,91 @@ const ERROR_MESSAGE =
 
 // ══════════════════════════════════════════
 // POST-IMPERSONATION REDIRECT
-// After the Impersonate.htm page finishes loading, redirect the tab to the
-// Profile page so agents land somewhere useful. The 3-second delay in
-// scrapeTabForLabel means the scrape naturally runs against the profile
-// page title (e.g. "Jane Doe | Zillow") instead of "My Account Settings".
+//
+// Impersonate.htm carries no account-type indicators, so we always land on
+// Account.htm first — it's a valid destination for Consumer accounts and the
+// only page where we can reliably detect ZPA vs Consumer.
+//
+// Detection reads the header for ZPA-specific items ("Property Tools",
+// "Inbox") that only appear when the impersonated account is a Premier Agent.
+// A second redirect to Profile.htm fires ONLY when those items are found.
+//
+//   Consumer  →  Account.htm  (one hop, done)
+//   Agent     →  Account.htm  →  Profile.htm  (ZPA items detected)
 // ══════════════════════════════════════════
 
 function redirectAfterImpersonate(tabId) {
-  function onUpdated(updatedTabId, changeInfo) {
-    if (updatedTabId !== tabId || changeInfo.status !== 'loading') return;
-    chrome.tabs.onUpdated.removeListener(onUpdated);
+  function onImpersonateComplete(updatedTabId, changeInfo) {
+    if (updatedTabId !== tabId || changeInfo.status !== 'complete') return;
+    chrome.tabs.onUpdated.removeListener(onImpersonateComplete);
     chrome.storage.local.get('zillow_settings', (data) => {
       const settings = data.zillow_settings || {};
       if (settings.redirectEnabled === false) return;
-      chrome.tabs.update(tabId, { url: PROFILE_REDIRECT });
+
+      // Check where Zillow landed after processing the impersonation.
+      // If already on a /myzillow/ page, run detection immediately — no
+      // redirect needed. This avoids a redundant reload when Zillow's own
+      // impersonation handler has already navigated to Account.htm.
+      chrome.tabs.get(tabId, (tab) => {
+        if (chrome.runtime.lastError || !tab) return;
+        const currentUrl = tab.url || '';
+
+        if (currentUrl.includes('/myzillow/')) {
+          // Already on the right surface — detect without redirecting.
+          runDetection(tabId);
+        } else {
+          // Still on Impersonate.htm or similar — navigate to Account.htm first.
+          chrome.tabs.update(tabId, { url: CONSUMER_REDIRECT }, () => {
+            if (chrome.runtime.lastError) return;
+            function onAccountLoaded(updatedTabId, changeInfo) {
+              if (updatedTabId !== tabId || changeInfo.status !== 'complete') return;
+              chrome.tabs.onUpdated.removeListener(onAccountLoaded);
+              runDetection(tabId);
+            }
+            chrome.tabs.onUpdated.addListener(onAccountLoaded);
+            setTimeout(() => chrome.tabs.onUpdated.removeListener(onAccountLoaded), 25000);
+          });
+        }
+      });
     });
   }
-  chrome.tabs.onUpdated.addListener(onUpdated);
+  chrome.tabs.onUpdated.addListener(onImpersonateComplete);
   // Safety: remove listener after 20s to avoid leaks
-  setTimeout(() => chrome.tabs.onUpdated.removeListener(onUpdated), 20000);
+  setTimeout(() => chrome.tabs.onUpdated.removeListener(onImpersonateComplete), 20000);
+}
+
+// Injects a detection script into tabId and routes based on account type:
+//   ZPA items found  →  redirect to Profile.htm (agent dashboard)
+//   ZPA items absent →  stay put (consumer is already on Account.htm)
+// Callers are responsible for verifying the tab is on a /myzillow/ page
+// before calling — the URL check is intentionally skipped here to avoid
+// an extra async round-trip.
+function runDetection(tabId) {
+  chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => {
+      const title = document.title || '';
+      const headerEl = document.querySelector('header');
+      const headerText = headerEl ? (headerEl.innerText || '') : '';
+      // ZPA-specific items only present in the agent header.
+      // Both account types share the same page title on Account.htm.
+      const isZPA = title.toLowerCase().includes('premier agent') ||
+                    headerText.includes('Property Tools') ||
+                    headerText.includes('Inbox');
+      return { isZPA, title, headerSnippet: headerText.substring(0, 120) };
+    }
+  }, (results) => {
+    if (chrome.runtime.lastError || !results || !results[0] ||
+        results[0].result == null) return;
+    const { isZPA, title, headerSnippet } = results[0].result;
+    console.log('[ZAT] Account type detected — isZPA:', isZPA,
+                '| title:', title, '| header:', headerSnippet);
+    if (isZPA) {
+      // Agent account — redirect to ZPA Profile dashboard.
+      chrome.tabs.update(tabId, { url: PROFILE_REDIRECT });
+    }
+    // Consumer account — already on Account.htm, nothing more to do.
+  });
 }
 
 // ══════════════════════════════════════════

@@ -10,6 +10,13 @@ Versioning follows [Semantic Versioning](https://semver.org/) under `0.x.y`:
 
 ---
 
+## [0.7.5] – 2026-03-26
+### Changed
+- Post-impersonation redirect now routes based on detected account type: Consumer accounts land on Account.htm in a single hop; Premier Agent accounts are redirected to Profile.htm only after ZPA-specific header items ("Property Tools", "Inbox") are detected in the page header
+- Eliminates the redundant page reload that previously occurred when Zillow's own impersonation handler had already navigated to Account.htm
+
+---
+
 ## [0.7.4] – 2026-03-25
 ### Fixed
 - Recently Viewed history now tracks listings clicked from search results pages

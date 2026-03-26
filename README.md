@@ -14,7 +14,7 @@ A Chrome extension for Zillow internal use that provides fast impersonation, ZPI
 - **Context Menu Support** — right-click any selected text, email link, or profile URL to impersonate instantly
 - **Side Panel** — floating action button on any page opens a persistent side panel
 - **History Tracking** — recent impersonations and listing searches saved locally, with copy-to-clipboard support
-- **Post-Impersonation Redirect** — automatically redirects to the Zillow profile page after impersonating
+- **Smart Post-Impersonation Redirect** — automatically routes to the correct page after impersonating: Consumer accounts land on Account.htm; Premier Agent accounts are detected via ZPA-specific header items and redirected to Profile.htm
 - **Dark / Light / Auto Theme** — configurable via the settings panel
 - **Passive Impersonation Tracker** — records impersonation events regardless of how they were initiated
 
@@ -72,7 +72,7 @@ Access settings via the gear icon in the popup.
 | History Limit | Number of recent items to retain (5–20) |
 | ZPID Tab | Show or hide the listing lookup tab |
 | Floating Button | Show or hide the floating side panel button |
-| Redirect After Impersonate | Auto-redirect to the profile page after impersonation |
+| Redirect After Impersonate | Smart redirect after impersonation — Consumer accounts go to Account.htm; Premier Agent accounts go to Profile.htm |
 | History Recording | Enable or disable search history |
 | Theme | Auto, Light, or Dark mode |
 
@@ -112,7 +112,7 @@ Zillow-Admin-Tools/
 
 - This is an **internal tool** intended for Zillow support/ops team use only.
 - No data is sent to any external server. All history and settings are stored locally in `chrome.storage.local`.
-- The extension is currently at **v3.4**.
+- The extension is currently at **v0.7.5**.
 
 ---
 

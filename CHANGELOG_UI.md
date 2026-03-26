@@ -1,3 +1,10 @@
+## [0.7.5] – 2026-03-26
+### Changed
+- Post-impersonation redirect is now account-type-aware: Consumer accounts land on Account.htm directly; Premier Agent accounts are detected via ZPA-specific header items and redirected to Profile.htm
+- Eliminated a redundant page reload that occurred when Zillow's handler had already navigated to Account.htm
+
+---
+
 ## [0.7.4] – 2026-03-25
 ### Fixed
 - Recently Viewed history now tracks listings clicked from search results pages
