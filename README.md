@@ -1,22 +1,26 @@
-# Zillow Admin Tools – README
-
 # Zillow Admin Tools
 
-A Chrome extension for Zillow internal use that provides fast impersonation, ZPID lookup, and address search — directly from the browser toolbar or a floating side panel.
+A Chrome extension for Zillow internal use — fast impersonation, listing lookup, address search, and quick admin access, directly from the browser toolbar or a persistent side panel.
 
 ---
 
 ## Features
 
-- **Impersonate by Email, ZUID, or Screen Name** — auto-detect or choose a specific mode
-- **ZPID Lookup** — open a listing in Zillow, Phoenix Admin, or DIT with one click
-- **Address Autocomplete** — type an address and get live Zillow suggestions
-- **Context Menu Support** — right-click any selected text, email link, or profile URL to impersonate instantly
-- **Side Panel** — floating action button on any page opens a persistent side panel
-- **History Tracking** — recent impersonations and listing searches saved locally, with copy-to-clipboard support
+- **Impersonate by Email, ZUID, or Screen Name** — auto-detect or choose a specific mode, with a confirmation step in auto mode
+- **ZPID Lookup** — open any listing in Zillow, Phoenix Admin (PHX), or DIT with one click
+- **MLS ID Search** — look up listings by MLS ID via the Phoenix admin tool (PHX mode only)
+- **Address Autocomplete** — live Zillow suggestions as you type; falls back to a search URL if no match
+- **Find Agent** — search Zillow's agent directory by first and last name
+- **Quick Access Links** — one-click buttons for 3D Home Tours, Address Change, Merge Profiles, Upgrade Account, and CaRP tools
+- **Context Menu Support** — right-click any selected text, `mailto:` link, or Zillow profile URL to impersonate instantly
+- **Side Panel** — floating action button on any page opens a persistent, full-featured side panel
+- **Collapsible History Sections** — Recently Impersonated and Recently Viewed collapse and expand; state persists within the session
+- **History Tracking** — recent impersonations and viewed listings saved locally; per-item copy, open, and link actions
+- **Passive Impersonation Tracker** — records impersonation events regardless of how they were initiated (popup, side panel, context menu, bookmark, etc.)
+- **SPA Navigation Tracking** — tracks listing views from Zillow search results pages, which use `history.pushState` and don't trigger a full page load
 - **Smart Post-Impersonation Redirect** — automatically routes to the correct page after impersonating: Consumer accounts land on Account.htm; Premier Agent accounts are detected via ZPA-specific header items and redirected to Profile.htm
+- **Version Badge** — displays the current extension version and release date in the popup header
 - **Dark / Light / Auto Theme** — configurable via the settings panel
-- **Passive Impersonation Tracker** — records impersonation events regardless of how they were initiated
 
 ---
 
@@ -24,7 +28,7 @@ A Chrome extension for Zillow internal use that provides fast impersonation, ZPI
 
 This extension is not published to the Chrome Web Store. Install it manually:
 
-1. Download or clone this repository.
+1. Clone the repository:
 
 ```
 git clone https://github.com/davidchill/Zillow-Admin-Tools.git
@@ -39,83 +43,33 @@ git clone https://github.com/davidchill/Zillow-Admin-Tools.git
 
 ## Usage
 
-### Impersonate Tab
+### Impersonate / Find Agent Tab
 
 - Select a mode: **Auto**, **Email**, **ZUID**, or **Screen Name**
 - Enter the identifier and press **Go** or hit **Enter**
 - In Auto mode, the extension detects the type and shows a confirmation before proceeding
+- Use the **Find Agent** section to search by first and/or last name — opens Zillow's agent directory in a new tab
 
-### ZPID / Listing Tab
+### Listing Search Tab
 
-- Enter a **ZPID** to open the listing in your chosen tool (Zillow, Phoenix, or DIT)
-- Use the **Address** field to search by street address with live autocomplete
+- Enter a **ZPID** to open the listing in your chosen tool: **Zillow**, **PHX**, or **DIT**
+- In **Zillow** mode, use the **Address** field to search by street address with live autocomplete
+- In **PHX** mode, use the **MLS ID** field to look up a listing by MLS ID
+
+### Quick Access Links
+
+A row of icon buttons sits above the tab panels for fast access to common admin tools:
+
+| Button | Destination |
+| --- | --- |
+| 3D Home Tours | Phoenix 3D tour admin |
+| Address Change | Address change tool |
+| Merge Profiles | Profile merge tool |
+| Upgrade Account | Account upgrade tool |
+| CaRP | CaRP tool |
 
 ### Context Menu
 
 - Select an email address, ZUID, or screen name on any page
 - Right-click and choose **Zillow - Impersonate**
-- Also works on `mailto:` links and Zillow profile page URLs
-
-### Side Panel
-
-- Click the floating **Z** button on any page to open the side panel
-- The side panel mirrors the popup functionality and persists while you browse
-
----
-
-## Settings
-
-Access settings via the gear icon in the popup.
-
-| Setting | Description |
-| --- | --- |
-| History Limit | Number of recent items to retain (5–20) |
-| ZPID Tab | Show or hide the listing lookup tab |
-| Floating Button | Show or hide the floating side panel button |
-| Redirect After Impersonate | Smart redirect after impersonation — Consumer accounts go to Account.htm; Premier Agent accounts go to Profile.htm |
-| History Recording | Enable or disable search history |
-| Theme | Auto, Light, or Dark mode |
-
----
-
-## File Structure
-
-```
-Zillow-Admin-Tools/
-├── manifest.json        # Extension manifest (MV3)
-├── background.js        # Service worker: context menus, tab scraping, autocomplete
-├── content.js           # Injected script: floating action button
-├── popup.html           # Toolbar popup UI
-├── popup.js             # Popup logic
-├── sidepanel.html       # Side panel UI
-├── sidepanel.js         # Side panel logic
-├── icons/               # Extension icons (16, 48, 128px)
-└── fonts/               # Local fonts
-```
-
----
-
-## Permissions Used
-
-| Permission | Reason |
-| --- | --- |
-| `contextMenus` | Right-click impersonation menu |
-| `activeTab` | Access the current tab for scripting |
-| `tabs` | Open new tabs and listen for navigation events |
-| `scripting` | Execute scripts to scrape page titles and run autocomplete in Zillow tabs |
-| `storage` | Save history and settings locally |
-| `sidePanel` | Open and close the side panel |
-
----
-
-## Notes
-
-- This is an **internal tool** intended for Zillow support/ops team use only.
-- No data is sent to any external server. All history and settings are stored locally in `chrome.storage.local`.
-- The extension is currently at **v0.7.5**.
-
----
-
-## Author
-
-Built and maintained by David Rodriguez — Zillow Group, Customer/Partner Support Operations.
+- Also works on `mailto
