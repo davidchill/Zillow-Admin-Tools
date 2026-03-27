@@ -10,6 +10,20 @@ Versioning follows [Semantic Versioning](https://semver.org/) under `0.x.y`:
 
 ---
 
+## [0.8.0] – 2026-03-26
+### Added
+- New **CXN Call Testing** tab in both popup and side panel, with a phone icon and line-broken label to match the existing tab layout
+- **Splunk Search** section with "Splunk Events by ZUID (last 30 days)" search — opens Splunk connections events dashboard filtered by the entered Zuid
+- **Splunk Events by LeadID (last 30 days)** search field (Coming soon — disabled placeholder)
+- **Pearl Search** section with Lead ID search field (Coming soon — disabled placeholder)
+
+### Changed
+- All tab labels in popup and side panel now display each word on its own line for consistent, compact layout
+- Tab row padding tightened and letter-spacing added to tab labels for a cleaner appearance
+- Impersonate mode pill buttons (ZUID, Email, Screen Name, Auto) reduced to 9px font with `white-space: nowrap` to prevent "Screen Name" from wrapping and causing uneven pill heights
+
+---
+
 ## [0.7.5] – 2026-03-26
 ### Changed
 - Post-impersonation redirect now routes based on detected account type: Consumer accounts land on Account.htm in a single hop; Premier Agent accounts are redirected to Profile.htm only after ZPA-specific header items ("Property Tools", "Inbox") are detected in the page header

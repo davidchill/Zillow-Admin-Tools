@@ -224,14 +224,14 @@
     /* ── Tabs ── */
     .sp-tabs { display: flex; border-bottom: 1px solid var(--border); }
     .sp-tab {
-      flex: 1; padding: 9px 8px; font-size: 12px; font-weight: 700; text-align: center;
+      flex: 1; padding: 4px 2px; font-size: 11px; font-weight: 700; text-align: center;
+      letter-spacing: 0.04em; line-height: 1.25;
       cursor: pointer; border: none; background: none; color: var(--text-faint); transition: all 0.15s;
-      display: flex; align-items: center; justify-content: center; gap: 5px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
     }
     .sp-tab:hover { color: var(--text-tertiary); }
     .sp-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); background: var(--bg-surface); }
-    .sp-tab svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
-    #sp-tab-imp { font-size: 10px; gap: 3px; }
+    .sp-tab svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; flex-shrink: 0; }
 
     /* ── Quick Access Links ── */
     .quick-links { display: flex; align-items: center; justify-content: space-around; padding: 8px 16px; background: var(--bg-page); border-bottom: 1px solid var(--border); }
@@ -244,7 +244,7 @@
     .quick-btn:last-child[data-tip]::after { left: auto; right: 0; transform: none; }
 
     /* ── Search Content ── */
-    .search-content { padding: 12px 14px 14px; }
+    .search-content { padding: 12px 14px 4px; }
 
     /* Mode selector */
     .modes { display: flex; gap: 4px; margin-bottom: 12px; }
@@ -318,7 +318,7 @@
     .agent-name-row .search-btn { position: static; transform: none; flex-shrink: 0; }
 
     /* ── History Area ── */
-    .history-area { padding: 16px; flex: 1; }
+    .history-area { padding: 11px 16px 16px; }
 
     /* ── Sections ── */
     .section + .section { margin-top: 20px; }
@@ -435,11 +435,15 @@
       <div class="sp-tabs" id="sp-tabs">
         <button class="sp-tab" id="sp-tab-zpid">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Listing Search
+          Listing<br>Search
         </button>
         <button class="sp-tab active" id="sp-tab-imp">
           <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Impersonate / Find Agent
+          Impersonate /<br>Find Agent
+        </button>
+        <button class="sp-tab" id="sp-tab-cxn">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 11.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.41 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.41a16 16 0 0 0 6 6l.76-.76a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.34 16l-.42 2.92z"/></svg>
+          CXN Call<br>Testing
         </button>
       </div>
 
@@ -521,6 +525,40 @@
             </div>
             <div class="error-msg" id="sp-addr-error-msg"></div>
           </div>
+        </div>
+
+        <!-- CXN Call Testing (hidden on other tabs) -->
+        <div id="sp-cxn-search" class="hidden">
+
+          <!-- Splunk Search -->
+          <div class="section-divider">Splunk Search</div>
+          <label class="input-label">Splunk Events by ZUID (last 30 days)</label>
+          <div class="input-row" style="margin-bottom:2px;">
+            <input type="text" id="sp-cxn-zuid-input" placeholder="e.g. 64587302" inputmode="numeric" autocomplete="off">
+            <button class="search-btn" id="sp-cxn-zuid-go-btn">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="sp-cxn-zuid-error-msg"></div>
+          <label class="input-label" style="margin-top:4px; display:block;">Splunk Events by LeadID (last 30 days)</label>
+          <div class="input-row" style="margin-bottom:2px;">
+            <input type="text" id="sp-cxn-lead-input" placeholder="Coming soon" autocomplete="off" disabled>
+            <button class="search-btn" id="sp-cxn-lead-go-btn" disabled>
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          </div>
+
+          <!-- Pearl Search -->
+          <div class="section-divider" style="margin-top:12px;">Pearl Search</div>
+          <label class="input-label">Lead ID Search</label>
+          <div class="input-row" style="margin-bottom:2px;">
+            <input type="text" id="sp-cxn-pearl-lead-input" placeholder="Coming soon" autocomplete="off" disabled>
+            <button class="search-btn" id="sp-cxn-pearl-lead-go-btn" disabled>
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="sp-cxn-pearl-lead-error-msg"></div>
+
         </div>
       </div>
     </div>

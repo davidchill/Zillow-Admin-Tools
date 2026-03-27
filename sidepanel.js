@@ -50,6 +50,14 @@ const spAgentFirstInput   = document.getElementById('sp-agent-first');
 const spAgentLastInput    = document.getElementById('sp-agent-last');
 const spAgentGoBtn        = document.getElementById('sp-agent-go-btn');
 const spAgentErrorMsg     = document.getElementById('sp-agent-error-msg');
+const spTabCxn            = document.getElementById('sp-tab-cxn');
+const spCxnSearch         = document.getElementById('sp-cxn-search');
+const spCxnZuidInput         = document.getElementById('sp-cxn-zuid-input');
+const spCxnZuidGoBtn         = document.getElementById('sp-cxn-zuid-go-btn');
+const spCxnZuidErrorMsg      = document.getElementById('sp-cxn-zuid-error-msg');
+const spCxnPearlLeadInput    = document.getElementById('sp-cxn-pearl-lead-input');
+const spCxnPearlLeadGoBtn    = document.getElementById('sp-cxn-pearl-lead-go-btn');
+const spCxnPearlLeadErrorMsg = document.getElementById('sp-cxn-pearl-lead-error-msg');
 const spChangelogOpen        = document.getElementById('sp-changelog-open');
 const spChangelogOverlay     = document.getElementById('sp-changelog-overlay');
 const spChangelogClose       = document.getElementById('sp-changelog-close');
@@ -178,13 +186,15 @@ function switchSearchTab(tab) {
   currentTab = tab;
   spTabImp.classList.toggle('active',  tab === 'impersonate');
   spTabZpid.classList.toggle('active', tab === 'listing');
-  spModeRow.classList.toggle('hidden', tab === 'listing');
+  spTabCxn.classList.toggle('active',  tab === 'cxn');
+  spModeRow.classList.toggle('hidden', tab !== 'impersonate');
   spConfirmBar.classList.add('hidden');
   pendingConfirm = null;
 
   // Show/hide the correct input area
-  spImpSearch.classList.toggle('hidden', tab === 'listing');
+  spImpSearch.classList.toggle('hidden',     tab !== 'impersonate');
   spListingSearch.classList.toggle('hidden', tab !== 'listing');
+  spCxnSearch.classList.toggle('hidden',     tab !== 'cxn');
 
   // Clear all inputs and errors
   spInput.value = '';
@@ -203,11 +213,17 @@ function switchSearchTab(tab) {
   spAgentErrorMsg.textContent = '';
   spAgentFirstInput.classList.remove('has-error');
   spAgentLastInput.classList.remove('has-error');
+  spCxnZuidInput.value = '';
+  spCxnZuidErrorMsg.textContent = '';
+  spCxnZuidInput.classList.remove('has-error');
+  spCxnPearlLeadInput.value = '';
+  spCxnPearlLeadErrorMsg.textContent = '';
+  spCxnPearlLeadInput.classList.remove('has-error');
   hideAcDropdown();
 
   if (tab === 'listing') {
     switchListingMode('zillow');
-  } else {
+  } else if (tab !== 'cxn') {
     updateImpersonateLabels();
   }
   renderHistory();
@@ -426,6 +442,46 @@ spListingModeBtns.forEach(btn => {
   btn.addEventListener('click', () => switchListingMode(btn.dataset.lmode));
 });
 
+// ── CXN Call Testing ──────────────────────────────────────────────────────────
+
+const SP_CXN_SPLUNK_ZUID_BASE = 'https://zillowgroup.splunkcloud.com/en-US/app/search/connections_events_by_zuid?form.field1.earliest=-30d%40d&form.field1.latest=now&form.team_member_zuid=*&form.lead_ID=*&form.ZUID=';
+
+function doSpCxnZuidSearch() {
+  const raw = spCxnZuidInput.value.trim();
+  spCxnZuidErrorMsg.textContent = '';
+  spCxnZuidInput.classList.remove('has-error');
+  if (!raw) return;
+  const cleanId = raw.replace(/\D/g, '');
+  if (!cleanId) {
+    spCxnZuidErrorMsg.textContent = 'Please enter a numeric ZUID.';
+    spCxnZuidInput.classList.add('has-error');
+    return;
+  }
+  chrome.tabs.create({ url: SP_CXN_SPLUNK_ZUID_BASE + cleanId });
+  spCxnZuidInput.value = '';
+}
+
+spCxnZuidGoBtn.addEventListener('click', doSpCxnZuidSearch);
+spCxnZuidInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSpCxnZuidSearch();
+});
+
+const SP_PEARL_LEAD_BASE = 'https://concierge.revoc.zillow.com/admin/audit/';
+
+function doSpCxnPearlLeadSearch() {
+  const raw = spCxnPearlLeadInput.value.trim();
+  spCxnPearlLeadErrorMsg.textContent = '';
+  spCxnPearlLeadInput.classList.remove('has-error');
+  if (!raw) return;
+  chrome.tabs.create({ url: SP_PEARL_LEAD_BASE + encodeURIComponent(raw) });
+  spCxnPearlLeadInput.value = '';
+}
+
+spCxnPearlLeadGoBtn.addEventListener('click', doSpCxnPearlLeadSearch);
+spCxnPearlLeadInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSpCxnPearlLeadSearch();
+});
+
 // ── Address Search ────────────────────────────────────────────────────────────
 spAddrGoBtn.addEventListener('click', () => {
   if (acResults.length && !spAcDropdown.classList.contains('hidden')) {
@@ -613,6 +669,11 @@ function renderSectionBlock(titleSvg, titleText, items, clearId, emptyText, coll
 function renderHistory() {
   const limit = Math.min(20, Math.max(5, spSettings.historyLimit || 5));
 
+  if (currentTab === 'cxn') {
+    spHistoryEl.innerHTML = '';
+    return;
+  }
+
   const personSvg = `<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
   const eyeSvg    = `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 
@@ -662,6 +723,7 @@ function renderHistory() {
 // ── Event listeners ───────────────────────────────────────────────────────────
 spTabImp.addEventListener('click',  () => switchSearchTab('impersonate'));
 spTabZpid.addEventListener('click', () => switchSearchTab('listing'));
+spTabCxn.addEventListener('click',  () => switchSearchTab('cxn'));
 
 spModeBtns.forEach(btn => btn.addEventListener('click', () => switchMode(btn)));
 

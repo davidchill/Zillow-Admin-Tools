@@ -66,6 +66,14 @@
   const agentLastInput      = document.getElementById('agent-last');
   const agentGoBtn          = document.getElementById('agent-go-btn');
   const agentErrorMsg       = document.getElementById('agent-error-msg');
+  const tabCxn              = document.getElementById('tab-cxn');
+  const cxnSearch           = document.getElementById('cxn-search');
+  const cxnZuidInput        = document.getElementById('cxn-zuid-input');
+  const cxnZuidGoBtn        = document.getElementById('cxn-zuid-go-btn');
+  const cxnZuidErrorMsg     = document.getElementById('cxn-zuid-error-msg');
+  const cxnPearlLeadInput    = document.getElementById('cxn-pearl-lead-input');
+  const cxnPearlLeadGoBtn    = document.getElementById('cxn-pearl-lead-go-btn');
+  const cxnPearlLeadErrorMsg = document.getElementById('cxn-pearl-lead-error-msg');
 
   // ── Autocomplete state ──
   let acDebounceTimer = null;
@@ -307,13 +315,15 @@
     currentTab = tab;
     tabImp.classList.toggle('active',  tab === 'impersonate');
     tabZpid.classList.toggle('active', tab === 'listing');
-    modeRow.classList.toggle('hidden', tab === 'listing');
+    tabCxn.classList.toggle('active',  tab === 'cxn');
+    modeRow.classList.toggle('hidden', tab !== 'impersonate');
     confirmBar.classList.add('hidden');
     pendingConfirm = null;
 
     // Show/hide the correct input area
-    impSearch.classList.toggle('hidden', tab === 'listing');
+    impSearch.classList.toggle('hidden',    tab !== 'impersonate');
     listingSearch.classList.toggle('hidden', tab !== 'listing');
+    cxnSearch.classList.toggle('hidden',    tab !== 'cxn');
 
     // Clear all inputs and errors
     mainInput.value = '';
@@ -332,11 +342,19 @@
     agentErrorMsg.textContent = '';
     agentFirstInput.classList.remove('has-error');
     agentLastInput.classList.remove('has-error');
+    cxnZuidInput.value = '';
+    cxnZuidErrorMsg.textContent = '';
+    cxnZuidInput.classList.remove('has-error');
+    cxnPearlLeadInput.value = '';
+    cxnPearlLeadErrorMsg.textContent = '';
+    cxnPearlLeadInput.classList.remove('has-error');
     hideAcDropdown();
 
     if (tab === 'listing') {
       switchListingMode('zillow');
       footerText.textContent = 'Enter a ZPID to navigate directly, or type an address for autocomplete suggestions.';
+    } else if (tab === 'cxn') {
+      footerText.textContent = 'Enter a ZUID to search Splunk connection events.';
     } else {
       updateImpersonateLabels();
     }
@@ -345,6 +363,7 @@
 
   tabImp.addEventListener('click',  function () { switchTab('impersonate'); });
   tabZpid.addEventListener('click', function () { switchTab('listing'); });
+  tabCxn.addEventListener('click',  function () { switchTab('cxn'); });
 
   document.querySelectorAll('.quick-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -466,6 +485,50 @@
 
   listingModeBtns.forEach(function (btn) {
     btn.addEventListener('click', function () { switchListingMode(btn.dataset.lmode); });
+  });
+
+  // ══════════════════════════════
+  // CXN CALL TESTING (cxn tab)
+  // ══════════════════════════════
+
+  const CXN_SPLUNK_ZUID_BASE = 'https://zillowgroup.splunkcloud.com/en-US/app/search/connections_events_by_zuid?form.field1.earliest=-30d%40d&form.field1.latest=now&form.team_member_zuid=*&form.lead_ID=*&form.ZUID=';
+
+  function doCxnZuidSearch() {
+    const raw = cxnZuidInput.value.trim();
+    cxnZuidErrorMsg.textContent = '';
+    cxnZuidInput.classList.remove('has-error');
+    if (!raw) return;
+    const cleanId = raw.replace(/\D/g, '');
+    if (!cleanId) {
+      cxnZuidErrorMsg.textContent = 'Please enter a numeric ZUID.';
+      cxnZuidInput.classList.add('has-error');
+      return;
+    }
+    chrome.tabs.create({ url: CXN_SPLUNK_ZUID_BASE + cleanId });
+    cxnZuidInput.value = '';
+  }
+
+  cxnZuidGoBtn.addEventListener('click', doCxnZuidSearch);
+  cxnZuidInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') doCxnZuidSearch();
+  });
+
+  // ── Pearl Search ──────────────────────────────────────────────────────────
+
+  const PEARL_LEAD_BASE = 'https://concierge.revoc.zillow.com/admin/audit/';
+
+  function doCxnPearlLeadSearch() {
+    const raw = cxnPearlLeadInput.value.trim();
+    cxnPearlLeadErrorMsg.textContent = '';
+    cxnPearlLeadInput.classList.remove('has-error');
+    if (!raw) return;
+    chrome.tabs.create({ url: PEARL_LEAD_BASE + encodeURIComponent(raw) });
+    cxnPearlLeadInput.value = '';
+  }
+
+  cxnPearlLeadGoBtn.addEventListener('click', doCxnPearlLeadSearch);
+  cxnPearlLeadInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') doCxnPearlLeadSearch();
   });
 
   // ══════════════════════════════
@@ -693,6 +756,12 @@
 
   function renderHistory() {
     const limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
+
+    if (currentTab === 'cxn') {
+      historyHeader.style.display = 'none';
+      historyList.innerHTML = '';
+      return;
+    }
 
     if (currentTab === 'listing') {
       historyHeader.style.display = 'none';

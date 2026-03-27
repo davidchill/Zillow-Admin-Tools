@@ -326,19 +326,22 @@
 
     .tab {
       flex: 1;
-      padding: 10px;
-      font-size: 13px;
+      padding: 4px 2px;
+      font-size: 11px;
       font-weight: 700;
       text-align: center;
+      letter-spacing: 0.04em;
       cursor: pointer;
       border: none;
       background: none;
       color: var(--text-faint);
       transition: all 0.15s;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 3px;
+      line-height: 1.25;
     }
 
     .tab:hover {
@@ -357,11 +360,7 @@
       fill: none;
       stroke: currentColor;
       stroke-width: 2;
-    }
-
-    #tab-imp {
-      font-size: 10px;
-      gap: 3px;
+      flex-shrink: 0;
     }
 
     /* Quick Access Links */
@@ -455,12 +454,18 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
       border: 1px solid var(--border);
       background: var(--bg-surface);
       color: var(--text-faint);
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.15s;
+    }
+
+    #mode-row .mode-btn {
+      font-size: 9px;
+      letter-spacing: 0.3px;
     }
 
     .mode-btn:hover {
@@ -742,7 +747,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 18px;
+      margin-top: 3px;
       margin-bottom: 10px;
     }
 
@@ -1020,9 +1025,7 @@
 
     /* Footer */
     .footer {
-      background: var(--bg-page);
-      border-top: 1px solid var(--border);
-      padding: 14px 20px;
+      display: none;
     }
 
     .footer-inner {
@@ -1356,14 +1359,20 @@
         <circle cx="11" cy="11" r="8" />
         <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
-      Listing Search
+      Listing<br>Search
     </button>
     <button class="tab active" id="tab-imp">
       <svg viewBox="0 0 24 24">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
-      Impersonate / Find Agent
+      Impersonate /<br>Find Agent
+    </button>
+    <button class="tab" id="tab-cxn">
+      <svg viewBox="0 0 24 24">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 11.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.41 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.41a16 16 0 0 0 6 6l.76-.76a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.34 16l-.42 2.92z"/>
+      </svg>
+      CXN Call<br>Testing
     </button>
   </div>
 
@@ -1461,6 +1470,49 @@
         </div>
         <div class="error-msg" id="addr-error-msg"></div>
       </div>
+    </div>
+
+    <!-- CXN Call Testing (hidden on other tabs) -->
+    <div id="cxn-search" class="hidden">
+
+      <!-- Splunk Search -->
+      <div class="section-divider">Splunk Search</div>
+      <label class="input-label">Splunk Events by ZUID (last 30 days)</label>
+      <div class="input-row" style="margin-bottom:4px;">
+        <input type="text" id="cxn-zuid-input" placeholder="e.g. 64587302" inputmode="numeric" autocomplete="off">
+        <button class="search-btn" id="cxn-zuid-go-btn">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+      </div>
+      <div class="error-msg" id="cxn-zuid-error-msg"></div>
+      <label class="input-label" style="margin-top:4px; display:block;">Splunk Events by LeadID (last 30 days)</label>
+      <div class="input-row" style="margin-bottom:4px;">
+        <input type="text" id="cxn-lead-input" placeholder="Coming soon" autocomplete="off" disabled>
+        <button class="search-btn" id="cxn-lead-go-btn" disabled>
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Pearl Search -->
+      <div class="section-divider" style="margin-top:12px;">Pearl Search</div>
+      <label class="input-label">Lead ID Search</label>
+      <div class="input-row" style="margin-bottom:4px;">
+        <input type="text" id="cxn-pearl-lead-input" placeholder="Coming soon" autocomplete="off" disabled>
+        <button class="search-btn" id="cxn-pearl-lead-go-btn" disabled>
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+      </div>
+      <div class="error-msg" id="cxn-pearl-lead-error-msg"></div>
+
     </div>
 
     <!-- History -->
