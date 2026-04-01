@@ -1,0 +1,928 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Font ── */
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('/fonts/NunitoSans-VariableFont.ttf') format('truetype');
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: block;
+}
+
+/* ── CSS Variables: Light theme (default) ── */
+:root {
+  --bg-page: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-input: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-tertiary: #475569;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-medium: #cbd5e1;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-bg: #eff6ff;
+  --accent-text: #1d4ed8;
+  --error: #ef4444;
+  --error-border: #fca5a5;
+  --error-bg: #fef2f2;
+  --confirm-bg: #fffbeb;
+  --confirm-border: #fde68a;
+  --confirm-text: #92400e;
+  --wip-bg: #fef3c7;
+  --wip-text: #d97706;
+  --success: #22c55e;
+  --tooltip-bg: #1e293b;
+  --tooltip-text: #ffffff;
+  --scrollbar: #e2e8f0;
+  --overlay-bg: rgba(0, 0, 0, 0.45);
+  --toggle-off: #cbd5e1;
+  --badge-email-bg: #f3e8ff;
+  --badge-email-text: #7c3aed;
+  --badge-zuid-bg: #dbeafe;
+  --badge-zuid-text: #2563eb;
+  --badge-screen-bg: #dcfce7;
+  --badge-screen-text: #16a34a;
+  --badge-zpid-bg: #fef3c7;
+  --badge-zpid-text: #d97706;
+  --badge-viewed-bg: #ecfeff;
+  --badge-viewed-text: #0e7490;
+  --badge-phx-bg: #ffedd5;
+  --badge-phx-text: #c2410c;
+  --badge-dit-bg: #fce7f3;
+  --badge-dit-text: #be185d;
+}
+
+/* ── Dark theme: system preference (Auto mode) ── */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --bg-page: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-input: #0f172a;
+    --bg-subtle: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #b8cede;
+    --text-muted: #a8bccf;
+    --text-faint: #94a3b8;
+    --border: #334155;
+    --border-light: #1e293b;
+    --border-medium: #475569;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --accent-bg: #1e3a5f;
+    --accent-text: #93c5fd;
+    --error: #f87171;
+    --error-border: #ef4444;
+    --error-bg: #3b1515;
+    --confirm-bg: #2d1f07;
+    --confirm-border: #92400e;
+    --confirm-text: #fcd34d;
+    --wip-bg: #422006;
+    --wip-text: #fbbf24;
+    --tooltip-bg: #f1f5f9;
+    --tooltip-text: #0f172a;
+    --scrollbar: #334155;
+    --overlay-bg: rgba(0, 0, 0, 0.65);
+    --toggle-off: #475569;
+    --badge-email-bg: #3b1d5e;
+    --badge-email-text: #c4b5fd;
+    --badge-zuid-bg: #1e3a5f;
+    --badge-zuid-text: #93c5fd;
+    --badge-screen-bg: #14532d;
+    --badge-screen-text: #86efac;
+    --badge-zpid-bg: #422006;
+    --badge-zpid-text: #fbbf24;
+    --badge-viewed-bg: #0c2a33;
+    --badge-viewed-text: #67e8f9;
+    --badge-phx-bg: #431407;
+    --badge-phx-text: #fb923c;
+    --badge-dit-bg: #4a044e;
+    --badge-dit-text: #f0abfc;
+  }
+}
+
+/* ── Dark theme: explicit override ── */
+html[data-theme="dark"] {
+  --bg-page: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-input: #0f172a;
+  --bg-subtle: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #b8cede;
+  --text-muted: #a8bccf;
+  --text-faint: #94a3b8;
+  --border: #334155;
+  --border-light: #1e293b;
+  --border-medium: #475569;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-bg: #1e3a5f;
+  --accent-text: #93c5fd;
+  --error: #f87171;
+  --error-border: #ef4444;
+  --error-bg: #3b1515;
+  --confirm-bg: #2d1f07;
+  --confirm-border: #92400e;
+  --confirm-text: #fcd34d;
+  --wip-bg: #422006;
+  --wip-text: #fbbf24;
+  --tooltip-bg: #f1f5f9;
+  --tooltip-text: #0f172a;
+  --scrollbar: #334155;
+  --overlay-bg: rgba(0, 0, 0, 0.65);
+  --toggle-off: #475569;
+  --badge-email-bg: #3b1d5e;
+  --badge-email-text: #c4b5fd;
+  --badge-zuid-bg: #1e3a5f;
+  --badge-zuid-text: #93c5fd;
+  --badge-screen-bg: #14532d;
+  --badge-screen-text: #86efac;
+  --badge-zpid-bg: #422006;
+  --badge-zpid-text: #fbbf24;
+  --badge-viewed-bg: #0c2a33;
+  --badge-viewed-text: #67e8f9;
+  --badge-phx-bg: #431407;
+  --badge-phx-text: #fb923c;
+  --badge-dit-bg: #4a044e;
+  --badge-dit-text: #f0abfc;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  font-family: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+body[data-surface="popup"] { width: 380px; }
+body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
+
+/* ── Shared input styles ── */
+.zat-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.zat-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+.zat-input.has-error {
+  border-color: var(--error-border);
+  background: var(--error-bg);
+}
+.zat-input::placeholder { color: var(--text-faint); }
+
+/* ── Search button ── */
+.zat-search-btn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.zat-search-btn:hover { background: var(--accent-hover); }
+.zat-search-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: white;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Mode buttons ── */
+.zat-modes {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.zat-mode-btn {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.zat-mode-btn.active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.zat-mode-btn:hover:not(.active) {
+  background: var(--bg-subtle);
+  border-color: var(--border-medium);
+}
+
+/* ── WIP tag ── */
+.zat-wip-tag {
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--wip-bg);
+  color: var(--wip-text);
+  letter-spacing: 0.3px;
+}
+
+/* ── Input label ── */
+.zat-input-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* ── Error message ── */
+.zat-error {
+  font-size: 11px;
+  color: var(--error);
+  min-height: 16px;
+  margin-top: 3px;
+}
+
+/* ── Input hint ── */
+.zat-input-hint {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+}
+
+/* ── Section divider ── */
+.zat-section-divider {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 0 6px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 10px;
+}
+
+/* ── History items ── */
+.zat-history-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 6px;
+  text-align: left;
+  font-family: inherit;
+}
+.zat-history-item:hover { background: var(--bg-subtle); }
+
+.zat-history-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.zat-history-item-id {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+.zat-history-item-id-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.zat-history-item-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding-left: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Copy/Open action buttons ── */
+.zat-copy-btn, .zat-open-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+.zat-copy-btn { padding: 2px; }
+.zat-copy-btn:hover { background: var(--border); }
+
+.zat-open-btn {
+  padding: 2px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+.zat-open-btn:hover { background: var(--border); color: var(--text-primary); }
+
+/* Tooltips */
+.zat-copy-btn[data-tip]::after,
+.zat-open-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  font-size: 11px;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: 10;
+}
+.zat-copy-btn[data-tip]:hover::after,
+.zat-open-btn[data-tip]:hover::after { opacity: 1; }
+
+/* Copy/external icon SVGs */
+.zat-copy-icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--border-medium);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.15s;
+}
+.zat-history-item:hover .zat-copy-icon { stroke: var(--text-faint); }
+.zat-copy-btn:hover .zat-copy-icon { stroke: var(--text-tertiary); }
+.zat-copy-btn.copy-ok .zat-copy-icon { stroke: var(--success); }
+
+.zat-ext-icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--border-medium);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.15s;
+  flex-shrink: 0;
+}
+.zat-history-item:hover .zat-ext-icon { stroke: var(--accent); }
+
+/* ── Badges ── */
+.zat-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+.zat-badge-email      { background: var(--badge-email-bg);  color: var(--badge-email-text); }
+.zat-badge-zuid       { background: var(--badge-zuid-bg);   color: var(--badge-zuid-text); }
+.zat-badge-screenname { background: var(--badge-screen-bg); color: var(--badge-screen-text); }
+.zat-badge-zpid       { background: var(--badge-zpid-bg);   color: var(--badge-zpid-text); }
+.zat-badge-viewed     { background: var(--badge-viewed-bg); color: var(--badge-viewed-text); }
+.zat-badge-phx        { background: var(--badge-phx-bg);    color: var(--badge-phx-text); }
+.zat-badge-dit        { background: var(--badge-dit-bg);    color: var(--badge-dit-text); }
+
+/* ── Empty state ── */
+.zat-empty-state {
+  text-align: center;
+  padding: 28px 0;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+}
+.zat-empty-state p {
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+/* ── History header row ── */
+.zat-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.zat-history-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+.zat-history-title svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.zat-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.zat-clear-btn:hover { background: var(--error-bg); color: var(--error); }
+.zat-clear-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Confirm bar ── */
+.zat-confirm-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--confirm-bg);
+  border: 1px solid var(--confirm-border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--confirm-text);
+}
+.zat-confirm-bar strong { font-weight: 700; }
+.zat-confirm-text { flex: 1; }
+.zat-confirm-yes {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.zat-confirm-yes:hover { background: var(--accent-hover); }
+.zat-confirm-no {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  background: none;
+  color: var(--confirm-text);
+  border: 1px solid var(--confirm-border);
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Toggle switch ── */
+.zat-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.zat-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.zat-toggle-track {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--toggle-off);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.zat-toggle-track::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.zat-toggle input:checked + .zat-toggle-track { background: var(--accent); }
+.zat-toggle input:checked + .zat-toggle-track::after { transform: translateX(20px); }
+
+/* ── Segmented control (theme / default-tab picker) ── */
+.zat-seg {
+  display: flex;
+  background: var(--bg-subtle);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+.zat-seg-btn {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: none;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.zat-seg-btn.active {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* ── Highspot search ── */
+.zat-highspot-search {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-surface);
+}
+
+/* ── Quick links ── */
+.zat-quick-links {
+  display: flex;
+  gap: 4px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  flex-wrap: wrap;
+}
+.zat-quick-btn {
+  flex: 1;
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-subtle);
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.zat-quick-btn:hover { background: var(--accent-bg); border-color: var(--accent); }
+.zat-quick-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.zat-quick-btn:hover svg { stroke: var(--accent); }
+
+/* Quick btn tooltips */
+.zat-quick-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  font-size: 11px;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: 100;
+  font-family: 'Nunito Sans', sans-serif;
+}
+.zat-quick-btn[data-tip]:hover::after { opacity: 1; }
+
+/* ── Tabs ── */
+.zat-tabs {
+  display: flex;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+.zat-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: inherit;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.zat-tab svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.zat-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.zat-tab:hover:not(.active) {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+/* ── Autocomplete dropdown ── */
+.zat-ac-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 50;
+  margin-top: 2px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.zat-ac-item {
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border-light);
+}
+.zat-ac-item:last-child { border-bottom: none; }
+.zat-ac-item:hover, .zat-ac-item.active { background: var(--bg-subtle); }
+.zat-ac-item-main {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.zat-ac-item-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* ── Settings/Changelog overlay ── */
+.zat-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--overlay-bg);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zat-modal {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  width: min(340px, calc(100vw - 24px));
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+.zat-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-input);
+  flex-shrink: 0;
+}
+.zat-modal-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.zat-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.zat-modal-close:hover { background: var(--border); }
+.zat-modal-close svg {
+  width: 18px; height: 18px;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.zat-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ── Settings rows ── */
+.zat-setting-row { margin-bottom: 18px; }
+.zat-setting-row:last-child { margin-bottom: 0; }
+.zat-setting-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+.zat-setting-label-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.zat-setting-label-hint { font-size: 10px; color: var(--text-faint); }
+.zat-setting-desc { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; }
+.zat-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.zat-toggle-label-group { flex: 1; }
+.zat-toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.zat-toggle-sub {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 1px;
+}
+.zat-setting-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  outline: none;
+}
+.zat-setting-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+.zat-setting-input[type="number"] { -moz-appearance: textfield; }
+.zat-setting-input[type="number"]::-webkit-inner-spin-button,
+.zat-setting-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+
+/* ── Changelog ── */
+.zat-cl-version {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 14px 0 6px;
+}
+.zat-cl-version:first-child { margin-top: 0; }
+.zat-cl-version-num {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.zat-cl-version-date {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.zat-cl-section {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-text);
+  margin: 8px 0 4px;
+}
+.zat-cl-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.zat-cl-list li {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 3px 0 3px 14px;
+  position: relative;
+  line-height: 1.5;
+}
+.zat-cl-list li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: var(--text-faint);
+}
+
+/* ── Agent name row ── */
+.zat-agent-row {
+  display: flex;
+  gap: 6px;
+}
+.zat-agent-row .zat-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Version tag ── */
+.zat-version-tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #93c5fd;
+  margin-left: 0;
+  margin-top: 2px;
+  opacity: 0.8;
+  white-space: nowrap;
+}
