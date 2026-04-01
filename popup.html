@@ -216,12 +216,43 @@
       font-weight: 400;
       color: rgba(255, 255, 255, 0.3);
       letter-spacing: 0.1px;
+      white-space: nowrap;
     }
 
     .header p {
       font-size: 12px;
       color: #94a3b8;
       margin-top: 4px;
+    }
+
+    .highspot-search {
+      margin-top: 10px;
+    }
+
+    .highspot-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 6px;
+      padding-left: 2px;
+    }
+
+    .highspot-row input {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: white;
+    }
+
+    .highspot-row input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .highspot-row input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
     }
 
     .settings-btn {
@@ -1308,6 +1339,18 @@
       </button>
     </div>
     <p>Search listings or impersonate users by email, ZUID, or screen name.</p>
+    <div class="highspot-search">
+      <label class="highspot-label">Highspot Search</label>
+      <div class="input-row highspot-row">
+        <input type="text" id="highspot-input" placeholder="Search Highspot..." autocomplete="off">
+        <button class="search-btn" id="highspot-go-btn">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Quick Access Links -->

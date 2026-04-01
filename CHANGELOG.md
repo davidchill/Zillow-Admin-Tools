@@ -10,6 +10,15 @@ Versioning follows [Semantic Versioning](https://semver.org/) under `0.x.y`:
 
 ---
 
+## [0.8.1] – 2026-03-31
+### Added
+- **Highspot Search** in the header of both popup and side panel — type any query and press Enter (or click the search button) to open `https://zillow.highspot.com/search?q=` in a new tab
+
+### Fixed
+- Version badge (e.g. "v0.8.1 · Mar 31, 2026") no longer wraps across two lines in narrow header layouts; added `white-space: nowrap` to the version tag
+
+---
+
 ## [0.8.0] – 2026-03-26
 ### Added
 - New **CXN Call Testing** tab in both popup and side panel, with a phone icon and line-broken label to match the existing tab layout

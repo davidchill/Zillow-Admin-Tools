@@ -50,6 +50,8 @@ const spAgentFirstInput   = document.getElementById('sp-agent-first');
 const spAgentLastInput    = document.getElementById('sp-agent-last');
 const spAgentGoBtn        = document.getElementById('sp-agent-go-btn');
 const spAgentErrorMsg     = document.getElementById('sp-agent-error-msg');
+const spHighspotInput     = document.getElementById('sp-highspot-input');
+const spHighspotGoBtn     = document.getElementById('sp-highspot-go-btn');
 const spTabCxn            = document.getElementById('sp-tab-cxn');
 const spCxnSearch         = document.getElementById('sp-cxn-search');
 const spCxnZuidInput         = document.getElementById('sp-cxn-zuid-input');
@@ -736,6 +738,16 @@ spAgentGoBtn.addEventListener('click', doAgentSearch);
 spAgentFirstInput.addEventListener('keydown', e => { if (e.key === 'Enter') doAgentSearch(); });
 spAgentLastInput.addEventListener('keydown',  e => { if (e.key === 'Enter') doAgentSearch(); });
 
+function doHighspotSearch() {
+  const q = spHighspotInput.value.trim();
+  if (!q) return;
+  chrome.tabs.create({ url: 'https://zillow.highspot.com/search?q=' + encodeURIComponent(q) });
+  spHighspotInput.value = '';
+}
+
+spHighspotGoBtn.addEventListener('click', doHighspotSearch);
+spHighspotInput.addEventListener('keydown', e => { if (e.key === 'Enter') doHighspotSearch(); });
+
 document.querySelectorAll('.quick-btn').forEach(btn => {
   btn.addEventListener('click', () => { chrome.tabs.create({ url: btn.dataset.url }); });
 });
@@ -909,7 +921,7 @@ spSettingDefaultTab.addEventListener('click', e => {
 });
 
 // ── Version badge ─────────────────────────────────────────────────────────────
-const RELEASE_DATE = 'Mar 25, 2026';
+const RELEASE_DATE = 'Mar 31, 2026';
 const spVersionTag = document.getElementById('sp-version-tag');
 if (spVersionTag) {
   const v = chrome.runtime.getManifest().version;
