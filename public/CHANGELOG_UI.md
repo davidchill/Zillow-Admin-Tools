@@ -8,7 +8,7 @@
 
 ---
 
-## [0.8.2]� 2026-04-01
+## [0.8.2] – 2026-04-01
 ### Changed
 - Migrated from plain HTML/JS to WXT + React + TypeScript
 - Rebuilt all UI as React components with Tailwind CSS and strict TypeScript
@@ -17,16 +17,16 @@
 
 ---
 
-## [0.8.1] � 2026-04-01
+## [0.8.1] – 2026-04-01
 ### Added
-- Highspot Search bar in the header � enter a query to search zillow.highspot.com
+- Highspot Search bar in the header — enter a query to search zillow.highspot.com
 
 ### Fixed
 - Version badge no longer wraps in narrow popup widths
 
 ---
 
-## [0.8.0] � 2026-03-27
+## [0.8.0] – 2026-03-27
 ### Added
 - CXN Call Testing tab with Splunk log search and Pearl call search sections
 
