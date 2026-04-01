@@ -1,7 +1,7 @@
 {
   "name": "zillow-admin-tools",
   "description": "Zillow Admin Tools Chrome Extension",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "type": "module",
   "scripts": {
