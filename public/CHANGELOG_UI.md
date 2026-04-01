@@ -1,3 +1,26 @@
+## [0.8.2] – 2026-04-01
+### Changed
+- Migrated from plain HTML/JS to WXT + React + TypeScript
+- Rebuilt all UI as React components with Tailwind CSS and strict TypeScript
+- Popup and Side Panel now share a single `<App>` component via a `surface` prop
+- All chrome.storage access moved to dedicated `useSettings` and `useHistory` hooks
+
+---
+
+## [0.8.1] – 2026-04-01
+### Added
+- Highspot Search bar in the header — enter a query to search zillow.highspot.com
+
+### Fixed
+- Version badge no longer wraps in narrow popup widths
+
+---
+
+## [0.8.0] – 2026-03-27
+### Added
+- CXN Call Testing tab with Splunk log search and Pearl call search sections
+
+---
 ## [0.7.5] â€“ 2026-03-26
 ### Changed
 - Post-impersonation redirect is now account-type-aware: Consumer accounts land on Account.htm directly; Premier Agent accounts are detected via ZPA-specific header items and redirected to Profile.htm
@@ -96,3 +119,4 @@
 - ZPID search and address autocomplete; recently viewed property tracking
 - PHX and DIT listing modes; address sub-line on history items
 - Initial release
+

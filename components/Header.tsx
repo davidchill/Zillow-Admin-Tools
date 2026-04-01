@@ -7,7 +7,7 @@ interface Props {
 
 export default function Header({ onChangelogOpen, onSettingsOpen }: Props) {
   const version = chrome.runtime.getManifest().version;
-  const RELEASE_DATE = 'Mar 25, 2026';
+  const RELEASE_DATE = 'Apr 1, 2026';
 
   return (
     <div
