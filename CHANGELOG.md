@@ -15,6 +15,10 @@ Versioning follows:
 ### Added
 - `README.md` added to the repository — documents all features, surfaces, tech stack, project structure, storage schema, and build/install steps
 
+### Fixed
+- Impersonation base URL corrected to `/user/Impersonate.htm` (was `/Impersonate.htm`)
+- ZUID impersonation requests now include `action=impersonate&confirm=1` parameters to ensure the impersonation completes without an extra confirmation step
+
 ---
 
 ## [0.8.2] – 2026-04-01

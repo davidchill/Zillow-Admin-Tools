@@ -39,10 +39,7 @@ export function buildListingUrl(type: ListingMode | 'viewed', id: string): strin
   return `https://www.zillow.com/homedetails/${id}_zpid/`;
 }
 
-export function buildAgentSearchUrl(first: string, last: string): string {
-  const nameParam = [first, last]
-    .filter(Boolean)
-    .map((n) => n.replace(/\s+/g, '+'))
-    .join('+');
+export function buildAgentSearchUrl(name: string): string {
+  const nameParam = name.trim().replace(/\s+/g, '+');
   return `https://www.zillow.com/professionals/real-estate-agent-reviews/?name=${nameParam}`;
 }

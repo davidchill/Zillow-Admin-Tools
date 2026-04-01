@@ -174,7 +174,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 /* ── Shared input styles ── */
 .zat-input {
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 13px;
@@ -196,8 +196,8 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 
 /* ── Search button ── */
 .zat-search-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
   background: var(--accent);
   border: none;

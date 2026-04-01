@@ -2,6 +2,10 @@
 ### Added
 - README added to the repository with full feature documentation, build instructions, and project structure
 
+### Fixed
+- Impersonation URL corrected — requests now route through `/user/Impersonate.htm`
+- ZUID impersonations now skip the extra confirmation step automatically
+
 ---
 
 ## [0.8.2]� 2026-04-01

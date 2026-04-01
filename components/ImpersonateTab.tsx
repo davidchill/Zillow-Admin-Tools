@@ -61,8 +61,7 @@ export default function ImpersonateTab({
   const [pending, setPending] = useState<{ method: ImpersonateMethod; value: string } | null>(null);
 
   // Agent search
-  const [agentFirst, setAgentFirst] = useState('');
-  const [agentLast, setAgentLast] = useState('');
+  const [agentName, setAgentName] = useState('');
   const [agentError, setAgentError] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -125,16 +124,14 @@ export default function ImpersonateTab({
   }
 
   function doAgentSearch() {
-    const first = agentFirst.trim();
-    const last = agentLast.trim();
+    const name = agentName.trim();
     setAgentError('');
-    if (!first && !last) {
-      setAgentError('Enter at least a first or last name.');
+    if (!name) {
+      setAgentError('Enter an agent name to search.');
       return;
     }
-    chrome.tabs.create({ url: buildAgentSearchUrl(first, last) });
-    setAgentFirst('');
-    setAgentLast('');
+    chrome.tabs.create({ url: buildAgentSearchUrl(name) });
+    setAgentName('');
   }
 
   const limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
@@ -195,22 +192,13 @@ export default function ImpersonateTab({
       {/* Find an Agent */}
       <div className="zat-section-divider">Find an Agent</div>
       <p className="zat-input-hint">Opens the Zillow Find an Agent results page.</p>
-      <div className="zat-agent-row mb-1">
+      <div className="flex gap-2 mb-1">
         <input
           type="text"
           className="zat-input"
-          placeholder="First name"
-          value={agentFirst}
-          onChange={(e) => setAgentFirst(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') doAgentSearch(); }}
-          autoComplete="off"
-        />
-        <input
-          type="text"
-          className="zat-input"
-          placeholder="Last name"
-          value={agentLast}
-          onChange={(e) => setAgentLast(e.target.value)}
+          placeholder="Agent name"
+          value={agentName}
+          onChange={(e) => { setAgentName(e.target.value); setAgentError(''); }}
           onKeyDown={(e) => { if (e.key === 'Enter') doAgentSearch(); }}
           autoComplete="off"
         />
