@@ -5,14 +5,36 @@ import { buildImpersonateUrl, PROFILE_REDIRECT, CONSUMER_REDIRECT } from '@/util
 
 export default defineBackground(() => {
   // ── Side Panel state tracking ──────────────────────────────────────────────
-  const openPanelWindows = new Set<number>();
+  //
+  // Persisted in chrome.storage.session rather than an in-memory Set so that
+  // the toggle state survives service worker restarts (MV3 SWs are ephemeral).
+  // storage.session is cleared on browser restart, matching the lifetime of
+  // open tabs/panels, and is fast enough to use synchronously on each message.
+
+  const SESSION_PANELS_KEY = 'zat_open_panels';
+
+  function getPanelWindows(): Promise<Set<number>> {
+    return new Promise((resolve) => {
+      chrome.storage.session.get(SESSION_PANELS_KEY, (data) => {
+        resolve(new Set<number>((data[SESSION_PANELS_KEY] as number[]) || []));
+      });
+    });
+  }
+
+  function setPanelWindows(set: Set<number>): Promise<void> {
+    return new Promise((resolve) => {
+      chrome.storage.session.set({ [SESSION_PANELS_KEY]: [...set] }, resolve);
+    });
+  }
 
   chrome.runtime.onConnect.addListener((port) => {
     if (!port.name.startsWith('zat-sidepanel-')) return;
     const windowId = parseInt(port.name.replace('zat-sidepanel-', ''), 10);
     if (!isNaN(windowId)) {
-      openPanelWindows.add(windowId);
-      port.onDisconnect.addListener(() => openPanelWindows.delete(windowId));
+      getPanelWindows().then((set) => { set.add(windowId); return setPanelWindows(set); });
+      port.onDisconnect.addListener(() => {
+        getPanelWindows().then((set) => { set.delete(windowId); return setPanelWindows(set); });
+      });
     }
   });
 
@@ -357,13 +379,17 @@ export default defineBackground(() => {
     if (msg.action === 'openSidePanel') {
       const windowId = sender.tab?.windowId;
       if (windowId != null) {
-        if (openPanelWindows.has(windowId)) {
-          // chrome.sidePanel.close() was added in Chrome 116 but is missing
-          // from the current @types/chrome definitions — cast to unblock tsc.
-          (chrome.sidePanel as unknown as { close: (opts: { windowId: number }) => void }).close({ windowId });
-        } else {
-          chrome.sidePanel.open({ windowId });
-        }
+        getPanelWindows().then((set) => {
+          if (set.has(windowId)) {
+            // chrome.sidePanel.close() was added in Chrome 116 but is missing
+            // from the current @types/chrome definitions — cast to unblock tsc.
+            (chrome.sidePanel as unknown as { close: (opts: { windowId: number }) => void }).close({ windowId });
+          } else {
+            chrome.sidePanel.open({ windowId });
+          }
+          sendResponse({ ok: true });
+        });
+        return true; // keep channel open for async getPanelWindows response
       }
       sendResponse({ ok: true });
     }

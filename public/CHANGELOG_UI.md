@@ -1,3 +1,10 @@
+## [0.8.6.1] – 2026-04-02
+### Fixed
+- Side panel toggle now works correctly after Chrome restarts the service worker in the background — no more getting stuck in "open only" mode
+- Changelog text is now safely escaped before rendering
+
+---
+
 ## [0.8.6] – 2026-04-02
 ### Changed
 - Listing Search tab is now always present — the hidden "Show Listing Search Tab" setting has been removed from the underlying code

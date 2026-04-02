@@ -6,6 +6,15 @@ interface Props {
   onClose: () => void;
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function parseChangelog(md: string): string {
   const lines = md.split('\n');
   let html = '';
@@ -35,14 +44,14 @@ function parseChangelog(md: string): string {
     const vMatch = line.match(/^## \[(.+?)\]\s*[–-]\s*(.+)/);
     if (vMatch) {
       if (inList) { html += '</ul>'; inList = false; }
-      html += `<div class="zat-cl-version"><span class="zat-cl-version-num">v${vMatch[1]}</span><span class="zat-cl-version-date">${vMatch[2]}</span></div>`;
+      html += `<div class="zat-cl-version"><span class="zat-cl-version-num">v${escapeHtml(vMatch[1])}</span><span class="zat-cl-version-date">${escapeHtml(vMatch[2])}</span></div>`;
       continue;
     }
 
     const sMatch = line.match(/^### (.+)/);
     if (sMatch) {
       if (inList) { html += '</ul>'; inList = false; }
-      html += `<div class="zat-cl-section">${sMatch[1]}</div><ul class="zat-cl-list">`;
+      html += `<div class="zat-cl-section">${escapeHtml(sMatch[1])}</div><ul class="zat-cl-list">`;
       inList = true;
       continue;
     }
@@ -50,7 +59,7 @@ function parseChangelog(md: string): string {
     const iMatch = line.match(/^- (.+)/);
     if (iMatch) {
       if (!inList) { html += '<ul class="zat-cl-list">'; inList = true; }
-      html += `<li>${iMatch[1]}</li>`;
+      html += `<li>${escapeHtml(iMatch[1])}</li>`;
       continue;
     }
   }

@@ -10,6 +10,14 @@ Versioning follows:
 
 ---
 
+## [0.8.6.1] – 2026-04-02
+
+### Security
+- `ChangelogModal`: HTML-escape all user-content values before injecting via `dangerouslySetInnerHTML` — version numbers, section headings, and list item text are now passed through an `escapeHtml` helper
+- `background.ts`: Side panel open/closed state moved from an in-memory `Set` to `chrome.storage.session` so the toggle survives MV3 service worker restarts; the `openSidePanel` message handler is now properly async
+
+---
+
 ## [0.8.6] – 2026-04-02
 
 ### Changed
