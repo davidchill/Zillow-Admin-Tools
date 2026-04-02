@@ -10,6 +10,15 @@ Versioning follows:
 
 ---
 
+## [0.8.5] – 2026-04-02
+
+### Fixed
+- TypeScript: removed unsafe type cast on `onAddToHistory` in `App.tsx`; widened `HistoryItem.method` and `addToHistory` to correctly include `'zpid' | 'phx' | 'dit'`
+- TypeScript: added explicit type assertion for `chrome.sidePanel.close()` which exists in Chrome 116+ but is absent from the current `@types/chrome` definitions
+- "Smart Redirect After Impersonate" setting description updated to "Redirects you to the profile page when impersonating agent profiles."
+
+---
+
 ## [0.8.4] – 2026-04-01
 
 ### Changed

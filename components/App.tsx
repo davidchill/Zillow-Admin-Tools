@@ -162,7 +162,7 @@ export default function App({ surface }: Props) {
           <ListingTab
             viewedHistory={viewedHistory}
             settings={settings}
-            onAddToHistory={addToHistory as (type: 'zpid' | 'phx' | 'dit', id: string, method: 'zpid' | 'phx' | 'dit', label?: string) => void}
+            onAddToHistory={addToHistory}
             onClearViewed={clearViewed}
             onRemoveFromViewed={removeFromViewed}
           />

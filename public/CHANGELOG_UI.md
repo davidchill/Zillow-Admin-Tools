@@ -1,3 +1,9 @@
+## [0.8.5] – 2026-04-02
+### Fixed
+- "Smart Redirect After Impersonate" setting description updated to read clearly: "Redirects you to the profile page when impersonating agent profiles."
+
+---
+
 ## [0.8.4] – 2026-04-01
 ### Changed
 - Tooltips everywhere updated to a bold pill style with a subtle drop shadow

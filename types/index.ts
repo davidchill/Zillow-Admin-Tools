@@ -9,7 +9,7 @@ export type HistoryItemType = 'impersonate' | 'zpid' | 'phx' | 'dit' | 'viewed';
 export interface HistoryItem {
   type: HistoryItemType;
   id: string;
-  method: ImpersonateMethod | 'viewed';
+  method: ImpersonateMethod | 'viewed' | 'zpid' | 'phx' | 'dit';
   label: string;
   timestamp: number;
 }

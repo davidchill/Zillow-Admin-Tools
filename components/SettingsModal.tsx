@@ -145,7 +145,7 @@ export default function SettingsModal({ settings, onUpdate, onClose }: Props) {
               checked={settings.redirectEnabled}
               onChange={(v) => onUpdate({ redirectEnabled: v })}
               label="Smart Redirect After Impersonate"
-              sub="Detects ZPA vs. Consumer accounts and routes accordingly."
+              sub="Redirects you to the profile page when impersonating agent profiles."
             />
           </div>
         </div>

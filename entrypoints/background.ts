@@ -88,17 +88,20 @@ export default defineBackground(() => {
           } else {
             chrome.tabs.update(tabId, { url: CONSUMER_REDIRECT }, () => {
               if (chrome.runtime.lastError) return;
-              function onAccountLoaded(
-                uid: number,
-                ci: chrome.tabs.TabChangeInfo
+              // Use onDOMContentLoaded instead of tabs 'complete' so we trigger
+              // detection as soon as the HTML is parsed — before images and
+              // third-party scripts finish loading.  A 300 ms buffer gives React
+              // time to hydrate ZPA nav elements before the DOM query runs.
+              function onDomReady(
+                details: chrome.webNavigation.WebNavigationFramedCallbackDetails
               ) {
-                if (uid !== tabId || ci.status !== 'complete') return;
-                chrome.tabs.onUpdated.removeListener(onAccountLoaded);
-                runDetection(tabId);
+                if (details.tabId !== tabId || details.frameId !== 0) return;
+                chrome.webNavigation.onDOMContentLoaded.removeListener(onDomReady);
+                setTimeout(() => runDetection(tabId), 300);
               }
-              chrome.tabs.onUpdated.addListener(onAccountLoaded);
+              chrome.webNavigation.onDOMContentLoaded.addListener(onDomReady);
               setTimeout(
-                () => chrome.tabs.onUpdated.removeListener(onAccountLoaded),
+                () => chrome.webNavigation.onDOMContentLoaded.removeListener(onDomReady),
                 25000
               );
             });
@@ -383,7 +386,9 @@ export default defineBackground(() => {
       const windowId = sender.tab?.windowId;
       if (windowId != null) {
         if (openPanelWindows.has(windowId)) {
-          chrome.sidePanel.close({ windowId });
+          // chrome.sidePanel.close() was added in Chrome 116 but is missing
+          // from the current @types/chrome definitions — cast to unblock tsc.
+          (chrome.sidePanel as unknown as { close: (opts: { windowId: number }) => void }).close({ windowId });
         } else {
           chrome.sidePanel.open({ windowId });
         }

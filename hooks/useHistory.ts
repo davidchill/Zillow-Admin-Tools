@@ -31,7 +31,7 @@ export function useHistory(historyLimit: number) {
     (
       type: HistoryItemType,
       id: string,
-      method: ImpersonateMethod | 'viewed',
+      method: ImpersonateMethod | 'viewed' | 'zpid' | 'phx' | 'dit',
       label = ''
     ) => {
       const limit = Math.min(20, Math.max(5, historyLimit));
