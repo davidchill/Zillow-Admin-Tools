@@ -151,16 +151,10 @@ export default function HistoryItem({ item, onClick }: Props) {
         : 'Copy ID';
     actionButtons = <SmartCopyBtn text={item.id} tip={copyTip} />;
     extButton = (
-      <button
-        className="zat-open-btn"
-        style={{ padding: 2, background: 'none', border: 'none' }}
-        onClick={(e) => {
-          e.stopPropagation();
-          chrome.tabs.create({ url: buildListingUrl(item.type as 'zpid' | 'phx' | 'dit', item.id) });
-        }}
-      >
-        {EXT_SVG}
-      </button>
+      <OpenBtn
+        url={buildListingUrl((item.type === 'zpid' ? 'zillow' : item.type) as 'zillow' | 'phx' | 'dit', item.id)}
+        tip="Open listing"
+      />
     );
   } else {
     // Impersonate
@@ -172,15 +166,10 @@ export default function HistoryItem({ item, onClick }: Props) {
         : 'Copy ZUID';
     actionButtons = <SmartCopyBtn text={item.id} tip={copyTip} />;
     extButton = (
-      <button
-        style={{ display: 'flex', alignItems: 'center', padding: 2, background: 'none', border: 'none', cursor: 'pointer' }}
-        onClick={(e) => {
-          e.stopPropagation();
-          chrome.tabs.create({ url: buildImpersonateUrl(item.method as 'email' | 'zuid' | 'screenname', item.id) });
-        }}
-      >
-        {EXT_SVG}
-      </button>
+      <OpenBtn
+        url={buildImpersonateUrl(item.method as 'email' | 'zuid' | 'screenname', item.id)}
+        tip="Impersonate"
+      />
     );
   }
 
