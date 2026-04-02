@@ -76,37 +76,12 @@ export default function App({ surface }: Props) {
   // Set initial tab from settings once loaded
   useEffect(() => {
     if (!ready) return;
-    const defaultTab = settings.defaultTab || 'listing';
-    // If zpidTab is disabled, fall back to impersonate
-    if (!settings.zpidTabEnabled && defaultTab === 'listing') {
-      setCurrentTab('impersonate');
-    } else {
-      setCurrentTab(defaultTab);
-    }
+    setCurrentTab(settings.defaultTab || 'listing');
   }, [ready]);  // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Reload history when tab becomes visible again (popup re-opens)
-  useEffect(() => {
-    const handler = () => {
-      if (!document.hidden) {
-        chrome.storage.local.get(
-          ['zillow_history_v3', 'zillow_viewed_v3', 'zillow_settings'],
-          () => {
-            // Storage hook handles the update via onChanged listener
-          }
-        );
-      }
-    };
-    document.addEventListener('visibilitychange', handler);
-    return () => document.removeEventListener('visibilitychange', handler);
-  }, []);
 
   if (!ready) return null;
 
-  const showListingTab = settings.zpidTabEnabled;
-
   function switchTab(tab: Tab) {
-    if (tab === 'listing' && !showListingTab) return;
     setCurrentTab(tab);
   }
 
@@ -131,15 +106,13 @@ export default function App({ surface }: Props) {
 
       {/* Tab bar */}
       <div className="zat-tabs">
-        {showListingTab && (
-          <button
-            className={`zat-tab${currentTab === 'listing' ? ' active' : ''}`}
-            onClick={() => switchTab('listing')}
-          >
-            {ListingTabIcon}
-            Listing<br />Search
-          </button>
-        )}
+        <button
+          className={`zat-tab${currentTab === 'listing' ? ' active' : ''}`}
+          onClick={() => switchTab('listing')}
+        >
+          {ListingTabIcon}
+          Listing<br />Search
+        </button>
         <button
           className={`zat-tab${currentTab === 'impersonate' ? ' active' : ''}`}
           onClick={() => switchTab('impersonate')}
@@ -158,7 +131,7 @@ export default function App({ surface }: Props) {
 
       {/* Tab content */}
       <div style={{ padding: '14px 14px 20px', flex: 1, overflowY: 'auto' }}>
-        {currentTab === 'listing' && showListingTab && (
+        {currentTab === 'listing' && (
           <ListingTab
             viewedHistory={viewedHistory}
             settings={settings}

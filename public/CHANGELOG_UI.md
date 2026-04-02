@@ -1,3 +1,10 @@
+## [0.8.6] – 2026-04-02
+### Changed
+- Listing Search tab is now always present — the hidden "Show Listing Search Tab" setting has been removed from the underlying code
+- Internal code cleanup: removed dead components, consolidated shared utilities, and improved extension context cleanup on page unload
+
+---
+
 ## [0.8.5] – 2026-04-02
 ### Fixed
 - "Smart Redirect After Impersonate" setting description updated to read clearly: "Redirects you to the profile page when impersonating agent profiles."

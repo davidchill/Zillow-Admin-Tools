@@ -16,7 +16,6 @@ export interface HistoryItem {
 
 export interface Settings {
   historyLimit: number;
-  zpidTabEnabled: boolean;
   floatingTabEnabled: boolean;
   redirectEnabled: boolean;
   historyEnabled: boolean;
@@ -26,7 +25,6 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   historyLimit: 5,
-  zpidTabEnabled: true,
   floatingTabEnabled: true,
   redirectEnabled: true,
   historyEnabled: true,

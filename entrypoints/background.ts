@@ -1,10 +1,9 @@
 // ── Zillow Admin Tools – Background Service Worker ──
 
-export default defineBackground(() => {
-  const IMPERSONATE_URL   = 'https://www.zillow.com/user/Impersonate.htm';
-  const PROFILE_REDIRECT  = 'https://www.zillow.com/myzillow/Profile.htm';
-  const CONSUMER_REDIRECT = 'https://www.zillow.com/myzillow/Account.htm';
+import { validateEmail } from '@/utils/validation';
+import { buildImpersonateUrl, PROFILE_REDIRECT, CONSUMER_REDIRECT } from '@/utils/urls';
 
+export default defineBackground(() => {
   // ── Side Panel state tracking ──────────────────────────────────────────────
   const openPanelWindows = new Set<number>();
 
@@ -18,33 +17,6 @@ export default defineBackground(() => {
   });
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-
-  function validateEmail(email: string): boolean {
-    return /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i.test(
-      email
-    );
-  }
-
-  function buildImpersonateUrl(method: string, value: string): string {
-    const params = new URLSearchParams();
-    switch (method) {
-      case 'email':
-        params.set('pEmail', value);
-        params.set('email', value);
-        break;
-      case 'zuid':
-        params.set('pZuid', value);
-        params.set('zuid', value);
-        params.set('action', 'impersonate');
-        params.set('confirm', '1');
-        break;
-      case 'screenname':
-        params.set('pScreenName', value);
-        params.set('screenName', value);
-        break;
-    }
-    return IMPERSONATE_URL + '?' + params.toString();
-  }
 
   function openInNewTab(url: string) {
     chrome.tabs.create({ url });
@@ -491,8 +463,7 @@ export default defineBackground(() => {
     }
   });
 
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-    void tabId;
+  chrome.tabs.onUpdated.addListener((_tabId, changeInfo) => {
     if (!changeInfo.url) return;
     const parsed = parseImpersonateUrl(changeInfo.url);
     if (parsed) addPassiveImpersonation(parsed.method, parsed.value);

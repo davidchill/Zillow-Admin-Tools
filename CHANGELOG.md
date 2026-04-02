@@ -10,6 +10,22 @@ Versioning follows:
 
 ---
 
+## [0.8.6] – 2026-04-02
+
+### Changed
+- Extracted `SearchSVG` to a shared `components/icons.tsx`; `HighspotSearch`, `ImpersonateTab`, `ListingTab`, and `CxnTab` now import from there instead of each defining their own copy
+- `background.ts` now imports `validateEmail`, `buildImpersonateUrl`, `PROFILE_REDIRECT`, and `CONSUMER_REDIRECT` from shared utils; inline duplicates removed
+- `zpidTabEnabled` removed entirely — the setting was no longer surfaced in the Settings UI; the Listing Search tab is now unconditionally rendered
+- `void tabId` parameter suppression in `background.ts` replaced with conventional `_tabId` naming
+- FAB `mousedown` listener in `content.ts` now passes `{ signal: ctx.signal }` for consistent cleanup alongside `mousemove` and `mouseup`
+
+### Removed
+- Dead `CopyBtn` component and `CHECK_SVG` from `HistoryItem.tsx` (superseded by `SmartCopyBtn`)
+- No-op `visibilitychange` `useEffect` from `App.tsx` (storage hooks already handle live updates via `onChanged`)
+- Unused `addrError` state and its dead error display from `ListingTab.tsx`
+
+---
+
 ## [0.8.5] – 2026-04-02
 
 ### Fixed

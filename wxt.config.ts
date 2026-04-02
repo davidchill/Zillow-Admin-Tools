@@ -4,7 +4,6 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
     name: 'Zillow Admin Tools',
-    version: '0.8.4',
     description:
       'Search by ZPID or Impersonate by Email, ZUID, or Screen Name — with right-click context menu support.',
     permissions: [

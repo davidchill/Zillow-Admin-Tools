@@ -1,5 +1,7 @@
 // ── Header — always-dark top bar with logo, version, changelog, and settings ──
 
+import { RELEASE_DATE } from '@/utils/constants';
+
 interface Props {
   onChangelogOpen: () => void;
   onSettingsOpen: () => void;
@@ -7,7 +9,6 @@ interface Props {
 
 export default function Header({ onChangelogOpen, onSettingsOpen }: Props) {
   const version = chrome.runtime.getManifest().version;
-  const RELEASE_DATE = 'Apr 1, 2026';
 
   return (
     <div

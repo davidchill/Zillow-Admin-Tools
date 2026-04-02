@@ -16,12 +16,6 @@ const COPY_SVG = (
   </svg>
 );
 
-const CHECK_SVG = (
-  <svg className="zat-copy-icon" viewBox="0 0 24 24">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
 const EXT_SVG = (
   <svg className="zat-ext-icon" viewBox="0 0 24 24">
     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -47,43 +41,6 @@ function getBadgeText(item: HistoryItemType): string {
   return (item.method || 'ZUID').toUpperCase();
 }
 
-function CopyBtn({
-  text,
-  tip,
-}: {
-  text: string;
-  tip: string;
-}) {
-  const btnRef = useRef<HTMLButtonElement>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = btnRef.current;
-      if (!btn) return;
-      btn.classList.add('copy-ok');
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        btn.classList.remove('copy-ok');
-      }, 1500);
-    });
-  };
-
-  return (
-    <button
-      ref={btnRef}
-      className="zat-copy-btn"
-      data-tip={tip}
-      onClick={handleClick}
-    >
-      {COPY_SVG}
-      <span style={{ display: 'none' }}>{CHECK_SVG}</span>
-    </button>
-  );
-}
-
-// A simplified CopyBtn that swaps icons on copy-ok
 function SmartCopyBtn({ text, tip }: { text: string; tip: string }) {
   const btnRef = useRef<HTMLButtonElement>(null);
 

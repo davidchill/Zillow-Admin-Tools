@@ -5,13 +5,7 @@ import type { ListingMode, HistoryItem, Settings, AutocompleteResult } from '@/t
 import { buildListingUrl } from '@/utils/urls';
 import AutocompleteDropdown from './AutocompleteDropdown';
 import HistorySection from './HistorySection';
-
-const SearchSVG = (
-  <svg viewBox="0 0 24 24">
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
+import { SearchSVG } from './icons';
 
 const EyeSVG = (
   <svg viewBox="0 0 24 24">
@@ -47,7 +41,6 @@ export default function ListingTab({
   const [mlsValue, setMlsValue] = useState('');
   // Address search
   const [addrValue, setAddrValue] = useState('');
-  const [addrError, setAddrError] = useState('');
   const [acResults, setAcResults] = useState<AutocompleteResult[]>([]);
   const [acActiveIdx, setAcActiveIdx] = useState(-1);
 
@@ -144,7 +137,6 @@ export default function ListingTab({
     setAcResults([]);
     setAcActiveIdx(-1);
     setAddrValue('');
-    setAddrError('');
   }
 
   // ── Address keydown ────────────────────────────────────────────────────────
@@ -249,12 +241,11 @@ export default function ListingTab({
             <div className="relative flex-1">
               <input
                 type="text"
-                className={`zat-input${addrError ? ' has-error' : ''}`}
+                className="zat-input"
                 placeholder="123 Main St, Seattle, WA"
                 value={addrValue}
                 onChange={(e) => {
                   setAddrValue(e.target.value);
-                  setAddrError('');
                   triggerAutocomplete(e.target.value.trim());
                 }}
                 onKeyDown={handleAddrKeyDown}
@@ -283,7 +274,6 @@ export default function ListingTab({
               {SearchSVG}
             </button>
           </div>
-          {addrError && <div className="zat-error">{addrError}</div>}
         </>
       )}
 

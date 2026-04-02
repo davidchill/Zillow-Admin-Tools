@@ -192,7 +192,7 @@ export default defineContentScript({
       dragStartTop = fabTopPx;
       fab.classList.add('dragging');
       e.preventDefault();
-    });
+    }, { signal: ctx.signal });
 
     document.addEventListener(
       'mousemove',
