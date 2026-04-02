@@ -70,30 +70,63 @@ export default function SettingsModal({ settings, onUpdate, onClose }: Props) {
         </div>
 
         <div className="zat-modal-body">
-          {/* History limit */}
+          {/* Theme picker */}
           <div className="zat-setting-row">
-            <div className="zat-setting-label-row">
-              <span className="zat-setting-label">History Limit</span>
-              <span className="zat-setting-label-hint">5 – 20 items</span>
+            <span className="zat-setting-label">Theme</span>
+            <div className="zat-seg">
+              {THEME_OPTIONS.map(({ val, label }) => (
+                <button
+                  key={val}
+                  className={`zat-seg-btn${settings.themeMode === val ? ' active' : ''}`}
+                  onClick={() => onUpdate({ themeMode: val })}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
-            <input
-              type="number"
-              min={5}
-              max={20}
-              value={settings.historyLimit}
-              onChange={handleLimitChange}
-              className="zat-setting-input"
-            />
           </div>
 
-          {/* Listing tab toggle */}
+          {/* Default tab picker */}
+          <div className="zat-setting-row">
+            <span className="zat-setting-label">Default Tab</span>
+            <div className="zat-toggle-sub" style={{ marginBottom: 8 }}>The tab you see first when opening the popup or side panel.</div>
+            <div className="zat-seg">
+              {TAB_OPTIONS.map(({ val, label }) => (
+                <button
+                  key={val}
+                  className={`zat-seg-btn${settings.defaultTab === val ? ' active' : ''}`}
+                  onClick={() => onUpdate({ defaultTab: val })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* History toggle + nested limit */}
           <div className="zat-setting-row">
             <Toggle
-              checked={settings.zpidTabEnabled}
-              onChange={(v) => onUpdate({ zpidTabEnabled: v })}
-              label="Show Listing Search Tab"
-              sub="Enables the ZPID / Address search tab in the toolbar."
+              checked={settings.historyEnabled}
+              onChange={(v) => onUpdate({ historyEnabled: v })}
+              label="Record History"
+              sub="Tracks impersonations and recently viewed listings."
             />
+            {settings.historyEnabled && (
+              <div style={{ marginTop: 6, paddingTop: 6, paddingLeft: 14, borderTop: '1px solid var(--border-light)' }}>
+                <div className="zat-setting-label-row">
+                  <span className="zat-setting-label">History Limit</span>
+                  <span className="zat-setting-label-hint">5 – 20 items</span>
+                </div>
+                <input
+                  type="number"
+                  min={5}
+                  max={20}
+                  value={settings.historyLimit}
+                  onChange={handleLimitChange}
+                  className="zat-setting-input"
+                />
+              </div>
+            )}
           </div>
 
           {/* Floating tab toggle */}
@@ -114,48 +147,6 @@ export default function SettingsModal({ settings, onUpdate, onClose }: Props) {
               label="Smart Redirect After Impersonate"
               sub="Detects ZPA vs. Consumer accounts and routes accordingly."
             />
-          </div>
-
-          {/* History toggle */}
-          <div className="zat-setting-row">
-            <Toggle
-              checked={settings.historyEnabled}
-              onChange={(v) => onUpdate({ historyEnabled: v })}
-              label="Record History"
-              sub="Tracks impersonations and recently viewed listings."
-            />
-          </div>
-
-          {/* Theme picker */}
-          <div className="zat-setting-row">
-            <span className="zat-setting-label">Theme</span>
-            <div className="zat-seg">
-              {THEME_OPTIONS.map(({ val, label }) => (
-                <button
-                  key={val}
-                  className={`zat-seg-btn${settings.themeMode === val ? ' active' : ''}`}
-                  onClick={() => onUpdate({ themeMode: val })}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Default tab picker */}
-          <div className="zat-setting-row">
-            <span className="zat-setting-label">Default Tab</span>
-            <div className="zat-seg">
-              {TAB_OPTIONS.map(({ val, label }) => (
-                <button
-                  key={val}
-                  className={`zat-seg-btn${settings.defaultTab === val ? ' active' : ''}`}
-                  onClick={() => onUpdate({ defaultTab: val })}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </div>

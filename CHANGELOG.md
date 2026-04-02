@@ -10,6 +10,23 @@ Versioning follows:
 
 ---
 
+## [0.8.4] – 2026-04-01
+
+### Changed
+- Tooltips across all surfaces (quick links, copy buttons, open buttons) updated to a bold pill style — heavier font weight, rounded pill shape, and subtle drop shadow
+- History section labels renamed: "Recently Viewed" → "Recently Viewed Listings", "Recently Impersonated" → "Recently Impersonated Profiles"
+- Search section labels in all tabs now match the "Find an Agent" style — uppercase, bold, and consistent color
+- Settings reordered: Theme, Default Tab, Record History, Floating Side Panel Button, Smart Redirect After Impersonate
+- "History Limit" is now nested under "Record History" and only visible when recording is enabled
+- "Default Tab" setting now includes a description explaining it controls the first tab shown on open
+- Removed "Show Listing Search Tab" from Settings
+
+### Fixed
+- Tooltips on the first and last quick link buttons no longer clip outside the popup border
+- Tooltip on the "Open in Zillow" button no longer clips outside the right popup border
+
+---
+
 ## [0.8.3] – 2026-04-01
 
 ### Added

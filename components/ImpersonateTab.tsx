@@ -211,7 +211,7 @@ export default function ImpersonateTab({
       {/* History */}
       <div className="mt-4">
         <HistorySection
-          title="Recently Impersonated"
+          title="Recently Impersonated Profiles"
           icon={UserSVG}
           items={filteredHistory}
           emptyText={emptyMsg}

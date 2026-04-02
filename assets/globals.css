@@ -268,8 +268,10 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 /* ── Input label ── */
 .zat-input-label {
   font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
   margin-bottom: 5px;
   display: block;
 }
@@ -381,22 +383,33 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 .zat-open-btn[data-tip]::after {
   content: attr(data-tip);
   position: absolute;
-  bottom: calc(100% + 5px);
+  bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
   background: var(--tooltip-bg);
   color: var(--tooltip-text);
   font-size: 11px;
+  font-weight: 700;
   white-space: nowrap;
-  padding: 3px 7px;
-  border-radius: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity 0.15s;
   z-index: 10;
+  font-family: 'Nunito Sans', sans-serif;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
 }
 .zat-copy-btn[data-tip]:hover::after,
 .zat-open-btn[data-tip]:hover::after { opacity: 1; }
+
+/* Prevent rightmost history action button tooltip from clipping outside popup bounds */
+.zat-history-item-top > div > .zat-open-btn:last-child[data-tip]::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
 
 /* Copy/external icon SVGs */
 .zat-copy-icon {
@@ -647,22 +660,36 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 .zat-quick-btn[data-tip]::after {
   content: attr(data-tip);
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
   background: var(--tooltip-bg);
   color: var(--tooltip-text);
   font-size: 11px;
+  font-weight: 700;
   white-space: nowrap;
-  padding: 3px 7px;
-  border-radius: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity 0.15s;
   z-index: 100;
   font-family: 'Nunito Sans', sans-serif;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
 }
 .zat-quick-btn[data-tip]:hover::after { opacity: 1; }
+
+/* Prevent first/last tooltips from clipping outside popup bounds */
+.zat-quick-btn:first-child[data-tip]::after {
+  left: 0;
+  transform: none;
+}
+.zat-quick-btn:last-child[data-tip]::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
 
 /* ── Tabs ── */
 .zat-tabs {
@@ -806,7 +833,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 }
 
 /* ── Settings rows ── */
-.zat-setting-row { margin-bottom: 18px; }
+.zat-setting-row { margin-bottom: 15px; }
 .zat-setting-row:last-child { margin-bottom: 0; }
 .zat-setting-label {
   font-size: 12px;

@@ -1,3 +1,17 @@
+## [0.8.4] – 2026-04-01
+### Changed
+- Tooltips everywhere updated to a bold pill style with a subtle drop shadow
+- History sections renamed to "Recently Viewed Listings" and "Recently Impersonated Profiles"
+- Search section labels in all tabs are now uppercase and bold for consistency
+- Settings reorganized — cleaner order, "History Limit" now lives under "Record History" and only appears when it's enabled
+- "Default Tab" setting now explains what it does
+- Removed "Show Listing Search Tab" from Settings
+
+### Fixed
+- Tooltips on edge buttons (first/last quick link, "Open in Zillow") no longer clip outside the popup border
+
+---
+
 ## [0.8.3] – 2026-04-01
 ### Added
 - README added to the repository with full feature documentation, build instructions, and project structure

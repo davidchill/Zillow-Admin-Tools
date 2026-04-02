@@ -290,7 +290,7 @@ export default function ListingTab({
       {/* Recently viewed history */}
       <div className="mt-4">
         <HistorySection
-          title="Recently Viewed"
+          title="Recently Viewed Listings"
           icon={EyeSVG}
           items={displayed}
           emptyText={emptyMsg}
