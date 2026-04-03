@@ -1,6 +1,7 @@
 ## [0.8.6.1] – 2026-04-02
 ### Fixed
 - Side panel toggle now works correctly after Chrome restarts the service worker in the background — no more getting stuck in "open only" mode
+- Resolved a regression introduced in this same release where clicking the FAB threw a "user gesture" error and the side panel wouldn't open at all
 - Changelog text is now safely escaped before rendering
 
 ---

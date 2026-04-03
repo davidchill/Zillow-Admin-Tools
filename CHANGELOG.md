@@ -14,7 +14,10 @@ Versioning follows:
 
 ### Security
 - `ChangelogModal`: HTML-escape all user-content values before injecting via `dangerouslySetInnerHTML` — version numbers, section headings, and list item text are now passed through an `escapeHtml` helper
-- `background.ts`: Side panel open/closed state moved from an in-memory `Set` to `chrome.storage.session` so the toggle survives MV3 service worker restarts; the `openSidePanel` message handler is now properly async
+- `background.ts`: Side panel open/closed state now uses a write-through cache — in-memory `Set` for the synchronous `sidePanel.open()` call (required by Chrome's user-gesture restriction), backed by `chrome.storage.session` for persistence across MV3 service worker restarts
+
+### Fixed
+- `background.ts`: Corrected a regression where `sidePanel.open()` was called inside an async `storage.session` read, causing Chrome to throw "may only be called in response to a user gesture"; the open/close decision is now synchronous again using the hydrated in-memory Set
 
 ---
 

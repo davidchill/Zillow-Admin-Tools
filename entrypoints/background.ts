@@ -6,34 +6,34 @@ import { buildImpersonateUrl, PROFILE_REDIRECT, CONSUMER_REDIRECT } from '@/util
 export default defineBackground(() => {
   // ── Side Panel state tracking ──────────────────────────────────────────────
   //
-  // Persisted in chrome.storage.session rather than an in-memory Set so that
-  // the toggle state survives service worker restarts (MV3 SWs are ephemeral).
-  // storage.session is cleared on browser restart, matching the lifetime of
-  // open tabs/panels, and is fast enough to use synchronously on each message.
+  // Write-through cache: openPanelWindows is the in-memory Set used for the
+  // synchronous open/close decision (chrome.sidePanel.open() must be called
+  // within a synchronous user-gesture handler — an async read would lose that
+  // context). chrome.storage.session is written on every change and read once
+  // on SW startup so the toggle state survives MV3 service worker restarts.
+  // storage.session is cleared on browser restart, matching tab/panel lifetime.
 
   const SESSION_PANELS_KEY = 'zat_open_panels';
+  let openPanelWindows = new Set<number>();
 
-  function getPanelWindows(): Promise<Set<number>> {
-    return new Promise((resolve) => {
-      chrome.storage.session.get(SESSION_PANELS_KEY, (data) => {
-        resolve(new Set<number>((data[SESSION_PANELS_KEY] as number[]) || []));
-      });
-    });
-  }
+  // Hydrate from session storage when the service worker wakes up.
+  chrome.storage.session.get(SESSION_PANELS_KEY, (data) => {
+    openPanelWindows = new Set<number>((data[SESSION_PANELS_KEY] as number[]) || []);
+  });
 
-  function setPanelWindows(set: Set<number>): Promise<void> {
-    return new Promise((resolve) => {
-      chrome.storage.session.set({ [SESSION_PANELS_KEY]: [...set] }, resolve);
-    });
+  function savePanelWindows() {
+    chrome.storage.session.set({ [SESSION_PANELS_KEY]: [...openPanelWindows] });
   }
 
   chrome.runtime.onConnect.addListener((port) => {
     if (!port.name.startsWith('zat-sidepanel-')) return;
     const windowId = parseInt(port.name.replace('zat-sidepanel-', ''), 10);
     if (!isNaN(windowId)) {
-      getPanelWindows().then((set) => { set.add(windowId); return setPanelWindows(set); });
+      openPanelWindows.add(windowId);
+      savePanelWindows();
       port.onDisconnect.addListener(() => {
-        getPanelWindows().then((set) => { set.delete(windowId); return setPanelWindows(set); });
+        openPanelWindows.delete(windowId);
+        savePanelWindows();
       });
     }
   });
@@ -379,17 +379,13 @@ export default defineBackground(() => {
     if (msg.action === 'openSidePanel') {
       const windowId = sender.tab?.windowId;
       if (windowId != null) {
-        getPanelWindows().then((set) => {
-          if (set.has(windowId)) {
-            // chrome.sidePanel.close() was added in Chrome 116 but is missing
-            // from the current @types/chrome definitions — cast to unblock tsc.
-            (chrome.sidePanel as unknown as { close: (opts: { windowId: number }) => void }).close({ windowId });
-          } else {
-            chrome.sidePanel.open({ windowId });
-          }
-          sendResponse({ ok: true });
-        });
-        return true; // keep channel open for async getPanelWindows response
+        if (openPanelWindows.has(windowId)) {
+          // chrome.sidePanel.close() was added in Chrome 116 but is missing
+          // from the current @types/chrome definitions — cast to unblock tsc.
+          (chrome.sidePanel as unknown as { close: (opts: { windowId: number }) => void }).close({ windowId });
+        } else {
+          chrome.sidePanel.open({ windowId });
+        }
       }
       sendResponse({ ok: true });
     }
