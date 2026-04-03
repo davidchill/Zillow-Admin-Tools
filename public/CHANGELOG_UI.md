@@ -1,3 +1,13 @@
+## [0.8.7] – 2026-04-02
+### Added
+- PHX and DIT listing history items now show cross-link buttons — a PHX entry lets you open it in DIT or Zillow, and a DIT entry lets you open it in PHX or Zillow
+
+### Fixed
+- PHX and DIT history items now show a "Copy URL" button that copies the full URL (previously showed "Copy ZPID" and only copied the ID)
+- The open button on PHX and DIT history items now correctly shows "Open in PHX" or "Open in DIT" (previously showed a generic "Open listing" tooltip)
+
+---
+
 ## [0.8.6.2] – 2026-04-02
 ### Added
 - Listing searches (ZPID, PHX, DIT) now appear in the "Recently Viewed Listings" history alongside properties you browsed to directly — all sorted by time, with a single Clear button for both

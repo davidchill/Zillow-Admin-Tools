@@ -10,6 +10,18 @@ Versioning follows:
 
 ---
 
+## [0.8.7] – 2026-04-02
+
+### Added
+- PHX history items now include cross-link buttons to open the listing in DIT and Zillow
+- DIT history items now include cross-link buttons to open the listing in PHX and Zillow
+
+### Fixed
+- PHX and DIT history items now show "Copy URL" (copying the full URL) instead of "Copy ZPID"
+- External link button on PHX and DIT history items now shows "Open in PHX" / "Open in DIT" instead of the generic "Open listing"
+
+---
+
 ## [0.8.6.2] – 2026-04-02
 
 ### Added

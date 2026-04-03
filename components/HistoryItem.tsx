@@ -101,15 +101,26 @@ export default function HistoryItem({ item, onClick }: Props) {
       </div>
     );
     extButton = <OpenBtn url={zpidUrl} tip="Open in Zillow" />;
+  } else if (item.type === 'phx' || item.type === 'dit') {
+    const url = buildListingUrl(item.type, item.id);
+    const label = item.type === 'phx' ? 'PHX' : 'DIT';
+    const zillowUrl = buildListingUrl('zillow', item.id);
+    const crossUrl = buildListingUrl(item.type === 'phx' ? 'dit' : 'phx', item.id);
+    const crossLabel = item.type === 'phx' ? 'DIT' : 'PHX';
+    actionButtons = (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <SmartCopyBtn text={url} tip="Copy URL" />
+        <OpenBtn url={crossUrl} tip={`Open in ${crossLabel}`} label={crossLabel} />
+        <OpenBtn url={zillowUrl} tip="Open in Zillow" label="Zillow" />
+      </div>
+    );
+    extButton = <OpenBtn url={url} tip={`Open in ${label}`} />;
   } else if (isListing) {
-    const copyTip =
-      item.type === 'zpid' || item.type === 'phx' || item.type === 'dit'
-        ? 'Copy ZPID'
-        : 'Copy ID';
-    actionButtons = <SmartCopyBtn text={item.id} tip={copyTip} />;
+    // zpid
+    actionButtons = <SmartCopyBtn text={item.id} tip="Copy ZPID" />;
     extButton = (
       <OpenBtn
-        url={buildListingUrl((item.type === 'zpid' ? 'zillow' : item.type) as 'zillow' | 'phx' | 'dit', item.id)}
+        url={buildListingUrl('zillow', item.id)}
         tip="Open listing"
       />
     );
