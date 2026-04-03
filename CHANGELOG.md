@@ -10,6 +10,20 @@ Versioning follows:
 
 ---
 
+## [0.8.6.2] – 2026-04-02
+
+### Added
+- ZPID, PHX, and DIT listing searches now appear in the "Recently Viewed Listings" history alongside passively-browsed properties, merged and sorted by time; the Clear button wipes both at once
+
+### Changed
+- "Viewed" badge on passively-browsed listing history items renamed to "Zillow"
+- `buildAgentSearchUrl` now uses `URLSearchParams` for correct encoding — agent names containing `&`, `=`, or other special characters no longer produce malformed URLs
+
+### Fixed
+- `background.ts` message listener now uses the typed `BackgroundMessage` union from `types/index.ts`; non-null assertions (`!`) on message fields removed — TypeScript narrows each action branch correctly
+
+---
+
 ## [0.8.6.1] – 2026-04-02
 
 ### Security

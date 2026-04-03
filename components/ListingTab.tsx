@@ -1,6 +1,6 @@
 // ── ListingTab — ZPID / PHX / DIT / address search + recently viewed ──
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import type { ListingMode, HistoryItem, Settings, AutocompleteResult } from '@/types';
 import { buildListingUrl } from '@/utils/urls';
 import AutocompleteDropdown from './AutocompleteDropdown';
@@ -22,17 +22,21 @@ const LISTING_MODES: { mode: ListingMode; label: string }[] = [
 
 interface Props {
   viewedHistory: HistoryItem[];
+  searchedHistory: HistoryItem[];
   settings: Settings;
   onAddToHistory: (type: 'zpid' | 'phx' | 'dit', id: string, method: 'zpid' | 'phx' | 'dit', label?: string) => void;
   onClearViewed: () => void;
+  onClearSearched: () => void;
   onRemoveFromViewed: (zpid: string) => void;
 }
 
 export default function ListingTab({
   viewedHistory,
+  searchedHistory,
   settings,
   onAddToHistory,
   onClearViewed,
+  onClearSearched,
   onRemoveFromViewed,
 }: Props) {
   const [listingMode, setListingMode] = useState<ListingMode>('zillow');
@@ -172,11 +176,23 @@ export default function ListingTab({
   }
 
   const limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
-  const displayed = viewedHistory.slice(0, limit);
+
+  // Merge searched listings (zpid/phx/dit) with browsed listings (viewed),
+  // deduplicated by id, sorted newest-first. The content script already
+  // prevents a searched ZPID from also appearing in viewed history, so
+  // duplicates are rare in practice but we guard anyway.
+  const combinedHistory = useMemo(() => {
+    const seen = new Set<string>();
+    return [...searchedHistory, ...viewedHistory]
+      .filter((h) => { if (seen.has(h.id)) return false; seen.add(h.id); return true; })
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, limit);
+  }, [searchedHistory, viewedHistory, limit]);
+
   const emptyMsg =
     settings.historyEnabled === false
       ? 'History recording is off. Enable it in Settings.'
-      : 'No recently viewed properties';
+      : 'No recently viewed or searched listings';
 
   return (
     <div className="flex flex-col gap-0">
@@ -277,14 +293,14 @@ export default function ListingTab({
         </>
       )}
 
-      {/* Recently viewed history */}
+      {/* Combined searched + viewed listing history */}
       <div className="mt-4">
         <HistorySection
           title="Recently Viewed Listings"
           icon={EyeSVG}
-          items={displayed}
+          items={combinedHistory}
           emptyText={emptyMsg}
-          onClear={displayed.length > 0 ? onClearViewed : undefined}
+          onClear={combinedHistory.length > 0 ? () => { onClearViewed(); onClearSearched(); } : undefined}
           onItemClick={(item) => {
             chrome.tabs.create({ url: buildListingUrl(item.type as ListingMode, item.id) });
           }}

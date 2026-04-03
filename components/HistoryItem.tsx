@@ -33,7 +33,7 @@ function getBadgeClass(item: HistoryItemType): string {
 }
 
 function getBadgeText(item: HistoryItemType): string {
-  if (item.type === 'viewed') return 'Viewed';
+  if (item.type === 'viewed') return 'Zillow';
   if (item.type === 'zpid') return 'ZPID';
   if (item.type === 'phx') return 'PHX';
   if (item.type === 'dit') return 'DIT';

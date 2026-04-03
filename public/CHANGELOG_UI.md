@@ -1,3 +1,12 @@
+## [0.8.6.2] – 2026-04-02
+### Added
+- Listing searches (ZPID, PHX, DIT) now appear in the "Recently Viewed Listings" history alongside properties you browsed to directly — all sorted by time, with a single Clear button for both
+
+### Changed
+- Passively-browsed listing items now show a "Zillow" badge instead of "Viewed"
+
+---
+
 ## [0.8.6.1] – 2026-04-02
 ### Fixed
 - Side panel toggle now works correctly after Chrome restarts the service worker in the background — no more getting stuck in "open only" mode

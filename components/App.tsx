@@ -48,6 +48,7 @@ export default function App({ surface }: Props) {
     viewedHistory,
     addToHistory,
     clearHistory,
+    clearSearchedListings,
     clearViewed,
     removeFromViewed,
   } = useHistory(settings.historyLimit);
@@ -134,9 +135,13 @@ export default function App({ surface }: Props) {
         {currentTab === 'listing' && (
           <ListingTab
             viewedHistory={viewedHistory}
+            searchedHistory={history.filter(
+              (h) => h.type === 'zpid' || h.type === 'phx' || h.type === 'dit'
+            )}
             settings={settings}
             onAddToHistory={addToHistory}
             onClearViewed={clearViewed}
+            onClearSearched={clearSearchedListings}
             onRemoveFromViewed={removeFromViewed}
           />
         )}

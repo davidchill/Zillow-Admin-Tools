@@ -55,6 +55,14 @@ export function useHistory(historyLimit: number) {
     });
   }, []);
 
+  const clearSearchedListings = useCallback(() => {
+    setHistory((prev) => {
+      const updated = prev.filter((h) => h.type === 'impersonate');
+      chrome.storage.local.set({ zillow_history_v3: updated });
+      return updated;
+    });
+  }, []);
+
   const clearViewed = useCallback(() => {
     setViewedHistory([]);
     chrome.storage.local.set({ zillow_viewed_v3: [] });
@@ -76,6 +84,7 @@ export function useHistory(historyLimit: number) {
     viewedHistory,
     addToHistory,
     clearHistory,
+    clearSearchedListings,
     clearViewed,
     removeFromViewed,
   };

@@ -2,6 +2,7 @@
 
 import { validateEmail } from '@/utils/validation';
 import { buildImpersonateUrl, PROFILE_REDIRECT, CONSUMER_REDIRECT } from '@/utils/urls';
+import type { BackgroundMessage } from '@/types';
 
 export default defineBackground(() => {
   // ── Side Panel state tracking ──────────────────────────────────────────────
@@ -357,22 +358,15 @@ export default defineBackground(() => {
   // ── Message Listener ───────────────────────────────────────────────────────
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    const msg = message as {
-      action: string;
-      tabId?: number;
-      historyId?: string;
-      historyType?: string;
-      zpid?: string;
-      query?: string;
-    };
+    const msg = message as BackgroundMessage;
 
     if (msg.action === 'scrapeTab') {
-      scrapeTabForLabel(msg.tabId!, msg.historyId!, msg.historyType!);
+      scrapeTabForLabel(msg.tabId, msg.historyId, msg.historyType);
       sendResponse({ ok: true });
     }
 
     if (msg.action === 'fetchAddress') {
-      fetchZpidAddress(msg.zpid!, msg.historyType!);
+      fetchZpidAddress(msg.zpid, msg.historyType);
       sendResponse({ ok: true });
     }
 
@@ -391,11 +385,11 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'autocomplete') {
-      fetchAutocompleteInTab(msg.query!, (tabResults) => {
+      fetchAutocompleteInTab(msg.query, (tabResults) => {
         if (tabResults && (tabResults as unknown[]).length > 0) {
           sendResponse({ ok: true, results: tabResults });
         } else {
-          fetchAutocomplete(msg.query!)
+          fetchAutocomplete(msg.query)
             .then((r) => sendResponse({ ok: true, results: r }))
             .catch(() => sendResponse({ ok: false, results: [] }));
         }

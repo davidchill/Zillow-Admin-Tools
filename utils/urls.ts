@@ -40,6 +40,6 @@ export function buildListingUrl(type: ListingMode | 'viewed', id: string): strin
 }
 
 export function buildAgentSearchUrl(name: string): string {
-  const nameParam = name.trim().replace(/\s+/g, '+');
-  return `https://www.zillow.com/professionals/real-estate-agent-reviews/?name=${nameParam}`;
+  const params = new URLSearchParams({ name: name.trim() });
+  return `https://www.zillow.com/professionals/real-estate-agent-reviews/?${params.toString()}`;
 }
