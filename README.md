@@ -1,6 +1,6 @@
 # Zillow Admin Tools
 
-**Version 0.8.2** — Internal Chrome extension for Zillow support staff.
+**Version 0.8.7** — Internal Chrome extension for Zillow support staff.
 
 Provides account impersonation, listing lookup, CXN call testing, Highspot search, and quick-access admin tools — all from a popup or persistent side panel.
 
