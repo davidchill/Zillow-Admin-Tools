@@ -1,5 +1,7 @@
 // ── Release metadata ──────────────────────────────────────────────────────────
-// Update RELEASE_DATE on every release. Version comes from package.json
-// automatically — do not hardcode it here or in wxt.config.ts.
+// Version and release date both come from package.json — update them there,
+// not here.
 
-export const RELEASE_DATE = 'Apr 9, 2026';
+import pkg from '../package.json';
+
+export const RELEASE_DATE: string = pkg.releaseDate;

@@ -1,7 +1,7 @@
 // ── useHistory — loads and manages impersonation + viewed history ──
 
 import { useState, useEffect, useCallback } from 'react';
-import type { HistoryItem, HistoryItemType, ImpersonateMethod } from '@/types';
+import type { HistoryItem, HistoryItemType } from '@/types';
 
 export function useHistory(historyLimit: number) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -31,7 +31,7 @@ export function useHistory(historyLimit: number) {
     (
       type: HistoryItemType,
       id: string,
-      method: ImpersonateMethod | 'viewed' | 'zpid' | 'phx' | 'dit',
+      method: HistoryItem['method'],
       label = ''
     ) => {
       const limit = Math.min(20, Math.max(5, historyLimit));

@@ -10,6 +10,19 @@ Versioning follows:
 
 ---
 
+## [0.9.8] – 2026-04-09
+
+### Changed
+- `RELEASE_DATE` in `utils/constants.ts` is now derived from the `releaseDate` field in `package.json` — version and release date are now co-located in one file; no more separate constant to update on each release
+- `ImpersonateTab.tsx`: "Auto" impersonation mode is now hidden from the mode selector — the `wip: true` flag causes it to be filtered out at render time so users are not exposed to an incomplete feature; the underlying logic remains in place for future use
+- `useHistory.ts`: `addToHistory` method parameter type is now derived as `HistoryItem['method']` rather than being spelled out manually — stays in sync with the discriminated union automatically
+
+### Added
+- `ErrorBoundary` class component wraps both the popup and side panel entry points — if a React render error occurs, users see a plain error message instead of a blank UI
+- `components/icons.tsx` now exports `ListingTabIcon`, `ImpersonateTabIcon`, and `CxnTabIcon` — the three inline SVGs previously defined in `App.tsx` are moved here; `ImpersonateTab.tsx` was using an identical copy of `ImpersonateTabIcon` as `UserSVG`, now imports the shared export
+
+---
+
 ## [0.9.7] – 2026-04-09
 
 ### Fixed

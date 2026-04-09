@@ -6,14 +6,7 @@ import { buildImpersonateUrl, buildAgentSearchUrl } from '@/utils/urls';
 import { validateEmail, detectImpersonateMethod } from '@/utils/validation';
 import ConfirmBar from './ConfirmBar';
 import HistorySection from './HistorySection';
-import { SearchSVG } from './icons';
-
-const UserSVG = (
-  <svg viewBox="0 0 24 24">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </svg>
-);
+import { SearchSVG, ImpersonateTabIcon as UserSVG } from './icons';
 
 const MODES: { mode: ImpersonateMethod; label: string; wip?: boolean }[] = [
   { mode: 'zuid', label: 'ZUID' },
@@ -190,14 +183,13 @@ export default function ImpersonateTab({
 
       {/* Mode row */}
       <div className="zat-seg" style={{ marginBottom: 10 }}>
-        {MODES.map(({ mode: m, label, wip }) => (
+        {MODES.filter(({ wip }) => !wip).map(({ mode: m, label }) => (
           <button
             key={m}
             className={`zat-seg-btn${mode === m ? ' active' : ''}`}
             onClick={() => handleModeChange(m)}
           >
             {label}
-            {wip && <span className="zat-wip-tag">WIP</span>}
           </button>
         ))}
       </div>

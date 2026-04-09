@@ -1,3 +1,13 @@
+## [0.9.8] – 2026-04-09
+### Changed
+- "Auto" detect mode removed from the Impersonate tab — it was incomplete and should not have been visible
+- Internal code polish: release date now derives from package metadata; type safety improvements; shared icon assets consolidated
+
+### Added
+- Crash protection added to the popup and side panel — if an unexpected error occurs during rendering, a plain error message is shown instead of a blank UI
+
+---
+
 ## [0.9.7] – 2026-04-09
 ### Fixed
 - Eliminated an internal security risk in the What's New panel — changelog content is now rendered natively by React instead of being injected as raw HTML
