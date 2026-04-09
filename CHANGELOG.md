@@ -10,6 +10,16 @@ Versioning follows:
 
 ---
 
+## [0.9.5] – 2026-04-09
+
+### Fixed
+- `content.ts`: Message listener for `trackZpid` action now guards against a missing `zpid` field before calling `doTrackView` — removed non-null assertion (`!`) and added an explicit `!msg.zpid` early return; `zpid` is captured into a local variable before the `setTimeout` to eliminate any stale-closure risk
+- `ListingTab.tsx`: Autocomplete Enter key handler and search button click handler now perform bounds-checked index access on `acResults` — if `acActiveIdx` is out of range (e.g. results updated mid-navigation), the code safely falls back to index 0 with a final `if (result)` guard before calling `selectAcResult`
+- `background.ts`: Message listener branches for `scrapeTab` and `fetchAddress` now return early after calling `sendResponse`, preventing unintended fall-through to subsequent `if` blocks; comments added clarifying that both are intentionally fire-and-forget (callers do not await the result)
+- `background.ts`: Added clarifying comment to the `openSidePanel` handler documenting why the `chrome.storage.session` hydration cannot gate `sidePanel.open()` — the call must remain synchronous to preserve Chrome's user gesture context; async wrapping causes a fatal "may only be called in response to a user gesture" error
+
+---
+
 ## [0.9.4] – 2026-04-09
 
 ### Added

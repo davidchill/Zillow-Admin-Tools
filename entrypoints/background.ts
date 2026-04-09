@@ -18,6 +18,11 @@ export default defineBackground(() => {
   let openPanelWindows = new Set<number>();
 
   // Hydrate from session storage when the service worker wakes up.
+  // Note: sidePanel.open/close requires a synchronous user gesture, so this
+  // async read cannot gate the openSidePanel handler. In the rare cold-start
+  // race (SW wakes up, message arrives before this callback fires), the Set
+  // is empty and the toggle opens instead of closes — it self-corrects on the
+  // next click via the onConnect port tracking.
   chrome.storage.session.get(SESSION_PANELS_KEY, (data) => {
     openPanelWindows = new Set<number>((data[SESSION_PANELS_KEY] as number[]) || []);
   });
@@ -360,19 +365,28 @@ export default defineBackground(() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const msg = message as BackgroundMessage;
 
+    // Fire-and-forget: these kick off async work but callers don't await the
+    // result — sendResponse({ ok: true }) just acknowledges receipt.
     if (msg.action === 'scrapeTab') {
       scrapeTabForLabel(msg.tabId, msg.historyId, msg.historyType);
       sendResponse({ ok: true });
+      return;
     }
 
     if (msg.action === 'fetchAddress') {
       fetchZpidAddress(msg.zpid, msg.historyType);
       sendResponse({ ok: true });
+      return;
     }
 
     if (msg.action === 'openSidePanel') {
       const windowId = sender.tab?.windowId;
       if (windowId != null) {
+        // sidePanel.open/close must be called synchronously in the message
+        // handler to preserve the user gesture context — no async allowed here.
+        // openPanelWindows may be empty on a cold SW start (hydration race),
+        // but that edge case causes open-instead-of-close at worst; it never
+        // crashes and self-corrects on the next click via the onConnect port.
         if (openPanelWindows.has(windowId)) {
           // chrome.sidePanel.close() was added in Chrome 116 but is missing
           // from the current @types/chrome definitions — cast to unblock tsc.
@@ -382,6 +396,7 @@ export default defineBackground(() => {
         }
       }
       sendResponse({ ok: true });
+      return;
     }
 
     if (msg.action === 'autocomplete') {

@@ -163,9 +163,9 @@ export default function ListingTab({
       }
       if (e.key === 'Enter') {
         e.preventDefault();
-        selectAcResult(
-          acActiveIdx >= 0 ? acResults[acActiveIdx] : acResults[0]
-        );
+        const idx = acActiveIdx >= 0 && acActiveIdx < acResults.length ? acActiveIdx : 0;
+        const result = acResults[idx];
+        if (result) selectAcResult(result);
         return;
       }
     }
@@ -320,7 +320,9 @@ export default function ListingTab({
               className="zat-search-btn"
               onClick={() => {
                 if (acResults.length) {
-                  selectAcResult(acActiveIdx >= 0 ? acResults[acActiveIdx] : acResults[0]);
+                  const idx = acActiveIdx >= 0 && acActiveIdx < acResults.length ? acActiveIdx : 0;
+                  const result = acResults[idx];
+                  if (result) selectAcResult(result);
                 } else {
                   const q = addrValue.trim();
                   if (q.length >= 2) doAddressSearch(q);

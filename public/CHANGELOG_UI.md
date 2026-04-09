@@ -1,3 +1,10 @@
+## [0.9.5] – 2026-04-09
+### Fixed
+- Resolved a potential crash when selecting an autocomplete result after the results list updates mid-navigation
+- Protected against a missing ZPID value in the property view tracker
+
+---
+
 ## [0.9.4] – 2026-04-09
 ### Added
 - "Alan Pit Stop" quick-access button added to the global Quick Access row, to the left of CaRP Tool — links to the Alan Pit Stop tool; uses a car icon

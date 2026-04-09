@@ -91,8 +91,9 @@ export default defineContentScript({
     }
 
     chrome.runtime.onMessage.addListener((msg: { action?: string; zpid?: string }) => {
-      if (msg.action !== 'trackZpid') return;
-      setTimeout(() => doTrackView(msg.zpid!), 1500);
+      if (msg.action !== 'trackZpid' || !msg.zpid) return;
+      const zpid = msg.zpid;
+      setTimeout(() => doTrackView(zpid), 1500);
     });
 
     // ── FAB Injection ────────────────────────────────────────────────────────
