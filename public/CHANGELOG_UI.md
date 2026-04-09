@@ -1,3 +1,60 @@
+## [0.9.0] – 2026-04-08
+### Changed
+- The same ZPID opened in different modes (Zillow, PHX, DIT) now appears as separate entries in the history list — previously they collapsed into one
+- Revisiting the same ZPID in the same mode still moves it to the top of the list as before
+- History list in the Listing Troubleshooting tab now scrolls independently — the search inputs, mode selector, and quick-access buttons stay fixed while you scroll through history
+
+---
+
+## [0.8.11] – 2026-04-08
+### Added
+- Section labels added to the Impersonate and CXN tabs: "Profile Tools", "Impersonate", and "CXN Call Tools" — clarifies the groupings at a glance
+
+### Changed
+- ZUID search in the CXN tab renamed from "ZUID (Splunk Connection Events)" to "Splunk - Events by ZUID"
+- Spacing and divider lines in the Impersonate and CXN tabs cleaned up
+
+---
+
+## [0.8.10] – 2026-04-08
+### Added
+- "Quick Access" section label between the Highspot Search bar and the global quick-access buttons
+- "Listing Tools" and "Listing Search" section labels inside the Listing Troubleshooting tab
+- Thin divider line between the global Quick Access row and the main tab bar
+
+---
+
+## [0.8.9] – 2026-04-08
+### Added
+- Color-coded left border on history items — each type has its own color (ZPID=amber, PHX=orange, DIT=pink, Zillow=cyan, Email=purple, ZUID=blue, Screen Name=green)
+- Empty history state now shows a muted inbox icon above the placeholder text
+- Highspot Search bar gets a subtle blue-tint background in light mode
+
+### Changed
+- Header redesigned with a dark gradient and blue accent stripe along the top edge
+- Header icon changed from a house to a shield — better reflects the admin nature of the tool
+- Header subtitle text removed to free up vertical space
+- Active tab indicator changed from an underline to a pill highlight
+- Quick link buttons now have a subtle hover lift effect with a blue glow
+- History item sub-text color darkened for better readability in light mode
+
+---
+
+## [0.8.8] – 2026-04-08
+### Added
+- Tab-contextual quick access buttons: each tab now has its own row of relevant shortcuts at the top
+  - Listing Troubleshooting: 3D Home Tours and Address Change
+  - Impersonate / Profile Troubleshooting: Merge Profiles and Upgrade Account
+  - CXN Call Troubleshooting: FAQT2 Test Calls, Pearl Dashboard, and VoIP Dashboard
+- Global Quick Links row expanded with Supportal and Zuora Billing shortcuts
+
+### Changed
+- Tabs renamed for clarity: "Listing Search" → "Listing Troubleshooting", "Impersonate / Find Agent" → "Impersonate / Profile Troubleshooting", "CXN Call Testing" → "CXN Call Troubleshooting"
+- 3D Home Tours and Address Change moved out of the global Quick Links row and into the Listing Troubleshooting tab
+- Merge Profiles and Upgrade Account moved out of the global Quick Links row and into the Impersonate tab
+
+---
+
 ## [0.8.7] – 2026-04-02
 ### Added
 - PHX and DIT listing history items now show cross-link buttons — a PHX entry lets you open it in DIT or Zillow, and a DIT entry lets you open it in PHX or Zillow
