@@ -74,11 +74,16 @@ export default function App({ surface }: Props) {
     }
   }, [settings.themeMode]);
 
-  // Set initial tab from settings once loaded
+  // Set initial tab from settings once loaded.
+  // settings.defaultTab is intentionally omitted from deps: we only want to
+  // apply the default once when ready flips true. After that the user may have
+  // navigated to another tab, and re-running on every settings change would
+  // reset their active tab unexpectedly.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!ready) return;
     setCurrentTab(settings.defaultTab || 'listing');
-  }, [ready]);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   if (!ready) return null;
 

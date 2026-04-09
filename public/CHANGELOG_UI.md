@@ -1,3 +1,13 @@
+## [0.9.6] – 2026-04-09
+### Fixed
+- Removed a spoofed browser identifier that could be flagged by Zillow's servers
+- Improved internal listener cleanup reliability in the background service worker
+- Unknown internal messages now receive an error response instead of silently timing out
+- Autocomplete results now use stable identifiers — prevents a rare visual glitch if the list refreshes while you're navigating it with the keyboard
+- Autocomplete debounce timer is now properly cancelled if the panel closes mid-search
+
+---
+
 ## [0.9.5] – 2026-04-09
 ### Fixed
 - Resolved a potential crash when selecting an autocomplete result after the results list updates mid-navigation

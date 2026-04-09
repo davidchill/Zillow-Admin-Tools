@@ -10,6 +10,18 @@ Versioning follows:
 
 ---
 
+## [0.9.6] – 2026-04-09
+
+### Fixed
+- `background.ts`: Removed hardcoded spoofed macOS/Chrome User-Agent header from `fetchZpidAddress` — fetch now uses the extension's natural headers, eliminating fingerprinting risk
+- `background.ts`: Replaced fragile `setTimeout`-only listener cleanup with boolean flag guards (`impersonateDone`, `scrapeDone`) in `redirectAfterImpersonate` and `scrapeTabForLabel` — both the self-detaching listener and the fallback timeout now coordinate via the flag, preventing redundant no-op `removeListener` calls
+- `background.ts`: Added default catch-all branch to the message listener — unknown actions now respond with `{ error: 'unknown action' }` instead of silently hanging the caller
+- `AutocompleteDropdown.tsx`: Replaced array index `key={i}` with a stable key derived from `result.metaData?.zpid`, falling back to `result.display` then index — prevents React from misidentifying DOM nodes when the results list updates
+- `App.tsx`: Replaced inline `eslint-disable-line` suppression on the initial-tab `useEffect` with a `eslint-disable-next-line` comment and a full explanation of why `settings.defaultTab` is intentionally excluded from the dependency array
+- `ListingTab.tsx`: Added `useEffect` cleanup to cancel the address autocomplete debounce timer on component unmount — prevents a setState call on an unmounted component
+
+---
+
 ## [0.9.5] – 2026-04-09
 
 ### Fixed

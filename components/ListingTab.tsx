@@ -1,6 +1,6 @@
 // ── ListingTab — ZPID / PHX / DIT / address search + recently viewed ──
 
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import type { ListingMode, HistoryItem, Settings, AutocompleteResult } from '@/types';
 import { buildListingUrl } from '@/utils/urls';
 import AutocompleteDropdown from './AutocompleteDropdown';
@@ -49,6 +49,12 @@ export default function ListingTab({
   const [acActiveIdx, setAcActiveIdx] = useState(-1);
 
   const acDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (acDebounceTimer.current) clearTimeout(acDebounceTimer.current);
+    };
+  }, []);
 
   // ── Autocomplete ───────────────────────────────────────────────────────────
 

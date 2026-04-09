@@ -68,11 +68,13 @@ export default defineBackground(() => {
   // Agent     →  Account.htm  →  Profile.htm  (ZPA items detected)
 
   function redirectAfterImpersonate(tabId: number) {
+    let impersonateDone = false;
     function onImpersonateComplete(
       updatedTabId: number,
       changeInfo: chrome.tabs.TabChangeInfo
     ) {
       if (updatedTabId !== tabId || changeInfo.status !== 'complete') return;
+      impersonateDone = true;
       chrome.tabs.onUpdated.removeListener(onImpersonateComplete);
 
       chrome.storage.local.get('zillow_settings', (data) => {
@@ -111,10 +113,12 @@ export default defineBackground(() => {
     }
 
     chrome.tabs.onUpdated.addListener(onImpersonateComplete);
-    setTimeout(
-      () => chrome.tabs.onUpdated.removeListener(onImpersonateComplete),
-      20000
-    );
+    setTimeout(() => {
+      if (!impersonateDone) {
+        impersonateDone = true;
+        chrome.tabs.onUpdated.removeListener(onImpersonateComplete);
+      }
+    }, 20000);
   }
 
   function runDetection(tabId: number) {
@@ -159,11 +163,13 @@ export default defineBackground(() => {
     historyId: string,
     historyType: string
   ) {
+    let scrapeDone = false;
     function onUpdated(
       updatedTabId: number,
       changeInfo: chrome.tabs.TabChangeInfo
     ) {
       if (updatedTabId !== tabId || changeInfo.status !== 'complete') return;
+      scrapeDone = true;
       chrome.tabs.onUpdated.removeListener(onUpdated);
 
       setTimeout(() => {
@@ -242,7 +248,12 @@ export default defineBackground(() => {
     }
 
     chrome.tabs.onUpdated.addListener(onUpdated);
-    setTimeout(() => chrome.tabs.onUpdated.removeListener(onUpdated), 20000);
+    setTimeout(() => {
+      if (!scrapeDone) {
+        scrapeDone = true;
+        chrome.tabs.onUpdated.removeListener(onUpdated);
+      }
+    }, 20000);
   }
 
   // ── ZPID Address Fetch ─────────────────────────────────────────────────────
@@ -252,8 +263,6 @@ export default defineBackground(() => {
     try {
       const res = await fetch(url, {
         headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
           Accept:
             'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.9',
@@ -411,6 +420,8 @@ export default defineBackground(() => {
       });
       return true; // keep channel open for async response
     }
+
+    sendResponse({ error: 'unknown action' });
   });
 
   // ── Passive Impersonation Tracker ──────────────────────────────────────────
