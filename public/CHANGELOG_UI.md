@@ -1,3 +1,9 @@
+## [0.9.4] – 2026-04-09
+### Added
+- "Alan Pit Stop" quick-access button added to the global Quick Access row, to the left of CaRP Tool — links to the Alan Pit Stop tool; uses a car icon
+
+---
+
 ## [0.9.3] – 2026-04-09
 ### Added
 - History sections are now collapsible — click "Recently Viewed Listings" or "Recently Impersonated Profiles" to collapse or expand the list

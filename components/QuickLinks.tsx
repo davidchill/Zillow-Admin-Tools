@@ -2,6 +2,18 @@
 
 const LINKS = [
   {
+    url: 'https://agent-pitstop-frontend.zg-ap-apps.com/login/callback',
+    tip: 'Alan Pit Stop',
+    svg: (
+      <svg viewBox="0 0 24 24">
+        <path d="M5 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l2-3h10l2 3h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2" />
+        <circle cx="7.5" cy="17" r="2.5" />
+        <circle cx="16.5" cy="17" r="2.5" />
+        <line x1="10" y1="17" x2="14" y2="17" />
+      </svg>
+    ),
+  },
+  {
     url: 'https://referral-pricing-admin-portal.corp.zillow-prod-k8s.zg-int.net/',
     tip: 'CaRP Tool',
     svg: (
