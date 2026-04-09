@@ -10,6 +10,14 @@ Versioning follows:
 
 ---
 
+## [0.9.0] – 2026-04-08
+
+### Changed
+- History deduplication in the Listing Troubleshooting tab now keys on `id + type` instead of `id` alone — the same ZPID opened in Zillow, PHX, and DIT modes now appears as three separate history entries rather than collapsing into one. Revisiting the same ZPID in the same mode still refreshes (moves to top) the existing entry as before.
+- History list in the Listing Troubleshooting tab now scrolls independently within the visible frame — the search inputs, mode selector, and quick-access buttons remain fixed at the top while the history list scrolls below them. Achieved by restructuring the tab content area as a bounded flex column (`height: 100%` on `html/body/#root` and App root, `overflow: hidden` on the tab wrapper) with the history section as the sole scrollable region (`overflow-y: auto; flex: 1`). Impersonate and CXN tabs retain their own scroll independently.
+
+---
+
 ## [0.8.11] – 2026-04-08
 
 ### Added

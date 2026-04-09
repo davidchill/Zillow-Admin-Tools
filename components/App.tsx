@@ -91,7 +91,7 @@ export default function App({ surface }: Props) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        height: '100%',
         background: 'var(--bg-page)',
         color: 'var(--text-primary)',
       }}
@@ -135,7 +135,7 @@ export default function App({ surface }: Props) {
       </div>
 
       {/* Tab content */}
-      <div style={{ padding: '14px 14px 20px', flex: 1, overflowY: 'auto' }}>
+      <div style={{ padding: '14px 14px 0', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {currentTab === 'listing' && (
           <ListingTab
             viewedHistory={viewedHistory}

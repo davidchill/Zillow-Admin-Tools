@@ -139,7 +139,7 @@ export default function ImpersonateTab({
       : 'No recent impersonations';
 
   return (
-    <div className="flex flex-col gap-0">
+    <div className="flex flex-col gap-0" style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 20 }}>
       {/* Impersonation-related quick tools */}
       <div className="zat-section-label" style={{ background: 'transparent', margin: '0 0 8px' }}>Profile Tools</div>
       <div className="zat-quick-links" style={{ padding: '0 0 4px', background: 'none' }}>

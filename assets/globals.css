@@ -165,6 +165,7 @@ html[data-theme="dark"] {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, #root {
+  height: 100%;
   font-family: 'Nunito Sans', system-ui, -apple-system, sans-serif;
   background: var(--bg-page);
   color: var(--text-primary);

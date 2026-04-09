@@ -184,7 +184,7 @@ export default function ListingTab({
   const combinedHistory = useMemo(() => {
     const seen = new Set<string>();
     return [...searchedHistory, ...viewedHistory]
-      .filter((h) => { if (seen.has(h.id)) return false; seen.add(h.id); return true; })
+      .filter((h) => { const key = `${h.id}-${h.type}`; if (seen.has(key)) return false; seen.add(key); return true; })
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, limit);
   }, [searchedHistory, viewedHistory, limit]);
@@ -195,7 +195,7 @@ export default function ListingTab({
       : 'No recently viewed or searched listings';
 
   return (
-    <div className="flex flex-col gap-0">
+    <div className="flex flex-col gap-0" style={{ flex: 1, minHeight: 0 }}>
       <div className="zat-section-label" style={{ background: 'transparent', margin: '0 0 8px' }}>Listing Tools</div>
 
       {/* Listing-related quick tools */}
@@ -323,7 +323,7 @@ export default function ListingTab({
       )}
 
       {/* Combined searched + viewed listing history */}
-      <div className="mt-4">
+      <div style={{ marginTop: 16, flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 20 }}>
         <HistorySection
           title="Recently Viewed Listings"
           icon={EyeSVG}
