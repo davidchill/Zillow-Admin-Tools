@@ -222,11 +222,11 @@ export default function ListingTab({
       </div>
 
       {/* Listing mode row */}
-      <div className="zat-modes">
+      <div className="zat-seg" style={{ marginBottom: 10 }}>
         {LISTING_MODES.map(({ mode, label }) => (
           <button
             key={mode}
-            className={`zat-mode-btn${listingMode === mode ? ' active' : ''}`}
+            className={`zat-seg-btn${listingMode === mode ? ' active' : ''}`}
             onClick={() => switchListingMode(mode)}
           >
             {label}

@@ -167,11 +167,11 @@ export default function ImpersonateTab({
       </div>
 
       {/* Mode row */}
-      <div className="zat-modes">
+      <div className="zat-seg" style={{ marginBottom: 10 }}>
         {MODES.map(({ mode: m, label, wip }) => (
           <button
             key={m}
-            className={`zat-mode-btn${mode === m ? ' active' : ''}`}
+            className={`zat-seg-btn${mode === m ? ' active' : ''}`}
             onClick={() => handleModeChange(m)}
           >
             {label}

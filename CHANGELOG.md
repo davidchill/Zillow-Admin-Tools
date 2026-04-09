@@ -10,6 +10,26 @@ Versioning follows:
 
 ---
 
+## [0.8.9] – 2026-04-08
+
+### Changed
+- Header background replaced with a directional gradient (`#0f172a` → `#1a2740`) and a blue accent stripe (`border-top: 2px solid #3b82f6`)
+- Header icon swapped from a house to a shield — better reflects the admin/internal nature of the tool
+- Header subtitle text removed — frees vertical space for experienced users
+- Tab bar active state changed from an underline to a pill indicator (`background: var(--accent-bg); border-radius: 8px`) with padding/gap between tabs
+- Mode selector buttons in Impersonate and Listing tabs replaced with the existing segmented control component (`.zat-seg` / `.zat-seg-btn`) for visual consistency
+- Quick link buttons now have a subtle resting shadow and lift with a blue glow on hover (`transform: translateY(-1px)`)
+- Search button `border-radius` bumped from `8px` to `10px` to match inputs
+- History item address/name sub-text color darkened from `--text-muted` to `--text-secondary` for better readability in light mode
+- Input labels (`.zat-input-label`) and history section titles (`.zat-history-title`) bumped from `font-weight: 700` to `800` for stronger hierarchy
+
+### Added
+- Color-coded left border on history items — each type gets its own accent color (ZPID=amber, PHX=orange, DIT=pink, Zillow=cyan, Email=purple, ZUID=blue, Screen Name=green)
+- Empty history state now shows a muted inbox icon above the placeholder text
+- Highspot Search section gets a subtle blue tint gradient in light mode; reverts to `--bg-surface` in dark mode
+
+---
+
 ## [0.8.8] – 2026-04-08
 
 ### Added

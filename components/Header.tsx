@@ -13,13 +13,14 @@ export default function Header({ onChangelogOpen, onSettingsOpen }: Props) {
   return (
     <div
       style={{
-        background: '#0f172a',
+        background: 'linear-gradient(135deg, #0f172a, #1a2740)',
+        borderTop: '2px solid #3b82f6',
         padding: '16px 20px',
         color: 'white',
         flexShrink: 0,
       }}
     >
-      <div className="flex items-center gap-3 mb-1">
+      <div className="flex items-center gap-3">
         {/* Icon */}
         <div
           style={{
@@ -36,8 +37,7 @@ export default function Header({ onChangelogOpen, onSettingsOpen }: Props) {
             viewBox="0 0 24 24"
             style={{ width: 20, height: 20, fill: 'none', stroke: 'white', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }}
           >
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
         </div>
 
@@ -110,9 +110,6 @@ export default function Header({ onChangelogOpen, onSettingsOpen }: Props) {
         </button>
       </div>
 
-      <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4 }}>
-        Search listings or impersonate users by email, ZUID, or screen name.
-      </p>
     </div>
   );
 }

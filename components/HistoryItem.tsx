@@ -24,6 +24,14 @@ const EXT_SVG = (
   </svg>
 );
 
+function getBorderClass(item: HistoryItemType): string {
+  if (item.type === 'viewed') return 'zat-item-border-viewed';
+  if (item.type === 'zpid') return 'zat-item-border-zpid';
+  if (item.type === 'phx') return 'zat-item-border-phx';
+  if (item.type === 'dit') return 'zat-item-border-dit';
+  return `zat-item-border-${item.method || 'zuid'}`;
+}
+
 function getBadgeClass(item: HistoryItemType): string {
   if (item.type === 'viewed') return 'zat-badge-viewed';
   if (item.type === 'zpid') return 'zat-badge-zpid';
@@ -76,6 +84,7 @@ function OpenBtn({ url, tip, label }: { url: string; tip: string; label?: React.
 export default function HistoryItem({ item, onClick }: Props) {
   const badgeClass = getBadgeClass(item);
   const badgeText = getBadgeText(item);
+  const borderClass = getBorderClass(item);
 
   // Build action buttons depending on type
   const isListing =
@@ -142,7 +151,7 @@ export default function HistoryItem({ item, onClick }: Props) {
   }
 
   return (
-    <button className="zat-history-item" onClick={onClick}>
+    <button className={`zat-history-item ${borderClass}`} onClick={onClick}>
       <div className="zat-history-item-top">
         <span className="zat-history-item-id">
           <span className={`zat-badge ${badgeClass}`}>{badgeText}</span>

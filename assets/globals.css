@@ -61,6 +61,9 @@
 
 /* ── Dark theme: system preference (Auto mode) ── */
 @media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .zat-highspot-search {
+    background: var(--bg-surface);
+  }
   html:not([data-theme="light"]) {
     --bg-page: #0f172a;
     --bg-surface: #1e293b;
@@ -109,6 +112,9 @@
 }
 
 /* ── Dark theme: explicit override ── */
+html[data-theme="dark"] .zat-highspot-search {
+  background: var(--bg-surface);
+}
 html[data-theme="dark"] {
   --bg-page: #0f172a;
   --bg-surface: #1e293b;
@@ -201,7 +207,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   flex-shrink: 0;
   background: var(--accent);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -268,7 +274,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 /* ── Input label ── */
 .zat-input-label {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
@@ -346,12 +352,21 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 
 .zat-history-item-sub {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   padding-left: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── History item: type-based left border ── */
+.zat-item-border-viewed     { border-left: 3px solid var(--badge-viewed-text); }
+.zat-item-border-zpid       { border-left: 3px solid var(--badge-zpid-text); }
+.zat-item-border-phx        { border-left: 3px solid var(--badge-phx-text); }
+.zat-item-border-dit        { border-left: 3px solid var(--badge-dit-text); }
+.zat-item-border-email      { border-left: 3px solid var(--badge-email-text); }
+.zat-item-border-zuid       { border-left: 3px solid var(--badge-zuid-text); }
+.zat-item-border-screenname { border-left: 3px solid var(--badge-screen-text); }
 
 /* ── Copy/Open action buttons ── */
 .zat-copy-btn, .zat-open-btn {
@@ -481,7 +496,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-secondary);
 }
 .zat-history-title svg {
@@ -618,7 +633,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 .zat-highspot-search {
   padding: 8px 14px;
   border-bottom: 1px solid var(--border-light);
-  background: var(--bg-surface);
+  background: linear-gradient(180deg, #eef5ff 0%, #f8fafc 100%);
 }
 
 /* ── Quick links ── */
@@ -643,8 +658,14 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   cursor: pointer;
   transition: all 0.15s;
   position: relative;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
-.zat-quick-btn:hover { background: var(--accent-bg); border-color: var(--accent); }
+.zat-quick-btn:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(37,99,235,0.15);
+}
 .zat-quick-btn svg {
   width: 15px;
   height: 15px;
@@ -696,6 +717,8 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   display: flex;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
+  gap: 4px;
+  padding: 6px 8px;
 }
 .zat-tab {
   flex: 1;
@@ -704,7 +727,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 10px 6px;
+  padding: 8px 6px;
   font-size: 10px;
   font-weight: 700;
   font-family: inherit;
@@ -713,7 +736,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   color: var(--text-muted);
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -728,7 +751,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 }
 .zat-tab.active {
   color: var(--accent);
-  border-bottom-color: var(--accent);
+  background: var(--accent-bg);
 }
 .zat-tab:hover:not(.active) {
   background: var(--bg-subtle);

@@ -2,4 +2,4 @@
 // Update RELEASE_DATE on every release. Version comes from package.json
 // automatically — do not hardcode it here or in wxt.config.ts.
 
-export const RELEASE_DATE = 'Apr 2, 2026';
+export const RELEASE_DATE = 'Apr 8, 2026';
