@@ -500,6 +500,18 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   font-weight: 800;
   color: var(--text-secondary);
 }
+.zat-history-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  border-radius: 4px;
+}
+.zat-history-toggle:hover { color: var(--text-primary); }
 .zat-history-title svg {
   width: 13px;
   height: 13px;
@@ -509,6 +521,17 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   stroke-linecap: round;
   stroke-linejoin: round;
   flex-shrink: 0;
+}
+.zat-chevron {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: var(--text-faint);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
 .zat-clear-btn {
   display: flex;
@@ -685,7 +708,12 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   background: var(--accent-bg);
   border-color: var(--accent);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(37,99,235,0.15);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.20), 0 0 0 1px rgba(37,99,235,0.08);
+}
+.zat-quick-btn:active {
+  transform: scale(0.93);
+  box-shadow: none;
+  transition-duration: 0.06s;
 }
 .zat-quick-btn svg {
   width: 15px;
@@ -695,8 +723,13 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  transition: transform 0.15s;
 }
-.zat-quick-btn:hover svg { stroke: var(--accent); }
+.zat-quick-btn:hover svg {
+  stroke: var(--accent);
+  transform: scale(1.15);
+}
+.zat-quick-btn:active svg { transform: scale(0.9); }
 
 /* Quick btn tooltips */
 .zat-quick-btn[data-tip]::after {
@@ -769,10 +802,16 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  transition: transform 0.15s, stroke-width 0.15s;
 }
 .zat-tab.active {
   color: var(--accent);
   background: var(--accent-bg);
+  box-shadow: 0 3px 0 0 var(--accent);
+}
+.zat-tab.active svg {
+  transform: scale(1.12);
+  stroke-width: 2.5;
 }
 .zat-tab:hover:not(.active) {
   background: var(--bg-subtle);

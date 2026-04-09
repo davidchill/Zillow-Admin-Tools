@@ -10,6 +10,14 @@ Versioning follows:
 
 ---
 
+## [0.9.3] – 2026-04-09
+
+### Added
+- "Recently Viewed Listings" and "Recently Impersonated Profiles" history sections are now collapsible — click the section header to toggle the list open or closed
+- Chevron indicator on each history section header rotates to reflect collapsed/expanded state
+
+---
+
 ## [0.9.2] – 2026-04-09
 
 ### Added

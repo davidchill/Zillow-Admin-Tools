@@ -1,3 +1,9 @@
+## [0.9.3] – 2026-04-09
+### Added
+- History sections are now collapsible — click "Recently Viewed Listings" or "Recently Impersonated Profiles" to collapse or expand the list
+
+---
+
 ## [0.9.2] – 2026-04-09
 ### Added
 - "MLS zWiki" quick-access button added to the Listing Tools row — links to the MLS reference page on zWiki
