@@ -19,7 +19,7 @@ export default function AutocompleteDropdown({ results, activeIdx, onSelect }: P
         const cityState = meta.cityStateZip || '';
         return (
           <button
-            key={i}
+            key={r.metaData?.zpid != null ? String(r.metaData.zpid) : (r.display ?? String(i))}
             className={`zat-ac-item${i === activeIdx ? ' active' : ''}`}
             onMouseDown={(e) => {
               e.preventDefault();
