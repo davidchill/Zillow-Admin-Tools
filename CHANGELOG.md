@@ -10,6 +10,14 @@ Versioning follows:
 
 ---
 
+## [0.9.8] – 2026-04-09 (patch)
+
+### Fixed
+- `CxnTab.tsx`: Removed dead `pearlError` state — `setPearlError` was never called with a non-empty value, making the error display div unreachable; state variable, setter, `has-error` class binding, and error div all removed
+- `icons.tsx`: Replaced `ListingTabIcon` with a house/home SVG — the export was an exact copy of `SearchSVG` (magnifying glass), a copy-paste oversight from when the tab icons were added; now shows a semantically appropriate home icon
+
+---
+
 ## [0.9.8] – 2026-04-09
 
 ### Changed

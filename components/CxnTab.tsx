@@ -8,7 +8,6 @@ export default function CxnTab() {
   const [zuidValue, setZuidValue] = useState('');
   const [zuidError, setZuidError] = useState('');
   const [pearlValue, setPearlValue] = useState('');
-  const [pearlError, setPearlError] = useState('');
 
   function doZuidSearch() {
     const raw = zuidValue.trim();
@@ -25,7 +24,6 @@ export default function CxnTab() {
 
   function doPearlSearch() {
     const raw = pearlValue.trim();
-    setPearlError('');
     if (!raw) return;
     chrome.tabs.create({ url: PEARL_LEAD_BASE + encodeURIComponent(raw) });
     setPearlValue('');
@@ -96,7 +94,7 @@ export default function CxnTab() {
       <div className="flex gap-2 mb-1">
         <input
           type="text"
-          className={`zat-input${pearlError ? ' has-error' : ''}`}
+          className="zat-input"
           placeholder="Lead ID"
           value={pearlValue}
           onChange={(e) => { setPearlValue(e.target.value); setPearlError(''); }}
@@ -107,7 +105,6 @@ export default function CxnTab() {
           {SearchSVG}
         </button>
       </div>
-      {pearlError && <div className="zat-error">{pearlError}</div>}
     </div>
   );
 }
