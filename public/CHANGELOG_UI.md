@@ -1,3 +1,12 @@
+## [0.9.1] – 2026-04-09
+### Changed
+- Search field labels and placeholders updated across the Listing and Impersonate tabs — labels now read "Search by ZPID", "Search by Address", "Search by ZUID", "Search by Email", and "Search by Screen Name"; ZPID and ZUID placeholders updated to "Input ZPID" and "Input ZUID"; Email placeholder updated to "Input full email address"
+- "Find an Agent" and "Impersonate" search sections swapped in the Impersonate tab — Find an Agent now appears at the top
+- "Impersonate" section header updated to match the centered hairline-rule style used elsewhere
+- Divider between the Quick Access buttons and the main tab bar updated to the centered hairline-rule style
+
+---
+
 ## [0.9.0] – 2026-04-08
 ### Changed
 - The same ZPID opened in different modes (Zillow, PHX, DIT) now appears as separate entries in the history list — previously they collapsed into one

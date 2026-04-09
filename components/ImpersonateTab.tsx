@@ -24,15 +24,15 @@ const MODES: { mode: ImpersonateMethod; label: string; wip?: boolean }[] = [
 
 const MODE_LABELS: Record<string, string> = {
   auto: 'Email, ZUID, or Screen Name',
-  email: 'Email Address',
-  zuid: 'User ID (ZUID)',
-  screenname: 'Screen Name',
+  email: 'Search by Email',
+  zuid: 'Search by ZUID',
+  screenname: 'Search by Screen Name',
 };
 
 const MODE_PLACEHOLDERS: Record<string, string> = {
   auto: 'Email, ZUID, or Screen Name',
-  email: 'e.g. user@example.com',
-  zuid: 'e.g. 12345678',
+  email: 'Input full email address',
+  zuid: 'Input ZUID',
   screenname: 'e.g. johndoe42',
 };
 
@@ -167,6 +167,25 @@ export default function ImpersonateTab({
         </button>
       </div>
 
+      {/* Find an Agent */}
+      <div className="zat-section-label" style={{ background: 'transparent', margin: '4px 0 8px' }}>Find an Agent</div>
+      <p className="zat-input-hint">Opens the Zillow Find an Agent results page.</p>
+      <div className="flex gap-2 mb-1">
+        <input
+          type="text"
+          className="zat-input"
+          placeholder="Agent name"
+          value={agentName}
+          onChange={(e) => { setAgentName(e.target.value); setAgentError(''); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') doAgentSearch(); }}
+          autoComplete="off"
+        />
+        <button className="zat-search-btn" onClick={doAgentSearch}>
+          {SearchSVG}
+        </button>
+      </div>
+      {agentError && <div className="zat-error">{agentError}</div>}
+
       <div className="zat-section-label" style={{ background: 'transparent', margin: '4px 0 8px' }}>Impersonate</div>
 
       {/* Mode row */}
@@ -211,25 +230,6 @@ export default function ImpersonateTab({
         </button>
       </div>
       {error && <div className="zat-error">{error}</div>}
-
-      {/* Find an Agent */}
-      <div className="zat-section-divider">Find an Agent</div>
-      <p className="zat-input-hint">Opens the Zillow Find an Agent results page.</p>
-      <div className="flex gap-2 mb-1">
-        <input
-          type="text"
-          className="zat-input"
-          placeholder="Agent name"
-          value={agentName}
-          onChange={(e) => { setAgentName(e.target.value); setAgentError(''); }}
-          onKeyDown={(e) => { if (e.key === 'Enter') doAgentSearch(); }}
-          autoComplete="off"
-        />
-        <button className="zat-search-btn" onClick={doAgentSearch}>
-          {SearchSVG}
-        </button>
-      </div>
-      {agentError && <div className="zat-error">{agentError}</div>}
 
       {/* History */}
       <div className="mt-4">

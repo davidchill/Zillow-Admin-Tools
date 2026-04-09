@@ -239,13 +239,13 @@ export default function ListingTab({
       </div>
 
       {/* ZPID input */}
-      <label className="zat-input-label">ZPID</label>
+      <label className="zat-input-label">Search by ZPID</label>
       <div className="flex gap-2 mb-1">
         <input
           type="text"
           inputMode="numeric"
           className={`zat-input${zpidError ? ' has-error' : ''}`}
-          placeholder="e.g. 29122711"
+          placeholder="Input ZPID"
           value={zpidValue}
           onChange={(e) => { setZpidValue(e.target.value); setZpidError(''); }}
           onKeyDown={(e) => { if (e.key === 'Enter') doZpidSearch(); }}
@@ -281,7 +281,7 @@ export default function ListingTab({
       {/* Address search (Zillow mode only) */}
       {listingMode === 'zillow' && (
         <>
-          <label className="zat-input-label" style={{ marginTop: 4 }}>Address Search</label>
+          <label className="zat-input-label" style={{ marginTop: 4 }}>Search by Address</label>
           <div className="relative flex gap-2 mb-1">
             <div className="relative flex-1">
               <input

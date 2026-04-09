@@ -10,6 +10,18 @@ Versioning follows:
 
 ---
 
+## [0.9.1] – 2026-04-09
+
+### Changed
+- ZPID search label in Listing Troubleshooting tab changed from "ZPID" to "Search by ZPID"; placeholder changed from "e.g. 29122711" to "Input ZPID"
+- Address search label in Listing Troubleshooting tab changed from "Address Search" to "Search by Address"
+- Impersonate tab search labels updated to "Search by ZUID", "Search by Email", and "Search by Screen Name" based on active mode
+- Impersonate tab placeholders updated: ZUID → "Input ZUID", Email → "Input full email address" (Screen Name unchanged)
+- "Find an Agent" and "Impersonate" sections swapped in the Impersonate tab — Find an Agent now appears first, Impersonate search below it
+- "Impersonate" section divider updated from `zat-section-divider` to `zat-section-label` style (centered text with hairline rules) to match the "Find an Agent" header
+- Global Quick Access → tab bar divider replaced from a plain `1px` line to a `zat-section-label` style hairline divider
+- `border-bottom` removed from the `zat-tabs` container in `App.tsx`
+
 ## [0.9.0] – 2026-04-08
 
 ### Changed

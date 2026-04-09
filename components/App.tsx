@@ -107,10 +107,10 @@ export default function App({ surface }: Props) {
 
       <QuickLinks />
 
-      <div style={{ height: '1px', background: 'var(--border-light)', margin: '0 0 10px' }} />
+      <div className="zat-section-label" style={{ background: 'transparent', margin: '4px 0 0' }} />
 
       {/* Tab bar */}
-      <div className="zat-tabs">
+      <div className="zat-tabs" style={{ borderBottom: 'none' }}>
         <button
           className={`zat-tab${currentTab === 'listing' ? ' active' : ''}`}
           onClick={() => switchTab('listing')}
