@@ -196,11 +196,13 @@ export default function ListingTab({
 
   return (
     <div className="flex flex-col gap-0">
+      <div className="zat-section-label" style={{ background: 'transparent', margin: '0 0 8px' }}>Listing Tools</div>
+
       {/* Listing-related quick tools */}
-      <div className="zat-quick-links" style={{ padding: '0 0 10px', borderBottom: '1px solid var(--border-light)', background: 'none', marginBottom: '10px' }}>
+      <div className="zat-quick-links" style={{ padding: '0 0 4px', background: 'none' }}>
         <button
           className="zat-quick-btn"
-          data-tip="3D Home Tours Tool"
+          data-tip="3D Home Tours"
           onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/richdata/ManageVirtualTours.htm' })}
         >
           <svg viewBox="0 0 24 24">
@@ -211,7 +213,7 @@ export default function ListingTab({
         </button>
         <button
           className="zat-quick-btn"
-          data-tip="Address Change Tool"
+          data-tip="Address Change"
           onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/AdminListing.htm' })}
         >
           <svg viewBox="0 0 24 24">
@@ -220,6 +222,8 @@ export default function ListingTab({
           </svg>
         </button>
       </div>
+
+      <div className="zat-section-label" style={{ background: 'transparent', margin: '4px 0 8px' }}>Listing Search</div>
 
       {/* Listing mode row */}
       <div className="zat-seg" style={{ marginBottom: 10 }}>

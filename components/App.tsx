@@ -103,7 +103,11 @@ export default function App({ surface }: Props) {
 
       <HighspotSearch />
 
+      <div className="zat-section-label">Quick Access</div>
+
       <QuickLinks />
+
+      <div style={{ height: '1px', background: 'var(--border-light)', margin: '0 0 10px' }} />
 
       {/* Tab bar */}
       <div className="zat-tabs">

@@ -10,6 +10,21 @@ Versioning follows:
 
 ---
 
+## [0.8.10] – 2026-04-08
+
+### Added
+- "Quick Access" section label between the Highspot Search bar and the global quick-access buttons — rendered as a centered uppercase label with hairline rules extending to each edge (`─── QUICK ACCESS ───`)
+- Thin `1px` horizontal divider line (matching the in-tab divider pattern) between the global Quick Access buttons and the main tab bar, with 10px of breathing room below
+- "Listing Tools" section label above the two listing-specific quick-access buttons in the Listing Troubleshooting tab
+- "Listing Search" section label between the listing-specific quick-access buttons and the Zillow/PHX/DIT segmented control in the Listing Troubleshooting tab
+
+### Changed
+- "Quick Access" label top padding reduced by 3px (`6px` → `3px`) to tighten spacing between the Highspot Search bar and the label
+- Tooltip text on listing quick-access buttons trimmed: "3D Home Tours Tool" → "3D Home Tours", "Address Change Tool" → "Address Change"
+- Global quick-access button row (`zat-quick-links`) no longer carries its own `border-bottom` — separation is now handled by the explicit divider element in `App.tsx`
+
+---
+
 ## [0.8.9] – 2026-04-08
 
 ### Changed
