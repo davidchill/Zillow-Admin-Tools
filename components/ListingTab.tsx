@@ -221,6 +221,17 @@ export default function ListingTab({
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
         </button>
+        <button
+          className="zat-quick-btn"
+          data-tip="MLS zWiki"
+          onClick={() => chrome.tabs.create({ url: 'https://zillowgroup.atlassian.net/wiki/spaces/ID/pages/168636059/MLSs' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polyline points="2 17 12 22 22 17" />
+            <polyline points="2 12 12 17 22 12" />
+          </svg>
+        </button>
       </div>
 
       <div className="zat-section-label" style={{ background: 'transparent', margin: '4px 0 8px' }}>Listing Search</div>

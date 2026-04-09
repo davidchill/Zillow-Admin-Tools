@@ -10,6 +10,13 @@ Versioning follows:
 
 ---
 
+## [0.9.2] – 2026-04-09
+
+### Added
+- "MLS zWiki" quick-access button added to the Listing Tools row in the Listing Troubleshooting tab, positioned to the right of the Address Change button — links to the MLS reference page on zWiki; uses a layers icon
+
+---
+
 ## [0.9.1] – 2026-04-09
 
 ### Changed
