@@ -112,21 +112,21 @@ export default function App({ surface }: Props) {
           onClick={() => switchTab('listing')}
         >
           {ListingTabIcon}
-          Listing<br />Search
+          Listing<br />Troubleshooting
         </button>
         <button
           className={`zat-tab${currentTab === 'impersonate' ? ' active' : ''}`}
           onClick={() => switchTab('impersonate')}
         >
           {ImpersonateTabIcon}
-          Impersonate /<br />Find Agent
+          Impersonate /<br />Profile Troubleshooting
         </button>
         <button
           className={`zat-tab${currentTab === 'cxn' ? ' active' : ''}`}
           onClick={() => switchTab('cxn')}
         >
           {CxnTabIcon}
-          CXN Call<br />Testing
+          CXN Call<br />Troubleshooting
         </button>
       </div>
 

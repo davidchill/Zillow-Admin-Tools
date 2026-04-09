@@ -196,6 +196,31 @@ export default function ListingTab({
 
   return (
     <div className="flex flex-col gap-0">
+      {/* Listing-related quick tools */}
+      <div className="zat-quick-links" style={{ padding: '0 0 10px', borderBottom: '1px solid var(--border-light)', background: 'none', marginBottom: '10px' }}>
+        <button
+          className="zat-quick-btn"
+          data-tip="3D Home Tours Tool"
+          onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/richdata/ManageVirtualTours.htm' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" y1="22.08" x2="12" y2="12" />
+          </svg>
+        </button>
+        <button
+          className="zat-quick-btn"
+          data-tip="Address Change Tool"
+          onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/AdminListing.htm' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+        </button>
+      </div>
+
       {/* Listing mode row */}
       <div className="zat-modes">
         {LISTING_MODES.map(({ mode, label }) => (

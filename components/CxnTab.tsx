@@ -33,6 +33,39 @@ export default function CxnTab() {
 
   return (
     <div className="flex flex-col gap-0">
+      {/* CXN-related quick tools */}
+      <div className="zat-quick-links" style={{ padding: '0 0 10px', borderBottom: '1px solid var(--border-light)', background: 'none', marginBottom: '10px' }}>
+        <button
+          className="zat-quick-btn"
+          data-tip="FAQT2 Test Calls"
+          onClick={() => chrome.tabs.create({ url: 'https://faqt2-prod.corp.connectionsplatform-prod-k8s.zg-int.net/findpro/testConnection' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 11.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.41 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.41a16 16 0 0 0 6 6l.76-.76a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+        </button>
+        <button
+          className="zat-quick-btn"
+          data-tip="Pearl Dashboard"
+          onClick={() => chrome.tabs.create({ url: 'https://concierge.revoc.zillow.com/admin/audit' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 1 0 10 10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </button>
+        <button
+          className="zat-quick-btn"
+          data-tip="VoIP Dashboard"
+          onClick={() => chrome.tabs.create({ url: 'https://internal-tools-ui.zg-ap-apps.com/voip-dashboard' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+          </svg>
+        </button>
+      </div>
+
       {/* ZUID → Splunk */}
       <label className="zat-input-label">ZUID (Splunk Connection Events)</label>
       <p className="zat-input-hint">Opens the Splunk connections dashboard filtered by ZUID.</p>
@@ -54,7 +87,10 @@ export default function CxnTab() {
       {zuidError && <div className="zat-error">{zuidError}</div>}
 
       {/* Pearl Lead */}
-      <div className="zat-section-divider">Pearl Lead Audit</div>
+      <div className="zat-section-divider" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        Pearl Lead Audit
+        <span className="zat-wip-tag">WIP</span>
+      </div>
       <p className="zat-input-hint">Opens the Pearl concierge audit page for the given lead ID.</p>
       <div className="flex gap-2 mb-1">
         <input

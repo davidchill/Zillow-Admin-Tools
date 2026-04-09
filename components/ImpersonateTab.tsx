@@ -140,6 +140,32 @@ export default function ImpersonateTab({
 
   return (
     <div className="flex flex-col gap-0">
+      {/* Impersonation-related quick tools */}
+      <div className="zat-quick-links" style={{ padding: '0 0 10px', borderBottom: '1px solid var(--border-light)', background: 'none', marginBottom: '10px' }}>
+        <button
+          className="zat-quick-btn"
+          data-tip="Merge Profiles Tool"
+          onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/TransferProfileData.htm' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <circle cx="18" cy="18" r="3" />
+            <circle cx="6" cy="6" r="3" />
+            <path d="M6 21V9a9 9 0 0 0 9 9" />
+          </svg>
+        </button>
+        <button
+          className="zat-quick-btn"
+          data-tip="Upgrade Account Tool"
+          onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/UpgradeAccount.htm' })}
+        >
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="16 12 12 8 8 12" />
+            <line x1="12" y1="16" x2="12" y2="8" />
+          </svg>
+        </button>
+      </div>
+
       {/* Mode row */}
       <div className="zat-modes">
         {MODES.map(({ mode: m, label, wip }) => (

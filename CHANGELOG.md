@@ -10,6 +10,25 @@ Versioning follows:
 
 ---
 
+## [0.8.8] – 2026-04-08
+
+### Added
+- Tab-contextual quick access button rows: each main tab now has its own row of relevant tool shortcuts, separated from the content below by a divider line, mirroring the style of the global quick links row
+- **Listing Troubleshooting tab** — 3D Home Tours Tool and Address Change Tool buttons nested at the top of the tab
+- **Impersonate / Profile Troubleshooting tab** — Merge Profiles Tool and Upgrade Account Tool buttons nested at the top of the tab
+- **CXN Call Troubleshooting tab** — FAQT2 Test Calls (phone icon), Pearl Dashboard (gauge icon), and VoIP Dashboard (headset icon) buttons nested at the top of the tab; all three link to their respective internal tools
+- Global Quick Links row expanded with two new buttons: Supportal (life buoy icon → `support.zillow-workspace.com/admin/users`) and Zuora Billing (credit card icon → `zuora.com/platform/webapp`)
+- WIP tag added to the Pearl Lead Audit section heading in the CXN Call Troubleshooting tab
+
+### Changed
+- "Listing Search" tab renamed to "Listing Troubleshooting"
+- "Impersonate / Find Agent" tab renamed to "Impersonate / Profile Troubleshooting"
+- "CXN Call Testing" tab renamed to "CXN Call Troubleshooting"
+- 3D Home Tours and Address Change Tool buttons moved out of the global Quick Links row and into the Listing Troubleshooting tab
+- Merge Profiles and Upgrade Account Tool buttons moved out of the global Quick Links row and into the Impersonate / Profile Troubleshooting tab
+
+---
+
 ## [0.8.7] – 2026-04-02
 
 ### Added
