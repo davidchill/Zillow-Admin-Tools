@@ -141,10 +141,11 @@ export default function ImpersonateTab({
   return (
     <div className="flex flex-col gap-0">
       {/* Impersonation-related quick tools */}
-      <div className="zat-quick-links" style={{ padding: '0 0 10px', borderBottom: '1px solid var(--border-light)', background: 'none', marginBottom: '10px' }}>
+      <div className="zat-section-label" style={{ background: 'transparent', margin: '0 0 8px' }}>Profile Tools</div>
+      <div className="zat-quick-links" style={{ padding: '0 0 4px', background: 'none' }}>
         <button
           className="zat-quick-btn"
-          data-tip="Merge Profiles Tool"
+          data-tip="Merge Profiles"
           onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/TransferProfileData.htm' })}
         >
           <svg viewBox="0 0 24 24">
@@ -155,7 +156,7 @@ export default function ImpersonateTab({
         </button>
         <button
           className="zat-quick-btn"
-          data-tip="Upgrade Account Tool"
+          data-tip="Upgrade Account"
           onClick={() => chrome.tabs.create({ url: 'https://www.zillow.com/admin/UpgradeAccount.htm' })}
         >
           <svg viewBox="0 0 24 24">
@@ -165,6 +166,8 @@ export default function ImpersonateTab({
           </svg>
         </button>
       </div>
+
+      <div className="zat-section-label" style={{ background: 'transparent', margin: '4px 0 8px' }}>Impersonate</div>
 
       {/* Mode row */}
       <div className="zat-seg" style={{ marginBottom: 10 }}>

@@ -34,7 +34,8 @@ export default function CxnTab() {
   return (
     <div className="flex flex-col gap-0">
       {/* CXN-related quick tools */}
-      <div className="zat-quick-links" style={{ padding: '0 0 10px', borderBottom: '1px solid var(--border-light)', background: 'none', marginBottom: '10px' }}>
+      <div className="zat-section-label" style={{ background: 'transparent', margin: '0 0 8px' }}>CXN Call Tools</div>
+      <div className="zat-quick-links" style={{ padding: '0 0 4px', background: 'none', marginBottom: '10px' }}>
         <button
           className="zat-quick-btn"
           data-tip="FAQT2 Test Calls"
@@ -67,14 +68,14 @@ export default function CxnTab() {
       </div>
 
       {/* ZUID → Splunk */}
-      <label className="zat-input-label">ZUID (Splunk Connection Events)</label>
+      <label className="zat-input-label">Splunk - Events by ZUID</label>
       <p className="zat-input-hint">Opens the Splunk connections dashboard filtered by ZUID.</p>
       <div className="flex gap-2 mb-1">
         <input
           type="text"
           inputMode="numeric"
           className={`zat-input${zuidError ? ' has-error' : ''}`}
-          placeholder="e.g. 12345678"
+          placeholder="Input ZUID"
           value={zuidValue}
           onChange={(e) => { setZuidValue(e.target.value); setZuidError(''); }}
           onKeyDown={(e) => { if (e.key === 'Enter') doZuidSearch(); }}

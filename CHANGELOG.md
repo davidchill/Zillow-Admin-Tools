@@ -10,6 +10,23 @@ Versioning follows:
 
 ---
 
+## [0.8.11] – 2026-04-08
+
+### Added
+- "Profile Tools" section label above the Merge Profiles and Upgrade Account quick-access buttons in the Impersonate tab
+- "Impersonate" section label above the ZUID/Email/Screen Name/Auto segmented control in the Impersonate tab
+- "CXN Call Tools" section label above the three quick-access buttons in the CXN Call Troubleshooting tab
+
+### Changed
+- Removed unlabeled `borderBottom` divider lines from quick-links rows in the Impersonate and CXN Call Troubleshooting tabs — section labels now provide the visual separation
+- Impersonate tab quick-links spacing aligned to match Listing Troubleshooting tab (`padding: 0 0 4px`, no `marginBottom` on the quick-links row; `margin: 4px 0 8px` on the Impersonate label)
+- CXN Call Troubleshooting tab quick-links given `marginBottom: 10px` to match spacing rhythm of other tabs
+- Tooltip text on Impersonate tab buttons trimmed: "Merge Profiles Tool" → "Merge Profiles", "Upgrade Account Tool" → "Upgrade Account"
+- ZUID search in CXN tab renamed from "ZUID (Splunk Connection Events)" to "Splunk - Events by ZUID"
+- ZUID search placeholder changed from "e.g. 12345678" to "Input ZUID"
+
+---
+
 ## [0.8.10] – 2026-04-08
 
 ### Added
