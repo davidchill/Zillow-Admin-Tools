@@ -35,7 +35,10 @@ export function useHistory(historyLimit: number) {
       label = ''
     ) => {
       const limit = Math.min(20, Math.max(5, historyLimit));
-      const item: HistoryItem = { type, id, method, label, timestamp: Date.now() };
+      // `type` and `method` are validated to be consistent at every call site;
+      // the cast is needed because TypeScript can't narrow two separate union
+      // variables to a single discriminated union variant.
+      const item = { type, id, method, label, timestamp: Date.now() } as HistoryItem;
       setHistory((prev) => {
         const updated = [item]
           .concat(prev.filter((h) => !(h.id === id && h.type === type)))

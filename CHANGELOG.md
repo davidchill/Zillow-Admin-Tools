@@ -10,6 +10,14 @@ Versioning follows:
 
 ---
 
+## [0.9.7] – 2026-04-09
+
+### Fixed
+- `ChangelogModal.tsx`: Eliminated `dangerouslySetInnerHTML` XSS risk — `parseChangelog` now returns `JSX.Element[]` directly instead of an HTML string; the `escapeHtml` helper is removed and React's built-in escaping handles all text content
+- `types/index.ts`: Replaced the flat `HistoryItem` interface with a discriminated union — each `type` value (`impersonate`, `zpid`, `phx`, `dit`, `viewed`) now constrains the allowed `method` values, making invalid combinations like `{ type: 'zpid', method: 'email' }` a compile error; `HistoryItemType` retained as a derived alias (`HistoryItem['type']`) so no import sites required changes
+
+---
+
 ## [0.9.6] – 2026-04-09
 
 ### Fixed

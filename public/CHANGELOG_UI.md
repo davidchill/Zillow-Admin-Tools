@@ -1,3 +1,10 @@
+## [0.9.7] – 2026-04-09
+### Fixed
+- Eliminated an internal security risk in the What's New panel — changelog content is now rendered natively by React instead of being injected as raw HTML
+- Tightened internal TypeScript types so invalid data combinations are caught at build time rather than at runtime
+
+---
+
 ## [0.9.6] – 2026-04-09
 ### Fixed
 - Removed a spoofed browser identifier that could be flagged by Zillow's servers

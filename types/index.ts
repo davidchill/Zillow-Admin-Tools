@@ -4,15 +4,15 @@ export type ImpersonateMethod = 'auto' | 'email' | 'zuid' | 'screenname';
 export type ListingMode = 'zillow' | 'phx' | 'dit';
 export type Tab = 'impersonate' | 'listing' | 'cxn';
 export type ThemeMode = 'auto' | 'light' | 'dark';
-export type HistoryItemType = 'impersonate' | 'zpid' | 'phx' | 'dit' | 'viewed';
+export type HistoryItem =
+  | { type: 'impersonate'; id: string; method: ImpersonateMethod; label: string; timestamp: number }
+  | { type: 'zpid';        id: string; method: 'zpid';            label: string; timestamp: number }
+  | { type: 'phx';         id: string; method: 'phx';             label: string; timestamp: number }
+  | { type: 'dit';         id: string; method: 'dit';             label: string; timestamp: number }
+  | { type: 'viewed';      id: string; method: 'viewed';          label: string; timestamp: number };
 
-export interface HistoryItem {
-  type: HistoryItemType;
-  id: string;
-  method: ImpersonateMethod | 'viewed' | 'zpid' | 'phx' | 'dit';
-  label: string;
-  timestamp: number;
-}
+// Derived alias — kept for backwards compatibility with existing imports
+export type HistoryItemType = HistoryItem['type'];
 
 export interface Settings {
   historyLimit: number;

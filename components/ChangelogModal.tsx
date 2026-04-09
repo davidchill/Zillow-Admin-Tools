@@ -6,26 +6,22 @@ interface Props {
   onClose: () => void;
 }
 
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function parseChangelog(md: string): string {
+function parseChangelog(md: string): JSX.Element[] {
   const lines = md.split('\n');
-  let html = '';
-  let inList = false;
+  const elements: JSX.Element[] = [];
+  let pending: JSX.Element[] = [];
+  let k = 0;
+
+  const flush = () => {
+    if (pending.length) {
+      elements.push(<ul key={k++} className="zat-cl-list">{pending}</ul>);
+      pending = [];
+    }
+  };
 
   for (const raw of lines) {
     const line = raw.trim();
-    if (!line || line === '---') {
-      if (inList) { html += '</ul>'; inList = false; }
-      continue;
-    }
+    if (!line || line === '---') { flush(); continue; }
     if (
       line.startsWith('# ') ||
       line.startsWith('All notable') ||
@@ -36,40 +32,46 @@ function parseChangelog(md: string): string {
     ) continue;
 
     if (/^## \[Earlier\]/.test(line)) {
-      if (inList) { html += '</ul>'; inList = false; }
-      html += '<div class="zat-cl-version"><span class="zat-cl-version-num">Earlier</span></div>';
+      flush();
+      elements.push(
+        <div key={k++} className="zat-cl-version">
+          <span className="zat-cl-version-num">Earlier</span>
+        </div>
+      );
       continue;
     }
 
     const vMatch = line.match(/^## \[(.+?)\]\s*[–-]\s*(.+)/);
     if (vMatch) {
-      if (inList) { html += '</ul>'; inList = false; }
-      html += `<div class="zat-cl-version"><span class="zat-cl-version-num">v${escapeHtml(vMatch[1])}</span><span class="zat-cl-version-date">${escapeHtml(vMatch[2])}</span></div>`;
+      flush();
+      elements.push(
+        <div key={k++} className="zat-cl-version">
+          <span className="zat-cl-version-num">v{vMatch[1]}</span>
+          <span className="zat-cl-version-date">{vMatch[2]}</span>
+        </div>
+      );
       continue;
     }
 
     const sMatch = line.match(/^### (.+)/);
     if (sMatch) {
-      if (inList) { html += '</ul>'; inList = false; }
-      html += `<div class="zat-cl-section">${escapeHtml(sMatch[1])}</div><ul class="zat-cl-list">`;
-      inList = true;
+      flush();
+      elements.push(<div key={k++} className="zat-cl-section">{sMatch[1]}</div>);
       continue;
     }
 
     const iMatch = line.match(/^- (.+)/);
     if (iMatch) {
-      if (!inList) { html += '<ul class="zat-cl-list">'; inList = true; }
-      html += `<li>${escapeHtml(iMatch[1])}</li>`;
-      continue;
+      pending.push(<li key={k++}>{iMatch[1]}</li>);
     }
   }
 
-  if (inList) html += '</ul>';
-  return html;
+  flush();
+  return elements;
 }
 
 export default function ChangelogModal({ onClose }: Props) {
-  const [html, setHtml] = useState('');
+  const [elements, setElements] = useState<JSX.Element[]>([]);
   const [loading, setLoading] = useState(true);
   const fetched = useRef(false);
 
@@ -80,11 +82,15 @@ export default function ChangelogModal({ onClose }: Props) {
     fetch(chrome.runtime.getURL('CHANGELOG_UI.md'))
       .then((r) => r.text())
       .then((md) => {
-        setHtml(parseChangelog(md));
+        setElements(parseChangelog(md));
         setLoading(false);
       })
       .catch(() => {
-        setHtml('<div style="text-align:center;padding:24px;color:var(--text-faint);font-size:13px;">Could not load changelog.</div>');
+        setElements([
+          <div key="err" style={{ textAlign: 'center', padding: 24, color: 'var(--text-faint)', fontSize: 13 }}>
+            Could not load changelog.
+          </div>,
+        ]);
         setLoading(false);
       });
   }, []);
@@ -110,7 +116,7 @@ export default function ChangelogModal({ onClose }: Props) {
               Loading…
             </div>
           ) : (
-            <div dangerouslySetInnerHTML={{ __html: html }} />
+            <>{elements}</>
           )}
         </div>
       </div>
