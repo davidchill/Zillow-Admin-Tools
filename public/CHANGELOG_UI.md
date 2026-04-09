@@ -1,3 +1,9 @@
+## [0.9.2] – 2026-04-09
+### Added
+- "MLS zWiki" quick-access button added to the Listing Tools row — links to the MLS reference page on zWiki
+
+---
+
 ## [0.9.1] – 2026-04-09
 ### Changed
 - Search field labels and placeholders updated across the Listing and Impersonate tabs — labels now read "Search by ZPID", "Search by Address", "Search by ZUID", "Search by Email", and "Search by Screen Name"; ZPID and ZUID placeholders updated to "Input ZPID" and "Input ZUID"; Email placeholder updated to "Input full email address"
