@@ -10,6 +10,15 @@ Versioning follows:
 
 ---
 
+## [0.9.9] – 2026-04-10 (patch)
+
+### Fixed
+- `entrypoints/content.ts`: PHX and DIT page visits are now tracked in Recently Viewed Listings history — `checkAndTrackZpid()` previously had an unconditional early return for any non-`www.zillow.com` hostname, so visits to `phoenix-admin-tool.dna-compute-prod.zg-int.net` and `prm.in.zillow.net` were silently ignored; both hostnames are now detected and the ZPID is extracted from the `?zpid=` query parameter
+- `entrypoints/content.ts`: PHX/DIT page-visit entries now write to `zillow_history_v3` with `type: 'phx'` or `type: 'dit'` (via new `doTrackPhxDit()`) rather than reusing `doTrackView()` — using the correct type ensures that clicking a history item re-opens the PHX or DIT URL rather than falling back to `www.zillow.com/homedetails/...`; a `fetchAddress` message is sent to background after saving so the property address label is backfilled from Zillow
+- `components/CxnTab.tsx`: Restored missing `pearlError` / `setPearlError` state declaration — the Pearl Lead input's `onChange` handler called `setPearlError('')` but the state was never declared, causing a TypeScript compile error
+
+---
+
 ## [0.9.8] – 2026-04-09 (patch)
 
 ### Fixed

@@ -1,3 +1,10 @@
+## [0.9.9] – 2026-04-10
+### Fixed
+- PHX and DIT page visits now appear in Recently Viewed Listings history — previously, only searches made from inside the extension were tracked; navigating directly to a PHX or DIT page was silently ignored
+- Clicking a PHX or DIT history item now reopens the correct tool URL — entries are stored with the right type so the link resolves to PHX or DIT rather than falling back to zillow.com
+
+---
+
 ## [0.9.8] – 2026-04-09
 ### Changed
 - "Auto" detect mode removed from the Impersonate tab — it was incomplete and should not have been visible

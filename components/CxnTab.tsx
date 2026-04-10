@@ -8,6 +8,7 @@ export default function CxnTab() {
   const [zuidValue, setZuidValue] = useState('');
   const [zuidError, setZuidError] = useState('');
   const [pearlValue, setPearlValue] = useState('');
+  const [pearlError, setPearlError] = useState('');
 
   function doZuidSearch() {
     const raw = zuidValue.trim();

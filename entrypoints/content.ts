@@ -74,14 +74,57 @@ export default defineContentScript({
       );
     }
 
+    function doTrackPhxDit(zpid: string, type: 'phx' | 'dit') {
+      chrome.storage.local.get(['zillow_history_v3', 'zillow_settings'], (data) => {
+        const settings = (data.zillow_settings as Record<string, unknown>) || {};
+        if (settings.historyEnabled === false) return;
+
+        const limit = Math.min(20, Math.max(5, (settings.historyLimit as number) || 5));
+        const history: Array<{ type: string; id: string; method: string; label: string; timestamp: number }> =
+          data.zillow_history_v3 || [];
+
+        const now = Date.now();
+        const isDupe = history.some(
+          (h) => h.type === type && h.id === zpid && now - h.timestamp < 5000
+        );
+        if (isDupe) return;
+
+        const newEntry: { type: string; id: string; method: string; label: string; timestamp: number } =
+          { type, id: zpid, method: type, label: '', timestamp: now };
+        const updated = [newEntry]
+          .concat(history.filter((h) => !(h.type === type && h.id === zpid)))
+          .slice(0, limit);
+
+        chrome.storage.local.set({ zillow_history_v3: updated }, () => {
+          chrome.runtime.sendMessage(
+            { action: 'fetchAddress', zpid, historyType: type },
+            () => { void chrome.runtime.lastError; }
+          );
+        });
+      });
+    }
+
     function checkAndTrackZpid() {
-      if (window.location.hostname !== 'www.zillow.com') return;
-      const match = window.location.pathname.match(
-        /\/homedetails\/[^?]*\/(\d+)_zpid(?:\/|$)/i
-      );
-      if (!match) return;
-      const viewedZpid = match[1];
-      setTimeout(() => doTrackView(viewedZpid), 1500);
+      const hostname = window.location.hostname;
+
+      if (hostname === 'www.zillow.com') {
+        const match = window.location.pathname.match(
+          /\/homedetails\/[^?]*\/(\d+)_zpid(?:\/|$)/i
+        );
+        if (!match) return;
+        setTimeout(() => doTrackView(match[1]), 1500);
+        return;
+      }
+
+      if (
+        hostname === 'phoenix-admin-tool.dna-compute-prod.zg-int.net' ||
+        hostname === 'prm.in.zillow.net'
+      ) {
+        const zpid = new URLSearchParams(window.location.search).get('zpid');
+        if (!zpid || !/^\d+$/.test(zpid)) return;
+        const type: 'phx' | 'dit' = hostname === 'prm.in.zillow.net' ? 'dit' : 'phx';
+        setTimeout(() => doTrackPhxDit(zpid, type), 1500);
+      }
     }
 
     if (document.readyState === 'loading') {
