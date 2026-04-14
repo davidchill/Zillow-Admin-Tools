@@ -13,6 +13,10 @@ export const CXN_SPLUNK_Zuid_BASE =
 
 export const PEARL_LEAD_BASE = 'https://concierge.revoc.zillow.com/admin/audit/';
 
+export const DATADOG_EVENTS_BASE =
+  'https://premier-agent.datadoghq.com/dashboard/d4f-vg6-29e/partner-support---pa-app-events-for-connections' +
+  '?fromUser=false&refresh_mode=sliding&tpl_var_context.agentZuid%5B0%5D=';
+
 export function buildImpersonateUrl(method: ImpersonateMethod, value: string): string {
   const p = new URLSearchParams();
   if (method === 'email') {

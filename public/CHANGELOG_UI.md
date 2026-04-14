@@ -1,3 +1,9 @@
+## [0.9.10] – 2026-04-13
+### Added
+- New "DataDog - Events by ZUID" search added to the CXN Call Troubleshooting tab, between Splunk and Pearl Lead Audit — enter a Zuid to open the DataDog PA app events dashboard filtered to that agent
+
+---
+
 ## [0.9.9] – 2026-04-10
 ### Fixed
 - PHX and DIT page visits now appear in Recently Viewed Listings history — previously, only searches made from inside the extension were tracked; navigating directly to a PHX or DIT page was silently ignored

@@ -1,12 +1,14 @@
-// ── CxnTab — CXN Call Testing: Splunk ZUID lookup + Pearl Lead search ──
+// ── CxnTab — CXN Call Testing: Splunk ZUID lookup + DataDog Events + Pearl Lead search ──
 
 import { useState } from 'react';
-import { CXN_SPLUNK_Zuid_BASE, PEARL_LEAD_BASE } from '@/utils/urls';
+import { CXN_SPLUNK_Zuid_BASE, DATADOG_EVENTS_BASE, PEARL_LEAD_BASE } from '@/utils/urls';
 import { SearchSVG } from './icons';
 
 export default function CxnTab() {
   const [zuidValue, setZuidValue] = useState('');
   const [zuidError, setZuidError] = useState('');
+  const [datadogValue, setDatadogValue] = useState('');
+  const [datadogError, setDatadogError] = useState('');
   const [pearlValue, setPearlValue] = useState('');
   const [pearlError, setPearlError] = useState('');
 
@@ -21,6 +23,19 @@ export default function CxnTab() {
     }
     chrome.tabs.create({ url: CXN_SPLUNK_Zuid_BASE + clean });
     setZuidValue('');
+  }
+
+  function doDatadogSearch() {
+    const raw = datadogValue.trim();
+    setDatadogError('');
+    if (!raw) return;
+    const clean = raw.replace(/\D/g, '');
+    if (!clean) {
+      setDatadogError('Please enter a numeric ZUID.');
+      return;
+    }
+    chrome.tabs.create({ url: DATADOG_EVENTS_BASE + clean });
+    setDatadogValue('');
   }
 
   function doPearlSearch() {
@@ -85,6 +100,26 @@ export default function CxnTab() {
         </button>
       </div>
       {zuidError && <div className="zat-error">{zuidError}</div>}
+
+      {/* DataDog Events by ZUID */}
+      <div className="zat-section-divider">DataDog - Events by ZUID</div>
+      <p className="zat-input-hint">Opens the DataDog PA app events dashboard filtered by ZUID.</p>
+      <div className="flex gap-2 mb-1">
+        <input
+          type="text"
+          inputMode="numeric"
+          className={`zat-input${datadogError ? ' has-error' : ''}`}
+          placeholder="Input ZUID"
+          value={datadogValue}
+          onChange={(e) => { setDatadogValue(e.target.value); setDatadogError(''); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') doDatadogSearch(); }}
+          autoComplete="off"
+        />
+        <button className="zat-search-btn" onClick={doDatadogSearch}>
+          {SearchSVG}
+        </button>
+      </div>
+      {datadogError && <div className="zat-error">{datadogError}</div>}
 
       {/* Pearl Lead */}
       <div className="zat-section-divider" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

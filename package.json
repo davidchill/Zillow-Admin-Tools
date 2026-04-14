@@ -1,8 +1,8 @@
 {
   "name": "zillow-admin-tools",
   "description": "Zillow Admin Tools Chrome Extension",
-  "version": "0.9.9",
-  "releaseDate": "Apr 10, 2026",
+  "version": "0.9.10",
+  "releaseDate": "Apr 13, 2026",
   "private": true,
   "type": "module",
   "scripts": {

@@ -10,6 +10,15 @@ Versioning follows:
 
 ---
 
+## [0.9.10] – 2026-04-13 (patch)
+
+### Added
+- `components/CxnTab.tsx`: Added "DataDog - Events by ZUID" search section between Splunk and Pearl Lead Audit — input accepts a numeric ZUID and opens the DataDog Partner Support PA App Events dashboard (`premier-agent.datadoghq.com`) filtered to that ZUID; validates numeric-only input with an inline error, matching the Splunk section's behavior
+- `utils/urls.ts`: Added `DATADOG_EVENTS_BASE` constant — full DataDog dashboard URL with all required query parameters pre-set; ZUID appended at the end
+
+---
+
+
 ## [0.9.9] – 2026-04-10 (patch)
 
 ### Fixed
