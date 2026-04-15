@@ -10,6 +10,23 @@ Versioning follows:
 
 ---
 
+## [0.9.11] – 2026-04-14 (patch)
+
+### Added
+- `components/SettingsModal.tsx`, `types/index.ts`, `components/App.tsx`: Added "Highspot Search" toggle to the bottom of the Settings panel — when disabled, the Highspot search bar is hidden and the space collapses; defaults to enabled
+
+### Changed
+- `assets/globals.css`: Increased text contrast across light and dark themes — light mode text tiers (`--text-secondary` through `--text-faint`) shifted three steps darker toward `#0f172a`; dark mode text tiers shifted three steps lighter toward `#ffffff` for equivalent contrast gain
+- `assets/globals.css`: History items (`zat-history-item`) now use `--bg-surface` (white) and `--border` for background and border in light mode — previously used `--bg-input` and `--border-light`, which were near-identical to the page background and produced no visible separation
+- `assets/globals.css`: History item vertical padding reduced by 2px (`10px` → `9px` top/bottom)
+- `assets/globals.css`: Search input vertical padding reduced by 5px (`8px 12px` → `6px 12px 5px`); search button reduced from `34×34px` to `29×29px` to match
+- `assets/globals.css`: Empty history state icon now centers correctly — `zat-empty-state` switched from `text-align: center` to flexbox column layout; `text-align` does not center block-level SVG elements
+- `components/Header.tsx`, `components/SettingsModal.tsx`, `components/App.tsx`: Theme picker moved out of the Settings modal and into the header as an icon-only pill (sun / monitor / moon); order is Light → System → Dark
+- `components/Header.tsx`: Right side of header restructured as a two-row column — Changelog and Settings buttons on top, theme pill below, both center-aligned; logo and title vertically centered against the column height; header padding reduced to tighten overall height
+- `assets/globals.css`: Fixed Dark mode rendering not matching System (auto) mode — `html[data-theme="dark"]` text variable block retained original pre-contrast values because its 2-space indentation never matched the 4-space `@media` block during earlier `replace_all` edits; explicit dark block now mirrors the System block exactly
+
+---
+
 ## [0.9.10] – 2026-04-13 (patch)
 
 ### Added

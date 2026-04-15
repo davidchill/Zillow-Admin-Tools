@@ -1,6 +1,6 @@
 // ── SettingsModal — extension settings panel ──
 
-import type { Settings, ThemeMode, Tab } from '@/types';
+import type { Settings, Tab } from '@/types';
 
 interface Props {
   settings: Settings;
@@ -37,12 +37,6 @@ function Toggle({
   );
 }
 
-const THEME_OPTIONS: { val: ThemeMode; label: string }[] = [
-  { val: 'auto', label: 'Auto' },
-  { val: 'light', label: 'Light' },
-  { val: 'dark', label: 'Dark' },
-];
-
 const TAB_OPTIONS: { val: Tab; label: string }[] = [
   { val: 'listing', label: 'Listing' },
   { val: 'impersonate', label: 'Impersonate' },
@@ -70,22 +64,6 @@ export default function SettingsModal({ settings, onUpdate, onClose }: Props) {
         </div>
 
         <div className="zat-modal-body">
-          {/* Theme picker */}
-          <div className="zat-setting-row">
-            <span className="zat-setting-label">Theme</span>
-            <div className="zat-seg">
-              {THEME_OPTIONS.map(({ val, label }) => (
-                <button
-                  key={val}
-                  className={`zat-seg-btn${settings.themeMode === val ? ' active' : ''}`}
-                  onClick={() => onUpdate({ themeMode: val })}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Default tab picker */}
           <div className="zat-setting-row">
             <span className="zat-setting-label">Default Tab</span>
@@ -146,6 +124,16 @@ export default function SettingsModal({ settings, onUpdate, onClose }: Props) {
               onChange={(v) => onUpdate({ redirectEnabled: v })}
               label="Smart Redirect After Impersonate"
               sub="Redirects you to the profile page when impersonating agent profiles."
+            />
+          </div>
+
+          {/* Highspot search toggle */}
+          <div className="zat-setting-row">
+            <Toggle
+              checked={settings.highspotEnabled}
+              onChange={(v) => onUpdate({ highspotEnabled: v })}
+              label="Highspot Search"
+              sub="Shows the Highspot search bar at the top of the panel."
             />
           </div>
         </div>

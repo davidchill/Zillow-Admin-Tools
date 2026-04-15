@@ -18,10 +18,10 @@
   --bg-input: #f8fafc;
   --bg-subtle: #f1f5f9;
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-tertiary: #475569;
-  --text-muted: #64748b;
-  --text-faint: #94a3b8;
+  --text-secondary: #0f172a;
+  --text-tertiary: #1e293b;
+  --text-muted: #334155;
+  --text-faint: #475569;
   --border: #e2e8f0;
   --border-light: #f1f5f9;
   --border-medium: #cbd5e1;
@@ -69,11 +69,11 @@
     --bg-surface: #1e293b;
     --bg-input: #0f172a;
     --bg-subtle: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-tertiary: #b8cede;
-    --text-muted: #a8bccf;
-    --text-faint: #94a3b8;
+    --text-primary: #ffffff;
+    --text-secondary: #f1f5f9;
+    --text-tertiary: #e2e8f0;
+    --text-muted: #cbd5e1;
+    --text-faint: #b8cede;
     --border: #334155;
     --border-light: #1e293b;
     --border-medium: #475569;
@@ -120,11 +120,11 @@ html[data-theme="dark"] {
   --bg-surface: #1e293b;
   --bg-input: #0f172a;
   --bg-subtle: #334155;
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #b8cede;
-  --text-muted: #a8bccf;
-  --text-faint: #94a3b8;
+  --text-primary: #ffffff;
+  --text-secondary: #f1f5f9;
+  --text-tertiary: #e2e8f0;
+  --text-muted: #cbd5e1;
+  --text-faint: #b8cede;
   --border: #334155;
   --border-light: #1e293b;
   --border-medium: #475569;
@@ -181,7 +181,7 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 /* ── Shared input styles ── */
 .zat-input {
   width: 100%;
-  padding: 8px 12px;
+  padding: 6px 12px 5px;
   border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 13px;
@@ -203,8 +203,8 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 
 /* ── Search button ── */
 .zat-search-btn {
-  width: 34px;
-  height: 34px;
+  width: 29px;
+  height: 29px;
   flex-shrink: 0;
   background: var(--accent);
   border: none;
@@ -316,9 +316,9 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   display: flex;
   flex-direction: column;
   gap: 3px;
-  padding: 10px 12px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-light);
+  padding: 9px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s;
@@ -475,6 +475,9 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
 
 /* ── Empty state ── */
 .zat-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 28px 0;
   border: 2px dashed var(--border);

@@ -19,6 +19,7 @@ export interface Settings {
   floatingTabEnabled: boolean;
   redirectEnabled: boolean;
   historyEnabled: boolean;
+  highspotEnabled: boolean;
   defaultTab: Tab;
   themeMode: ThemeMode;
 }
@@ -28,6 +29,7 @@ export const DEFAULT_SETTINGS: Settings = {
   floatingTabEnabled: true,
   redirectEnabled: true,
   historyEnabled: true,
+  highspotEnabled: true,
   defaultTab: 'listing',
   themeMode: 'auto',
 };

@@ -1,3 +1,18 @@
+## [0.9.11] – 2026-04-14
+### Added
+- New setting: "Highspot Search" toggle — hide or show the Highspot search bar from the Settings panel
+
+### Changed
+- Text contrast improved in both Light and Dark mode — all text tiers are noticeably darker in Light mode and brighter in Dark mode
+- History items in Light mode now have a white card background with a visible border, making them clearly distinct from the page background
+- History items are slightly more compact (2px less height)
+- Search boxes are slightly more compact (5px less height)
+- Empty history icon now correctly centers when a section has no entries
+- Theme picker moved from Settings into the header — tap the sun, monitor, or moon icon to switch between Light, System, and Dark mode without opening Settings
+- Dark mode now correctly matches System (auto) mode — a CSS bug caused the two to render differently
+
+---
+
 ## [0.9.10] – 2026-04-13
 ### Added
 - New "DataDog - Events by ZUID" search added to the CXN Call Troubleshooting tab, between Splunk and Pearl Lead Audit — enter a Zuid to open the DataDog PA app events dashboard filtered to that agent

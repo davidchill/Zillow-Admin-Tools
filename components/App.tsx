@@ -83,9 +83,11 @@ export default function App({ surface }: Props) {
       <Header
         onChangelogOpen={() => setShowChangelog(true)}
         onSettingsOpen={() => setShowSettings(true)}
+        themeMode={settings.themeMode}
+        onThemeChange={(mode) => updateSettings({ themeMode: mode })}
       />
 
-      <HighspotSearch />
+      {settings.highspotEnabled && <HighspotSearch />}
 
       <div className="zat-section-label">Quick Access</div>
 
