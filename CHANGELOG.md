@@ -10,6 +10,16 @@ Versioning follows:
 
 ---
 
+## [0.9.12] – 2026-04-15 (patch)
+
+### Fixed
+- `components/App.tsx`: Removed the double-divider between the Quick Access links and the tab bar — an empty `zat-section-label` div was producing two 1px lines (one per pseudo-element) with the page background color bleeding through the gap between them; replaced with a single `1px` border line
+
+### Changed
+- `components/SettingsModal.tsx`, `assets/globals.css`: "History Limit" setting converted from a number input to a range slider (min 5, max 20, step 1) — the label hint now shows the live selected value (e.g. "10 items") instead of the static "5 – 20 items" range text; slider styled with a 4px track and a 16px accent-blue thumb with scale + glow on hover
+
+---
+
 ## [0.9.11] – 2026-04-14 (patch)
 
 ### Added
