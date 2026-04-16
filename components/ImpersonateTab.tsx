@@ -121,10 +121,7 @@ export default function ImpersonateTab({
     setAgentName('');
   }
 
-  const limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
-  const filteredHistory = history
-    .filter((h) => h.type === 'impersonate')
-    .slice(0, limit);
+  const filteredHistory = history.filter((h) => h.type === 'impersonate');
 
   const emptyMsg =
     settings.historyEnabled === false

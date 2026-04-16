@@ -181,8 +181,6 @@ export default function ListingTab({
     }
   }
 
-  const limit = Math.min(20, Math.max(5, settings.historyLimit || 5));
-
   // Merge searched listings (zpid/phx/dit) with browsed listings (viewed),
   // deduplicated by id, sorted newest-first. The content script already
   // prevents a searched ZPID from also appearing in viewed history, so
@@ -192,8 +190,8 @@ export default function ListingTab({
     return [...searchedHistory, ...viewedHistory]
       .filter((h) => { const key = `${h.id}-${h.type}`; if (seen.has(key)) return false; seen.add(key); return true; })
       .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, limit);
-  }, [searchedHistory, viewedHistory, limit]);
+      .slice(0, settings.historyLimit);
+  }, [searchedHistory, viewedHistory, settings.historyLimit]);
 
   const emptyMsg =
     settings.historyEnabled === false
