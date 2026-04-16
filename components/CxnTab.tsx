@@ -10,7 +10,6 @@ export default function CxnTab() {
   const [datadogValue, setDatadogValue] = useState('');
   const [datadogError, setDatadogError] = useState('');
   const [pearlValue, setPearlValue] = useState('');
-  const [pearlError, setPearlError] = useState('');
 
   function doZuidSearch() {
     const raw = zuidValue.trim();
@@ -133,7 +132,7 @@ export default function CxnTab() {
           className="zat-input"
           placeholder="Lead ID"
           value={pearlValue}
-          onChange={(e) => { setPearlValue(e.target.value); setPearlError(''); }}
+          onChange={(e) => setPearlValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') doPearlSearch(); }}
           autoComplete="off"
         />

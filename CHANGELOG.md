@@ -10,6 +10,13 @@ Versioning follows:
 
 ---
 
+## [0.9.12] – 2026-04-15 (patch) [2]
+
+### Removed
+- `components/CxnTab.tsx`: Removed dead `pearlError` state — `const [pearlError, setPearlError] = useState('')` was declared but `pearlError` was never read or rendered; unlike `zuidError` and `datadogError` which have corresponding inline error display blocks, the Pearl Lead section has no validation and no error output; the corresponding `setPearlError('')` no-op call in the `onChange` handler was also removed
+
+---
+
 ## [0.9.12] – 2026-04-15 (patch)
 
 ### Fixed
