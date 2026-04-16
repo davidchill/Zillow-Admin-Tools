@@ -25,24 +25,21 @@ const EXT_SVG = (
 );
 
 function getBorderClass(item: HistoryItemType): string {
-  if (item.type === 'viewed') return 'zat-item-border-viewed';
-  if (item.type === 'zpid') return 'zat-item-border-zpid';
+  if (item.type === 'viewed' || item.type === 'zpid') return 'zat-item-border-viewed';
   if (item.type === 'phx') return 'zat-item-border-phx';
   if (item.type === 'dit') return 'zat-item-border-dit';
   return `zat-item-border-${item.method || 'zuid'}`;
 }
 
 function getBadgeClass(item: HistoryItemType): string {
-  if (item.type === 'viewed') return 'zat-badge-viewed';
-  if (item.type === 'zpid') return 'zat-badge-zpid';
+  if (item.type === 'viewed' || item.type === 'zpid') return 'zat-badge-viewed';
   if (item.type === 'phx') return 'zat-badge-phx';
   if (item.type === 'dit') return 'zat-badge-dit';
   return `zat-badge-${item.method || 'zuid'}`;
 }
 
 function getBadgeText(item: HistoryItemType): string {
-  if (item.type === 'viewed') return 'Zillow';
-  if (item.type === 'zpid') return 'ZPID';
+  if (item.type === 'viewed' || item.type === 'zpid') return 'Zillow';
   if (item.type === 'phx') return 'PHX';
   if (item.type === 'dit') return 'DIT';
   if (item.method === 'screenname') return 'Screen';
@@ -87,16 +84,10 @@ export default function HistoryItem({ item, onClick }: Props) {
   const borderClass = getBorderClass(item);
 
   // Build action buttons depending on type
-  const isListing =
-    item.type === 'viewed' ||
-    item.type === 'zpid' ||
-    item.type === 'phx' ||
-    item.type === 'dit';
-
   let actionButtons: React.ReactNode;
   let extButton: React.ReactNode;
 
-  if (item.type === 'viewed') {
+  if (item.type === 'viewed' || item.type === 'zpid') {
     const zpidUrl = `https://www.zillow.com/homedetails/${item.id}_zpid/`;
     const phxUrl = `https://phoenix-admin-tool.dna-compute-prod.zg-int.net/zillow-data-lookup?zpid=${item.id}`;
     const ditUrl = `https://prm.in.zillow.net/zpid/edit?zpid=${item.id}`;
@@ -124,15 +115,6 @@ export default function HistoryItem({ item, onClick }: Props) {
       </div>
     );
     extButton = <OpenBtn url={url} tip={`Open in ${label}`} />;
-  } else if (isListing) {
-    // zpid
-    actionButtons = <SmartCopyBtn text={item.id} tip="Copy ZPID" />;
-    extButton = (
-      <OpenBtn
-        url={buildListingUrl('zillow', item.id)}
-        tip="Open listing"
-      />
-    );
   } else {
     // Impersonate
     const copyTip =
