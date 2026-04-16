@@ -10,6 +10,15 @@ Versioning follows:
 
 ---
 
+## [0.9.13] – 2026-04-15 (patch)
+
+### Refactored
+- `components/HistoryItem.tsx`: Replaced three parallel helper functions (`getBorderClass`, `getBadgeClass`, `getBadgeText`) with a single `ITEM_TYPE_META` lookup table and one `getItemMeta()` function — the four static types (`viewed`, `zpid`, `phx`, `dit`) resolve via direct lookup; impersonate items fall through to method-based logic; call site reduced from three variable declarations to one destructured assignment
+- `components/ImpersonateTab.tsx`: Removed redundant `limit` variable and `.slice(0, limit)` from `filteredHistory` — the `history` array from `useHistory` is already capped at `historyLimit`, so the local slice was a no-op
+- `components/ListingTab.tsx`: Removed redundant clamping formula (`Math.min(20, Math.max(5, historyLimit || 5))`) from `combinedHistory` useMemo — replaced with direct `settings.historyLimit` reference since `DEFAULT_SETTINGS` guarantees it is always a valid number; the `.slice()` itself is preserved as `combinedHistory` merges two independently-capped arrays
+
+---
+
 ## [0.9.12] – 2026-04-15 (patch) [2]
 
 ### Removed

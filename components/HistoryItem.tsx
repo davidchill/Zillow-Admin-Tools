@@ -24,26 +24,23 @@ const EXT_SVG = (
   </svg>
 );
 
-function getBorderClass(item: HistoryItemType): string {
-  if (item.type === 'viewed' || item.type === 'zpid') return 'zat-item-border-viewed';
-  if (item.type === 'phx') return 'zat-item-border-phx';
-  if (item.type === 'dit') return 'zat-item-border-dit';
-  return `zat-item-border-${item.method || 'zuid'}`;
-}
+const ITEM_TYPE_META: Partial<Record<string, { border: string; badge: string; text: string }>> = {
+  viewed: { border: 'zat-item-border-viewed', badge: 'zat-badge-viewed', text: 'Zillow' },
+  zpid:   { border: 'zat-item-border-viewed', badge: 'zat-badge-viewed', text: 'Zillow' },
+  phx:    { border: 'zat-item-border-phx',    badge: 'zat-badge-phx',    text: 'PHX'   },
+  dit:    { border: 'zat-item-border-dit',    badge: 'zat-badge-dit',    text: 'DIT'   },
+};
 
-function getBadgeClass(item: HistoryItemType): string {
-  if (item.type === 'viewed' || item.type === 'zpid') return 'zat-badge-viewed';
-  if (item.type === 'phx') return 'zat-badge-phx';
-  if (item.type === 'dit') return 'zat-badge-dit';
-  return `zat-badge-${item.method || 'zuid'}`;
-}
-
-function getBadgeText(item: HistoryItemType): string {
-  if (item.type === 'viewed' || item.type === 'zpid') return 'Zillow';
-  if (item.type === 'phx') return 'PHX';
-  if (item.type === 'dit') return 'DIT';
-  if (item.method === 'screenname') return 'Screen';
-  return (item.method || 'ZUID').toUpperCase();
+function getItemMeta(item: HistoryItemType): { border: string; badge: string; text: string } {
+  const meta = ITEM_TYPE_META[item.type];
+  if (meta) return meta;
+  // Impersonate: derive from method
+  const method = item.method || 'zuid';
+  return {
+    border: `zat-item-border-${method}`,
+    badge:  `zat-badge-${method}`,
+    text:   method === 'screenname' ? 'Screen' : method.toUpperCase(),
+  };
 }
 
 function SmartCopyBtn({ text, tip }: { text: string; tip: string }) {
@@ -79,9 +76,7 @@ function OpenBtn({ url, tip, label }: { url: string; tip: string; label?: React.
 }
 
 export default function HistoryItem({ item, onClick }: Props) {
-  const badgeClass = getBadgeClass(item);
-  const badgeText = getBadgeText(item);
-  const borderClass = getBorderClass(item);
+  const { border: borderClass, badge: badgeClass, text: badgeText } = getItemMeta(item);
 
   // Build action buttons depending on type
   let actionButtons: React.ReactNode;
