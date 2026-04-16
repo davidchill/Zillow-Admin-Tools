@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { HistoryItem } from '@/types';
 import HistoryItemComponent from './HistoryItem';
+import { TrashSVG } from './icons';
 
 interface Props {
   title: string;
@@ -12,15 +13,6 @@ interface Props {
   onClear?: () => void;
   onItemClick: (item: HistoryItem) => void;
 }
-
-const TrashSVG = (
-  <svg viewBox="0 0 24 24">
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-    <path d="M10 11v6" />
-    <path d="M14 11v6" />
-  </svg>
-);
 
 export default function HistorySection({
   title,

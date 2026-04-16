@@ -98,9 +98,7 @@ export default function Header({ onChangelogOpen, onSettingsOpen, themeMode, onT
             <button
               onClick={onChangelogOpen}
               title="What's New"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 3, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = '#1e293b')}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'none')}
+              className="zat-header-icon-btn"
             >
               <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: 'none', stroke: '#93c5fd', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }}>
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -113,9 +111,7 @@ export default function Header({ onChangelogOpen, onSettingsOpen, themeMode, onT
             <button
               onClick={onSettingsOpen}
               title="Settings"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 3, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = '#1e293b')}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'none')}
+              className="zat-header-icon-btn"
             >
               <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, fill: 'none', stroke: '#93c5fd', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }}>
                 <circle cx="12" cy="12" r="3" />

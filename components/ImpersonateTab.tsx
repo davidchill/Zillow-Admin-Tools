@@ -8,26 +8,12 @@ import ConfirmBar from './ConfirmBar';
 import HistorySection from './HistorySection';
 import { SearchSVG, ImpersonateTabIcon as UserSVG } from './icons';
 
-const MODES: { mode: ImpersonateMethod; label: string; wip?: boolean }[] = [
-  { mode: 'zuid', label: 'ZUID' },
-  { mode: 'email', label: 'Email' },
-  { mode: 'screenname', label: 'Screen Name' },
-  { mode: 'auto', label: 'Auto', wip: true },
+const MODES: { mode: ImpersonateMethod; label: string; inputLabel: string; placeholder: string; wip?: boolean }[] = [
+  { mode: 'zuid',       label: 'ZUID',        inputLabel: 'Search by ZUID',              placeholder: 'Input ZUID' },
+  { mode: 'email',      label: 'Email',       inputLabel: 'Search by Email',             placeholder: 'Input full email address' },
+  { mode: 'screenname', label: 'Screen Name', inputLabel: 'Search by Screen Name',       placeholder: 'e.g. johndoe42' },
+  { mode: 'auto',       label: 'Auto',        inputLabel: 'Email, ZUID, or Screen Name', placeholder: 'Email, ZUID, or Screen Name', wip: true },
 ];
-
-const MODE_LABELS: Record<string, string> = {
-  auto: 'Email, ZUID, or Screen Name',
-  email: 'Search by Email',
-  zuid: 'Search by ZUID',
-  screenname: 'Search by Screen Name',
-};
-
-const MODE_PLACEHOLDERS: Record<string, string> = {
-  auto: 'Email, ZUID, or Screen Name',
-  email: 'Input full email address',
-  zuid: 'Input ZUID',
-  screenname: 'e.g. johndoe42',
-};
 
 interface Props {
   history: HistoryItem[];
@@ -121,6 +107,7 @@ export default function ImpersonateTab({
     setAgentName('');
   }
 
+  const modeConfig = MODES.find((m) => m.mode === mode)!;
   const filteredHistory = history.filter((h) => h.type === 'impersonate');
 
   const emptyMsg =
@@ -202,13 +189,13 @@ export default function ImpersonateTab({
       )}
 
       {/* Main input */}
-      <label className="zat-input-label">{MODE_LABELS[mode]}</label>
+      <label className="zat-input-label">{modeConfig.inputLabel}</label>
       <div className="flex gap-2 mb-1">
         <input
           ref={inputRef}
           type="text"
           className={`zat-input${error ? ' has-error' : ''}`}
-          placeholder={MODE_PLACEHOLDERS[mode]}
+          placeholder={modeConfig.placeholder}
           value={value}
           onChange={(e) => { setValue(e.target.value); setError(''); }}
           onKeyDown={handleKeyDown}

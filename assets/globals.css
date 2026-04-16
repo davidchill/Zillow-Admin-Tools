@@ -1065,6 +1065,20 @@ body[data-surface="sidepanel"] { width: 100%; min-width: 280px; }
   min-width: 0;
 }
 
+/* ── Header icon buttons (changelog + settings) ── */
+.zat-header-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.zat-header-icon-btn:hover { background: #1e293b; }
+
 /* ── Version tag ── */
 .zat-version-tag {
   display: block;

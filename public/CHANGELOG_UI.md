@@ -1,3 +1,9 @@
+## [0.9.14] – 2026-04-15
+### Changed
+- Internal code cleanup — no visible changes; several components simplified and deduplicated under the hood
+
+---
+
 ## [0.9.12] – 2026-04-15
 ### Fixed
 - Double-divider between Quick Access links and the tab bar removed — there was a visible gap between two stacked lines; now a single clean divider separates the two sections

@@ -11,30 +11,22 @@ export default function CxnTab() {
   const [datadogError, setDatadogError] = useState('');
   const [pearlValue, setPearlValue] = useState('');
 
-  function doZuidSearch() {
-    const raw = zuidValue.trim();
-    setZuidError('');
+  function doNumericSearch(raw: string, baseUrl: string, onClear: () => void, onError: (msg: string) => void) {
     if (!raw) return;
     const clean = raw.replace(/\D/g, '');
-    if (!clean) {
-      setZuidError('Please enter a numeric ZUID.');
-      return;
-    }
-    chrome.tabs.create({ url: CXN_SPLUNK_Zuid_BASE + clean });
-    setZuidValue('');
+    if (!clean) { onError('Please enter a numeric ZUID.'); return; }
+    chrome.tabs.create({ url: baseUrl + clean });
+    onClear();
+  }
+
+  function doZuidSearch() {
+    setZuidError('');
+    doNumericSearch(zuidValue.trim(), CXN_SPLUNK_Zuid_BASE, () => setZuidValue(''), setZuidError);
   }
 
   function doDatadogSearch() {
-    const raw = datadogValue.trim();
     setDatadogError('');
-    if (!raw) return;
-    const clean = raw.replace(/\D/g, '');
-    if (!clean) {
-      setDatadogError('Please enter a numeric ZUID.');
-      return;
-    }
-    chrome.tabs.create({ url: DATADOG_EVENTS_BASE + clean });
-    setDatadogValue('');
+    doNumericSearch(datadogValue.trim(), DATADOG_EVENTS_BASE, () => setDatadogValue(''), setDatadogError);
   }
 
   function doPearlSearch() {

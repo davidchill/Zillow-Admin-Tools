@@ -66,10 +66,6 @@ export default function App({ surface }: Props) {
 
   if (!ready) return null;
 
-  function switchTab(tab: Tab) {
-    setCurrentTab(tab);
-  }
-
   return (
     <div
       style={{
@@ -99,21 +95,21 @@ export default function App({ surface }: Props) {
       <div className="zat-tabs" style={{ borderBottom: 'none' }}>
         <button
           className={`zat-tab${currentTab === 'listing' ? ' active' : ''}`}
-          onClick={() => switchTab('listing')}
+          onClick={() => setCurrentTab('listing')}
         >
           {ListingTabIcon}
           Listing<br />Troubleshooting
         </button>
         <button
           className={`zat-tab${currentTab === 'impersonate' ? ' active' : ''}`}
-          onClick={() => switchTab('impersonate')}
+          onClick={() => setCurrentTab('impersonate')}
         >
           {ImpersonateTabIcon}
           Impersonate /<br />Profile Troubleshooting
         </button>
         <button
           className={`zat-tab${currentTab === 'cxn' ? ' active' : ''}`}
-          onClick={() => switchTab('cxn')}
+          onClick={() => setCurrentTab('cxn')}
         >
           {CxnTabIcon}
           CXN Call<br />Troubleshooting

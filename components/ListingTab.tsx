@@ -5,14 +5,7 @@ import type { ListingMode, HistoryItem, Settings, AutocompleteResult } from '@/t
 import { buildListingUrl } from '@/utils/urls';
 import AutocompleteDropdown from './AutocompleteDropdown';
 import HistorySection from './HistorySection';
-import { SearchSVG } from './icons';
-
-const EyeSVG = (
-  <svg viewBox="0 0 24 24">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
+import { SearchSVG, EyeSVG } from './icons';
 
 const LISTING_MODES: { mode: ListingMode; label: string }[] = [
   { mode: 'zillow', label: 'Zillow' },

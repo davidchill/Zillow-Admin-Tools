@@ -10,6 +10,18 @@ Versioning follows:
 
 ---
 
+## [0.9.14] – 2026-04-15 (patch)
+
+### Refactored
+- `components/ImpersonateTab.tsx`: Merged `MODE_LABELS` and `MODE_PLACEHOLDERS` records into the existing `MODES` array — each entry now carries `inputLabel` and `placeholder` fields alongside `label`; a single `modeConfig` lookup before the return drives both JSX references; eliminates synchronisation risk when adding future modes
+- `components/CxnTab.tsx`: Extracted `doNumericSearch(raw, baseUrl, onClear, onError)` helper — `doZuidSearch` and `doDatadogSearch` were byte-for-byte identical except for their state variables and base URL; each is now two lines; saves ~15 lines of duplicated logic
+- `components/App.tsx`: Removed `switchTab(tab: Tab)` passthrough wrapper — the function did nothing but call `setCurrentTab(tab)`; all three tab button `onClick` handlers now call `setCurrentTab(...)` directly
+- `components/icons.tsx`, `components/ListingTab.tsx`, `components/HistorySection.tsx`: Moved `EyeSVG` and `TrashSVG` into `icons.tsx` as named exports — both were previously defined inline in their respective component files; they now live alongside `SearchSVG` and the tab icons and are imported from a single source
+- `components/Header.tsx`, `assets/globals.css`: Replaced JS hover handlers on the Changelog and Settings header buttons with a CSS class — `onMouseEnter`/`onMouseLeave` inline handlers and the full `style` prop removed from both buttons; replaced with `className="zat-header-icon-btn"` and a corresponding rule (+ `:hover`) added to `globals.css`
+- `components/HighspotSearch.tsx`: Converted from uncontrolled (`useRef`) to controlled input (`useState`) — input now has `value` and `onChange` props, matching every other search input in the codebase; `doSearch` simplified by removing the double ref-access pattern
+
+---
+
 ## [0.9.13] – 2026-04-15 (patch)
 
 ### Refactored
