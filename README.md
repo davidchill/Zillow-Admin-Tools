@@ -1,58 +1,57 @@
 # Zillow Admin Tools
 
-**Version 0.8.7** — Internal Chrome extension for Zillow support staff.
+**v0.9.14** — Internal Chrome extension for Zillow support and operations staff.
 
-Provides account impersonation, listing lookup, CXN call testing, Highspot search, and quick-access admin tools — all from a popup or persistent side panel.
+Consolidates frequently used admin workflows — account impersonation, listing lookup, connection management, and quick navigation to internal tools — into a single popup and persistent side panel, reducing tabs, bookmarks, and manual URL construction during daily support work.
+
+> **Internal use only.** This extension accesses internal Zillow admin URLs and is not published to the Chrome Web Store. Requires an active Zillow SSO session.
 
 ---
 
 ## Features
 
-### Impersonate / Find Agent tab
-Look up and impersonate any Zillow account by ZUID, email address, or screen name. An **Auto** mode (WIP) detects the input type automatically and prompts for confirmation before proceeding. After impersonation, **Smart Redirect** inspects the account type and routes to the correct landing page (`Profile.htm` for ZPA / Premier Agent accounts, `Account.htm` for Consumer accounts). A **Find an Agent** section opens the Zillow agent directory pre-filtered by name.
+### Impersonate Tab
+Look up and impersonate any Zillow partner account by email address, ZUID, or screen name. After impersonation, **Smart Redirect** inspects the account type and routes to the correct landing page (`Profile.htm` for Premier Agent accounts, `Account.htm` for Consumer accounts). Each impersonation is logged to local history with a display label scraped from the page title. A **Find an Agent** section opens the Zillow agent directory pre-filtered by name.
 
-### Listing Search tab
-Search for any property by ZPID, with support for three environments:
-- **Zillow** — opens the standard `homedetails` listing page
-- **PHX** — opens the Phoenix Admin Tool (also supports MLS ID lookup)
-- **DIT** — opens the DIT environment for the given ZPID
+### Listing Lookup Tab
+Search for any property by ZPID or street address.
+- **ZPID search** — navigates to the internal admin listing page
+- **Address autocomplete** — live suggestions debounced and proxied through the background service worker to work around CORS; results open a Zillow search in a new tab
+- **Splunk search** — opens a pre-configured Splunk query scoped to the current ZPID
+- **Recently viewed** — properties you visit on Zillow are automatically tracked and surfaced here
 
-Address search with live **autocomplete** (debounced, proxied through the background service worker to work around CORS) lets you find properties by street address without knowing the ZPID in advance. Can be disabled in Settings.
-
-### CXN Call Testing tab
-Two utilities for diagnosing connection call issues:
-- **Zuid → Splunk** — opens the Splunk connections dashboard filtered by a given ZUID
-- **Pearl Lead Audit** — opens the Pearl concierge audit page for a given lead ID
+### Connections Tab (CxnTab)
+Quick navigation to internal connection-management and partner admin pages.
+- **PHX Search** — opens the Phoenix Admin Tool for a given identifier
+- **DIT Search** — opens the Data Integration Tool admin page for a given identifier
+- **Pearl Lead lookup** — opens the Pearl Lead admin page by lead ID
+- **Viewed listing lookup** — opens the viewed listing admin page for a ZPID
 
 ### Highspot Search
-A persistent search bar at the top of every view that opens `zillow.highspot.com` pre-queried with whatever you type.
+A persistent search bar above the tab content area that opens `zillow.highspot.com` pre-queried with your search term. Can be toggled on/off in Settings.
 
-### Quick Links
-A row of five icon buttons for one-click access to frequently used internal admin tools:
-- 3D Home Tours Tool
-- Address Change Tool
-- Merge Profiles Tool
-- Upgrade Account Tool
-- CaRP Tool (Referral Pricing Admin Portal)
+### Quick Links Bar
+A row of icon buttons for one-click access to frequently used internal Zillow admin tools. Each button opens the target URL in a new tab.
 
 ### Floating Action Button (FAB)
-A draggable button injected onto all Zillow pages (via content script, Shadow DOM) that opens the side panel. Position is saved per-session. Can be disabled in Settings.
+A draggable button injected onto every page via the content script (Shadow DOM isolated) that opens the side panel without navigating away from your current page. Position is saved to `chrome.storage.local`. Can be disabled in Settings.
 
 ### Context Menu
-Right-clicking on any page provides quick impersonation and listing actions via the browser context menu (handled by the background service worker).
+Right-clicking any link on any page provides a context menu option to extract identifiers (screen names, ZPIDs) from the URL and perform an admin lookup directly.
+
+### Changelog Modal
+The **What's New** button in the header displays a parsed changelog from `CHANGELOG_UI.md` using native React elements — no `dangerouslySetInnerHTML`.
 
 ---
 
-## Surfaces
+## Extension Surfaces
 
-The extension runs in two surfaces that share identical functionality:
+Both surfaces mount the same `<App>` component. There is no duplicated logic between them.
 
-| Surface | How to open |
-|---|---|
-| **Popup** | Click the extension icon in the Chrome toolbar |
-| **Side Panel** | Click the FAB on any Zillow page, or open via the browser side panel menu |
-
-Both mount the same `<App>` component — there is no duplicated logic between them.
+| Surface | Entry Point | How to Open |
+|---|---|---|
+| **Popup** | `entrypoints/popup/main.tsx` | Click the extension icon in the Chrome toolbar |
+| **Side Panel** | `entrypoints/sidepanel/main.tsx` | Click the FAB on any page, or open via the browser side panel menu |
 
 ---
 
@@ -62,13 +61,14 @@ Accessible via the gear icon in the header.
 
 | Setting | Description |
 |---|---|
-| History Limit | Number of items to retain in history lists (5–20) |
-| Show Listing Search Tab | Toggle the Listing Search tab on/off |
-| Floating Side Panel Button | Show/hide the draggable FAB on all Zillow pages |
+| Theme | Light / Dark / System (auto-detect) |
+| Default Tab | Which tab opens first (Listing, Impersonate, or Connections) |
+| History Limit | Number of items to retain per history list (5–20, slider) |
+| Highspot Search | Show/hide the Highspot search bar |
+| Floating Side Panel Button | Show/hide the draggable FAB on all pages |
 | Smart Redirect After Impersonate | Auto-route to the correct post-impersonation page |
-| Record History | Enable/disable impersonation and listing view history |
-| Theme | Auto / Light / Dark |
-| Default Tab | Which tab opens first (Listing, Impersonate, or CXN) |
+| Record History | Enable/disable history tracking |
+| Clear History | Removes all stored history entries |
 
 ---
 
@@ -76,9 +76,9 @@ Accessible via the gear icon in the header.
 
 | | |
 |---|---|
-| Framework | [WXT](https://wxt.dev/) v0.19 (Manifest V3) |
+| Build Framework | [WXT](https://wxt.dev/) (Manifest V3) |
 | UI | React 18 + TypeScript |
-| Styling | Tailwind CSS + custom CSS variables (`assets/globals.css`) |
+| Styling | Tailwind CSS 3.x + custom CSS variables (`assets/globals.css`) |
 | Bundler | Vite (via WXT) |
 
 ---
@@ -87,79 +87,101 @@ Accessible via the gear icon in the header.
 
 ```
 entrypoints/
-  background.ts       # Service worker — context menu, impersonation tracking,
-                      # smart redirect, autocomplete proxy, SPA nav tracking
-  content.ts          # Injected on all pages — FAB, property view tracking
-  popup/              # Popup entry point
-  sidepanel/          # Side panel entry point
+  background.ts         # Service worker — context menu, impersonation tracking,
+                        #   smart redirect, autocomplete proxy, SPA nav tracking,
+                        #   side panel open/close state
+  content.ts            # Injected on all pages — FAB (Shadow DOM), property
+                        #   view tracking, PHX/DIT visit tracking
+  popup/
+    index.html
+    main.tsx            # Mounts <App surface="popup" />
+  sidepanel/
+    index.html
+    main.tsx            # Mounts <App surface="sidepanel" />
 
 components/
-  App.tsx             # Root component shared by popup + sidepanel
-  Header.tsx          # Top bar — logo, version, changelog, settings buttons
-  HighspotSearch.tsx  # Highspot search bar
-  QuickLinks.tsx      # Quick-access admin tool buttons
-  ImpersonateTab.tsx  # Impersonate + Find an Agent
-  ListingTab.tsx      # ZPID / address / PHX / DIT search
-  CxnTab.tsx          # CXN Splunk + Pearl Lead tools
-  SettingsModal.tsx   # Settings overlay
-  ChangelogModal.tsx  # What's New overlay (reads CHANGELOG_UI.md)
-  HistorySection.tsx  # Reusable history list
-  HistoryItem.tsx     # Single history row
+  App.tsx               # Root component shared by popup + sidepanel
+  Header.tsx            # Top bar — logo, version, changelog, settings buttons
+  HighspotSearch.tsx    # Highspot search bar
+  QuickLinks.tsx        # Quick-access admin tool icon buttons
+  ImpersonateTab.tsx    # Impersonate + Find an Agent
+  ListingTab.tsx        # ZPID / address search + recently viewed
+  CxnTab.tsx            # PHX / DIT / Pearl Lead / viewed listing tools
+  SettingsModal.tsx     # Settings overlay
+  ChangelogModal.tsx    # What's New overlay (parses CHANGELOG_UI.md)
+  HistorySection.tsx    # Reusable history list
+  HistoryItem.tsx       # Single history row with copy/open actions
   AutocompleteDropdown.tsx
   ConfirmBar.tsx
+  icons.tsx             # Shared SVG icon components
 
 hooks/
-  useSettings.ts      # Reads/writes settings via chrome.storage
-  useHistory.ts       # Reads/manages impersonation + listing view history
+  useSettings.ts        # Reads/writes settings via chrome.storage
+  useHistory.ts         # Reads/manages impersonation + listing view history
 
 utils/
-  urls.ts             # URL builders for all search types
-  validation.ts       # Email, ZUID, and screen name validators
+  urls.ts               # URL builders for all search/admin types
+  validation.ts         # Email, ZUID, and screen name validators
 
 types/
-  index.ts            # Shared TypeScript types and interfaces
+  index.ts              # Shared TypeScript types and interfaces
+
+assets/
+  globals.css           # CSS custom properties, component styles, theming
 ```
 
 ---
 
-## Storage
+## Data Storage
 
-All data is stored in `chrome.storage.local`.
+All data is stored locally in `chrome.storage.local`. Nothing is transmitted externally.
 
-| Key | Type | Contents |
-|---|---|---|
-| `zillow_history_v3` | `HistoryItem[]` | Impersonation history |
-| `zillow_viewed_v3` | `HistoryItem[]` | Recently viewed listings |
-| `zillow_settings` | `Settings` | User preferences |
-| `zat_fab_top` | `number` | FAB vertical position (px) |
+| Key | Type | Contents | PII? |
+|---|---|---|---|
+| `zillow_history_v3` | `HistoryItem[]` | Impersonation + PHX/DIT visit history | Yes — emails, ZUIDs, screen names |
+| `zillow_viewed_v3` | `HistoryItem[]` | Recently viewed listing history | Possibly — property addresses |
+| `zillow_settings` | `Settings` | User preferences | No |
+| `zat_fab_top` | `number` | FAB vertical position (px) | No |
+
+Side panel open/close state is tracked in `chrome.storage.session` (current session only).
 
 ---
 
 ## Build & Install
 
 ```bash
-# Install dependencies (first time only)
+# Install dependencies (first time only, or after pulling new deps)
 npm install
 
 # Build the extension
 npm run build
 
-# Watch mode (hot reload during development)
+# Watch mode with hot reload during development
 npm run dev
 
 # Type check without emitting
 npm run typecheck
 ```
 
-After building, load the extension from `.output/chrome-mv3/` in Chrome:
+After building, load the extension in Chrome:
 
 1. Go to `chrome://extensions`
 2. Enable **Developer Mode**
 3. Click **Load unpacked** and select `.output/chrome-mv3/`
-4. After any rebuild, click the reload icon on the extension card
+4. After any rebuild, click the **reload icon** on the extension card
 
 ---
 
-## Internal Use Only
+## Permissions
 
-This extension is built for Zillow internal staff and accesses internal admin URLs. It is not published to the Chrome Web Store.
+| Permission | Purpose |
+|---|---|
+| `storage` | History, preferences, FAB position, panel state |
+| `tabs` | Tab creation, URL reading, tab updates |
+| `sidePanel` | Persistent docked side panel surface |
+| `contextMenus` | Right-click context menu integration |
+| `scripting` | Autocomplete CORS-bypass proxy, smart redirect detection |
+| `activeTab` | Scripting into the active tab |
+| `webNavigation` | SPA navigation tracking on Zillow pages |
+
+**Host permissions:** `*://*/*` — Required for the content script to detect ZPIDs across all Zillow subdomains and internal environments, and for the FAB to be accessible on any page a support agent may be viewing.
