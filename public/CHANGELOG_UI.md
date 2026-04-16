@@ -1,3 +1,12 @@
+## [0.9.12] – 2026-04-15
+### Fixed
+- Double-divider between Quick Access links and the tab bar removed — there was a visible gap between two stacked lines; now a single clean divider separates the two sections
+
+### Changed
+- "History Limit" in Settings is now a slider instead of a text input — drag left or right to set a limit between 5 and 20 items; the current value is shown live next to the label
+
+---
+
 ## [0.9.11] – 2026-04-14
 ### Added
 - New setting: "Highspot Search" toggle — hide or show the Highspot search bar from the Settings panel

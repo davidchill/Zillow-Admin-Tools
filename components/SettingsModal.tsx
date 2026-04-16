@@ -93,15 +93,16 @@ export default function SettingsModal({ settings, onUpdate, onClose }: Props) {
               <div style={{ marginTop: 6, paddingTop: 6, paddingLeft: 14, borderTop: '1px solid var(--border-light)' }}>
                 <div className="zat-setting-label-row">
                   <span className="zat-setting-label">History Limit</span>
-                  <span className="zat-setting-label-hint">5 – 20 items</span>
+                  <span className="zat-setting-label-hint">{settings.historyLimit} items</span>
                 </div>
                 <input
-                  type="number"
+                  type="range"
                   min={5}
                   max={20}
+                  step={1}
                   value={settings.historyLimit}
                   onChange={handleLimitChange}
-                  className="zat-setting-input"
+                  className="zat-slider"
                 />
               </div>
             )}

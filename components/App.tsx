@@ -93,7 +93,7 @@ export default function App({ surface }: Props) {
 
       <QuickLinks />
 
-      <div className="zat-section-label" style={{ background: 'transparent', margin: '4px 0 0' }} />
+      <div style={{ height: '1px', background: 'var(--border)', margin: '0 14px' }} />
 
       {/* Tab bar */}
       <div className="zat-tabs" style={{ borderBottom: 'none' }}>
